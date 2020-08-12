@@ -38,9 +38,6 @@
 import Header from "./NavBar/Header"
 import NavBarButton from "./NavBar/Button"
 import $ from "jquery";
-import localization from "@/utils/Language.js"
-
-const local = new localization();
 
 export default {
     name: "NavBar",
@@ -48,9 +45,11 @@ export default {
     props: {
         active: String
     },
-    data: () => ({
-        localization: local
-    }),
+    data() {
+        return {
+            localization: this.$parent.localization
+        }
+    },
     computed: {
         updateAvailable() {
             return this.$parent.updateAvailable > 0;

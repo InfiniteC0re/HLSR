@@ -24,7 +24,7 @@
                           :md-size="200">
                         </md-empty-state>
                     </div>
-                    <div id="friends_list" v-if="this.steam_friends.length >= this.steam_friend_count">
+                    <div id="friends_list" v-if="steam_friends.length >= steam_friend_count">
                         <SteamFriend v-for="friend in friends" :key="friend._id" :friend="friend"/>
                     </div>
                 </div>
@@ -64,12 +64,9 @@
     import Store from "../utils/Store.js";
     import SteamFriend from "./Home/SteamFriend"
     import StoreDefaults from "../utils/StoreDefaults.js";
-    import localization from "@/utils/Language.js"
     import HLSRConsole from "hlsr-console";
 
     const Console = new HLSRConsole();
-
-    const local = new localization();
 
     const store = new Store({
         configName: "library",
@@ -79,21 +76,26 @@
     export default {
         name: "home-page",
         components: {SteamFriend},
-        data: () => ({
-            iframeLoaded: false,
-            steam_friends: [],
-            friends: [],
-            steam_friend_count: 666,
-            localization: local,
-            interval: null,
-            song: null,
-            songPosRaw: 0,
-            songPos: "00:00",
-            widget: null,
-            playing: false,
-            songs: [],
-            hlsrconsole: Console,
-        }),
+        data() {
+            return {
+                iframeLoaded: false,
+                steam_friends: [],
+                friends: [],
+                steam_friend_count: 666,
+                steam_friends_counted: 0,
+                localization: this.$parent.localization,
+                interval: null,
+                song: null,
+                songPosRaw0: 0,
+                songPosRaw1: 0,
+                songPos: "00:00",
+                widget: null,
+                playing: false,
+                songs: [],
+                hlsrconsole: Console,
+                posUpdater: null
+            }
+        },
         computed: {
             soundcloudArtwork() {
                 return {
@@ -102,7 +104,7 @@
             },
             bar() {
                 return {
-                    width: `${this.song ? (this.songPosRaw * 100 / this.song.duration) : "0"}%`
+                    width: `${this.song ? (this.songPosRaw1 * 100 / this.song.duration) : "0"}%`
                 }
             },
             songsList() {
@@ -163,6 +165,8 @@
                 return 3;
             },
             updateFriends() {
+                this.steam_friends_counted++;
+                if(this.steam_friends_counted != this.steam_friend_count) return;
                 this.steam_friends.forEach(e => {
                     switch(this.checkState(e)) {
                         case 0:
@@ -221,11 +225,15 @@
                 let ctx = this;
                 var widget = SC.Widget(document.querySelector("#sc"));
                 widget.bind(SC.Widget.Events.PLAY_PROGRESS, (e) => {
-                    this.songPos = this.toHHMMSS(e.currentPosition / 1000)
-                    this.songPosRaw = e.currentPosition;
+                    this.songPosRaw0 = e.currentPosition;
                 });
                 widget.bind(SC.Widget.Events.PLAY, (e) => {
                     this.playing = true;
+                    this.posUpdater = setInterval(function(){
+                        ctx.songPosRaw1 = ctx.songPosRaw0;
+                        ctx.songPos = ctx.toHHMMSS(ctx.songPosRaw1 / 1000);
+                    }, 1000);
+
                     widget.getCurrentSound(song => {
                         ctx.song = song;
                     });
@@ -236,13 +244,11 @@
                         ctx.song = song;
                     });
                 });
-                // widget.play();
+
                 widget.getCurrentSound(song => {
                     ctx.song = song;
                     console.log(this.song)
                 });
-
-                // widget.isP aused(e => {console.log(e)});
 
                 this.widget = widget;
             }
@@ -252,7 +258,6 @@
             var sw = this.$parent.$sw;
 
             ctx.songs = this.$parent.songs;
-            console.log(ctx.songs)
 
             sw.addCallback("FriendCount", (e) => {
                 this.steam_friend_count = e.count;
@@ -288,8 +293,10 @@
             if(this.$parent.steam)
                     sw.command('GetFriends');
             this.interval = setInterval(() => {
-                if(this.$parent.steam)
+                if(this.$parent.steam && document.hasFocus()) {
+                    this.steam_friends_counted = 0;
                     sw.command('GetFriends');
+                }
             }, 5000);
 
             // SoundCloud

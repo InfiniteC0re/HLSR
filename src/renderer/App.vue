@@ -55,10 +55,27 @@ import "./utils/Soundcloud";
 import Store from "./utils/Store.js";
 import StoreDefaults from "./utils/StoreDefaults.js";
 import { machineId, machineIdSync } from "node-machine-id";
+import "codemirror/lib/codemirror.css";
+import "@/utils/infinite.css";
+import "codemirror/addon/selection/active-line.js";
+import "codemirror/addon/hint/show-hint.js";
+import "codemirror/addon/hint/show-hint.css";
+import "codemirror/addon/hint/javascript-hint.js";
+import "codemirror/addon/selection/active-line.js";
+import "codemirror/addon/scroll/annotatescrollbar.js";
+import "codemirror/addon/search/matchesonscrollbar.js";
+import "codemirror/addon/search/searchcursor.js";
+import "codemirror/addon/search/match-highlighter.js";
+import "@/utils/hlscripts/hlscripts.js";
 
 const store = new Store({
   configName: "beta_auth",
   defaults: StoreDefaults.beta_auth,
+});
+
+const settings = new Store({
+  configName: "settings",
+  defaults: StoreDefaults.settings,
 });
 
 const local = new localization();
@@ -156,6 +173,7 @@ export default {
       this.$sw.command("InitSteamWorks");
     },
     updateRPC() {
+      if(!settings.get('config').rpc) return;
       let ctx = this;
       let rpc = JSON.parse(JSON.stringify(this.standardRPC));
       let widget = SC.Widget(document.querySelector("#sc"));
@@ -174,7 +192,6 @@ export default {
                 let current = { state: rpc.state, details: rpc.details };
                 if (JSON.stringify(current) != JSON.stringify(ctx.lastRPC))
                   ctx.rpc.setActivity(rpc);
-                else console.log("EQUAL");
                 ctx.lastRPC = current;
               });
             });
@@ -182,7 +199,6 @@ export default {
             let current = { state: rpc.state, details: rpc.details };
             if (JSON.stringify(current) != JSON.stringify(ctx.lastRPC))
               ctx.rpc.setActivity(rpc);
-            else console.log("EQUAL");
             ctx.rpc.setActivity(rpc);
             ctx.lastRPC = current;
           }
@@ -259,32 +275,11 @@ export default {
         ctx.updateAvailable = 0;
       }
     });
-
-    // ipcRenderer.on("update-error", function(event, text) {
-    //   ctx.updateAvailable = 0;
-    //   alert(JSON.stringify(text))
-    // });
-
-    // ipcRenderer.on("update-available", function(event, text) {
-    //   ctx.updateAvailable = 1;
-    //   alert("new update")
-    // });
-
-    // ipcRenderer.on('update-downloaded', function(event, text) {
-    //   ctx.updateAvailable = 2;
-    //   alert("update downloaded")
-    // });
   },
 };
 </script>
 
 <style>
-/*@import url("https://fonts.googleapis.com/css?family=Rubik|Roboto");*/
-
-* {
-  scroll-behavior: smooth;
-}
-
 .transition {
   transition: 0.08s all;
 }
@@ -362,6 +357,7 @@ body {
   transition: 0.22s;
 }
 .slide-enter {
+  will-change: transform, opacity;
   transform: translate(0, 100%);
   pointer-events: none;
 }

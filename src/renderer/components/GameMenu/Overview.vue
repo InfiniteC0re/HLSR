@@ -22,10 +22,12 @@ export default {
       default: "no id specified",
     },
   },
-  data: () => ({
-    localization: local,
-    posts: [],
-  }),
+  data() {
+    return {
+      localization: this.$parent.localization,
+      posts: [],
+    }
+  },
   methods: {
     openLink(url) {
       let shell = require("electron").remote.shell;

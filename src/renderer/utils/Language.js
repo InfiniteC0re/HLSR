@@ -8,6 +8,7 @@ const store = new Store({
 
 class localization {
 	constructor() {
+		this.lang = store.get("config").language;
 		this.localData = {
 			english: {
 				"#UI_HOME": "Home",
@@ -166,6 +167,10 @@ class localization {
 		};
 	}
 
+	update() {
+		this.lang = store.get("config").language;
+	}
+
 	_parse(str, vars) {
 		for(let i = 0; i < vars.length; i++) {
 			let val = vars[i];
@@ -175,7 +180,7 @@ class localization {
 	}
 
 	get(key, ...vars) {
-		let lang = store.get('config').language;
+		let lang = this.lang;
 		if(lang == 0) lang = "english";
 		if(lang == 1) lang = "russian";
 		if(this.localData[lang] && this.localData[lang][key]) return this._parse(this.localData[lang][key], vars);

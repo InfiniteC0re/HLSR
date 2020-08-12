@@ -23,37 +23,11 @@
 </template>
 
 <script>
-import localization from "@/utils/Language.js";
-
-import "codemirror/lib/codemirror.css";
-
-// theme css
-import "@/utils/infinite.css";
-
-// require active-line.js
-import "codemirror/addon/selection/active-line.js";
-
-// hint
-import "codemirror/addon/hint/show-hint.js";
-import "codemirror/addon/hint/show-hint.css";
-import "codemirror/addon/hint/javascript-hint.js";
-import "codemirror/addon/selection/active-line.js";
-
-// highlightSelectionMatches
-import "codemirror/addon/scroll/annotatescrollbar.js";
-import "codemirror/addon/search/matchesonscrollbar.js";
-import "codemirror/addon/search/searchcursor.js";
-import "codemirror/addon/search/match-highlighter.js";
-import "codemirror/keymap/sublime";
-
 import { codemirror } from "vue-codemirror";
-
-import "@/utils/hlscripts/hlscripts.js";
 
 import fs from "fs";
 import { remote } from "electron";
 
-const local = new localization();
 export default {
   name: "advanced-configs",
   components: {
@@ -88,7 +62,7 @@ export default {
   },
   data() {
     return {
-      localization: local,
+      localization: this.$parent.localization,
       cm: null,
       code: "",
       fileName: "",

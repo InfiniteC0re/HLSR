@@ -13,16 +13,14 @@
 </template>
 
 <script type="text/javascript">
-    import localization from "@/utils/Language.js"
-
-    const local = new localization();
-
 	export default{
 		name: "steam-friend",
 		props: ['friend'],
-        data: () => ({
-            localization: local
-        })
+        data() {
+            return {
+                localization: this.$parent.localization
+            }
+        }
 	}
 </script>
 

@@ -33,9 +33,6 @@
 <script type="text/javascript">
 	import Store from '../../utils/Store.js'
 	import StoreDefaults from '../../utils/StoreDefaults.js'
-	import localization from "@/utils/Language.js"
-
-	const local = new localization();
 
 	const store = new Store({
 		configName: 'library',
@@ -45,15 +42,17 @@
 	export default {
 		name: "gamemenu-configurator",
 		components: {},
-		data: () => ({
-			bxt: false,
-			livesplit: false,
-			rinput: false,
-			edited_dll: false,
-			version: "Steam",
-			args: "",
-			localization: local
-		}),
+		data() {
+			return{
+				bxt: false,
+				livesplit: false,
+				rinput: false,
+				edited_dll: false,
+				version: "Steam",
+				args: "",
+				localization: this.$parent.localization
+			}
+		},
 		props: {
 			id: {
 				type: String,

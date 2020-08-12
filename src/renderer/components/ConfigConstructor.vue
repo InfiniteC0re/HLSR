@@ -72,7 +72,6 @@
 import electron from "electron";
 import Store from "../utils/Store.js";
 import StoreDefaults from "../utils/StoreDefaults.js";
-import localization from "@/utils/Language.js";
 
 const gamesPath = require("path").join(
   (electron.app || electron.remote.app).getPath("userData"),
@@ -85,15 +84,16 @@ const store = new Store({
   defaults: StoreDefaults.scripts,
 });
 
-const local = new localization();
 export default {
   name: "config-constructor",
-  data: () => ({
-    localization: local,
-    selected: {},
-    detailsOpen: false,
-    scripts: {},
-  }),
+  data() {
+    return {
+      localization: this.$parent.localization,
+      selected: {},
+      detailsOpen: false,
+      scripts: {},
+    }
+  },
   computed: {
     video() {
       if (this.selected.video)

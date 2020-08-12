@@ -66,10 +66,8 @@ import Configurator from "./GameMenu/Configurator";
 import Store from "../utils/Store.js";
 import StoreDefaults from "../utils/StoreDefaults.js";
 import HLSRConsole from "hlsr-console";
-import localization from "@/utils/Language.js";
 
 const Console = new HLSRConsole();
-const local = new localization();
 
 const store = new Store({
   configName: "library",
@@ -86,7 +84,7 @@ export default {
       gameTitle: null,
       background: "linear-gradient(rgb(140, 140, 140), rgb(140, 140, 140))",
       section: 0,
-      localization: local,
+      localization: this.$parent.localization,
       installed: false,
       hlsrconsole: Console,
       steam: false,

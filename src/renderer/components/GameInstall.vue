@@ -75,9 +75,7 @@
 import { ipcRenderer } from "electron";
 import Store from "../utils/Store.js";
 import StoreDefaults from "../utils/StoreDefaults.js";
-import localization from "@/utils/Language.js";
 
-const local = new localization();
 const fs = require("fs");
 const onezip = require("onezip");
 
@@ -89,21 +87,23 @@ const store = new Store({
 export default {
   name: "game-install",
   components: {},
-  data: () => ({
-    active: "first",
-    show: false,
-    first: false,
-    second: false,
-    third: false,
-    items: [],
-    game: "",
-    memory: 0,
-    progress: 0,
-    unpacked: false,
-    status: null,
-    appid: null,
-    localization: local
-  }),
+  data(){
+    return {
+      active: "first",
+      show: false,
+      first: false,
+      second: false,
+      third: false,
+      items: [],
+      game: "",
+      memory: 0,
+      progress: 0,
+      unpacked: false,
+      status: null,
+      appid: null,
+      localization: this.$parent.localization
+    }
+  },
   methods: {
     setDone(id, index) {
       this[id] = true;
