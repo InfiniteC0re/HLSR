@@ -258,7 +258,6 @@ export default {
       } else {
         ctx.updateAvailable = 0;
       }
-      alert(text);
     });
 
     // ipcRenderer.on("update-error", function(event, text) {
