@@ -1,0 +1,81 @@
+<template>
+  <div id="wrap">
+    <div class="title">{{localization.get('#UI_OVERVIEW')}}</div>
+    <div class="post" v-for="post in posts" :key="post._id" @click="openLink(post.url)">
+      <div class="post-author">{{post.feedlabel}}</div>
+      <div class="post-title">{{post.title}}</div>
+    </div>
+  </div>
+</template>
+
+<script type="text/javascript">
+import localization from "@/utils/Language.js";
+
+const local = new localization();
+
+export default {
+  name: "gamemenu-overview",
+  components: {},
+  props: {
+    id: {
+      type: String,
+      default: "no id specified",
+    },
+  },
+  data: () => ({
+    localization: local,
+    posts: [],
+  }),
+  methods: {
+    openLink(url) {
+      let shell = require("electron").remote.shell;
+      shell.openExternal(url);
+    },
+  },
+  mounted() {
+    let ctx = this;
+    console.log(this.id);
+    fetch(
+      `https://api.steampowered.com/ISteamNews/GetNewsForApp/v2/?appid=${ctx.id}&count=15`
+    )
+      .then((a) => {
+        return a.json();
+      })
+      .then((data) => {
+        if (!data.appnews) return;
+        ctx.posts = data.appnews.newsitems;
+      });
+  },
+};
+</script>
+
+<style scoped>
+.title {
+  color: #00abff !important;
+  font-size: 20px !important;
+  font-weight: bold !important;
+  margin-left: 16px !important;
+}
+.post {
+  margin: 16px;
+  color: rgb(155, 155, 155);
+  transition: 0.06s color;
+  cursor: pointer;
+}
+.post:hover {
+  color: rgb(185, 185, 185);
+}
+.post:nth-last-child(1) {
+  margin-bottom: 0;
+}
+.post-author {
+  opacity: 0.4;
+}
+.post-title {
+  margin: 0 4px;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+</style>
