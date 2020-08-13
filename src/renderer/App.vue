@@ -68,6 +68,10 @@ import "codemirror/addon/search/searchcursor.js";
 import "codemirror/addon/search/match-highlighter.js";
 import "@/utils/hlscripts/hlscripts.js";
 
+import HLSRConsole from "hlsr-console";
+
+const Console = new HLSRConsole();
+
 const store = new Store({
   configName: "beta_auth",
   defaults: StoreDefaults.beta_auth,
@@ -102,6 +106,7 @@ export default {
     songs: [],
     songsUpdater: null,
     updateAvailable: 0,
+    hlsrconsole: Console,
     beta: {
       enabled: true,
       form: false,

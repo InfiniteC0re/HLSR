@@ -65,9 +65,6 @@ import Overview from "./GameMenu/Overview";
 import Configurator from "./GameMenu/Configurator";
 import Store from "../utils/Store.js";
 import StoreDefaults from "../utils/StoreDefaults.js";
-import HLSRConsole from "hlsr-console";
-
-const Console = new HLSRConsole();
 
 const store = new Store({
   configName: "library",
@@ -86,7 +83,7 @@ export default {
       section: 0,
       localization: this.$parent.localization,
       installed: false,
-      hlsrconsole: Console,
+      hlsrconsole: this.$parent.hlsrconsole,
       steam: false,
     };
   },

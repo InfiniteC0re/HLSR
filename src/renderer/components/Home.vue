@@ -16,7 +16,7 @@
                 </div>
                 <div class="box box1">
                     <div class="mini-title">{{localization.get('#UI_STEAM_FRIENDS')}}</div>
-                    <div class="center" v-if="this.steam_friends.length < this.steam_friend_count">
+                    <div class="center" v-if="steam_friends.length == 0">
                         <md-empty-state
                           class="md-accent"
                           md-rounded
@@ -64,9 +64,6 @@
     import Store from "../utils/Store.js";
     import SteamFriend from "./Home/SteamFriend"
     import StoreDefaults from "../utils/StoreDefaults.js";
-    import HLSRConsole from "hlsr-console";
-
-    const Console = new HLSRConsole();
 
     const store = new Store({
         configName: "library",
@@ -92,7 +89,7 @@
                 widget: null,
                 playing: false,
                 songs: [],
-                hlsrconsole: Console,
+                hlsrconsole: this.$parent.hlsrconsole,
                 posUpdater: null
             }
         },
@@ -142,6 +139,7 @@
             lastLaunchedGameStart() {
                 let gameID = store.get("lastLaunched");
                 let config = store.get("config");
+                console.log(1);
                 if (this.checkInstalled(gameID)) {
                     this.hlsrconsole.execute([
                     require("path").join(
@@ -167,6 +165,7 @@
             updateFriends() {
                 this.steam_friends_counted++;
                 if(this.steam_friends_counted != this.steam_friend_count) return;
+                
                 this.steam_friends.forEach(e => {
                     switch(this.checkState(e)) {
                         case 0:
@@ -293,7 +292,7 @@
             if(this.$parent.steam)
                     sw.command('GetFriends');
             this.interval = setInterval(() => {
-                if(this.$parent.steam && document.hasFocus()) {
+                if(this.$parent.steam) {
                     this.steam_friends_counted = 0;
                     sw.command('GetFriends');
                 }

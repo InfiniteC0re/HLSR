@@ -1,7 +1,7 @@
 <template>
     <div id="header" :style="isAbsolute">
         <div class="logo"></div>
-        <div class="title">HLSR <span style="color: rgba(255,255,255,.2);">BETA</span></div>
+        <div class="title">HLSR <span style="color: rgba(255,255,255,.2);">BETA <span style="font-size: 12px;letter-spacing: 0px">0.1.2</span></span></div>
     </div>
 </template>
 
