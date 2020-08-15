@@ -47,8 +47,11 @@ Vue.use(MdChips)
 
 import App from './App'
 import router from './router'
+import path from 'path'
 
-var steamworks = require("steamworks");
+var steamworks;
+
+steamworks = require('steamworks');
 
 if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
 Vue.http = Vue.prototype.$http = axios
