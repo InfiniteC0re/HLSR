@@ -13,7 +13,7 @@
             <NavBarButton :text="localization.get('#UI_CONFIGS')" notActivable="true" icon="table" @click.native="revealTab('configs-tab')"/>
             <div class="tab" id="configs-tab">
                 <NavBarButton :text="localization.get('#UI_CONFIGS_CONSTRUCTOR')" small="true" @click.native="goTo('config-constructor')"/>
-                <NavBarButton :text="localization.get('#UI_CONFIGS_ADVANCED')" small="true" @click.native="goTo('advanced-configs')"/>
+                <NavBarButton :text="localization.get('#UI_CONFIGS_ADVANCED')" small="true" @click.native="goTo('config-editor')"/>
                 <span class="split"></span>    
             </div>
             <!-- <NavBarButton :text="localization.get('#UI_CUSTOMIZATION')" notActivable="true" icon="sliders-h" @click.native="revealTab('customization-tab')"/>

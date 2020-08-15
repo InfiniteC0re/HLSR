@@ -12,6 +12,11 @@
 <script>
 export default {
     name: "NavBarButton",
+    data() {
+        return {
+            window: null
+        }
+    },
     props: {
         text: String,
         icon: String,
@@ -56,7 +61,7 @@ export default {
             else return "";
         },
         isAnimated() {
-            if(this.animated == "true") return true
+            if(this.animated == "true" && !document.hidden) return true
             else return false;
         }
     },
@@ -68,6 +73,7 @@ export default {
     mounted() {
         this.active = (this.standardActive === "true");
         this.$navbarbuttons.push(this);
+        // this.window = require("electron").remote.getCurrentWindow();
     }
 }
 </script>
@@ -114,14 +120,15 @@ export default {
 
     .animated{
         animation: spin 1.6s infinite linear;
+        will-change: transform;
     }
 
     @keyframes spin {
         0%{
-            transform: rotate(0deg);
+            transform: rotateZ(0deg);
         }
         100%{
-            transform: rotate(360deg);
+            transform: rotateZ(360deg);
         }
     }
 </style>

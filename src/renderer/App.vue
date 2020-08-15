@@ -11,7 +11,7 @@
     <md-snackbar
       md-position="center"
       :md-duration="Infinity"
-      :md-active.sync="!this.steam"
+      :md-active="!steamworks.active && $router.currentRoute.name != 'hltp-loading'"
       md-persistent
     >
       <span>{{localization.get('#UI_STEAM_ERROR')}}</span>
@@ -46,7 +46,6 @@
 
 <script>
 import Frame from "./components/Frame";
-import Steamworks from "steam-integration";
 import BackgroundTheme from "./components/BackgroundTheme";
 import NavBar from "./components/NavBar";
 import GameInstall from "./components/GameInstall.vue";
@@ -88,7 +87,6 @@ export default {
   name: "hltp",
   components: { BackgroundTheme, NavBar, GameInstall, Frame },
   data: () => ({
-    steam: true,
     steamName: null,
     localization: local,
     widgetLoaded: false,
@@ -107,12 +105,18 @@ export default {
     songsUpdater: null,
     updateAvailable: 0,
     hlsrconsole: Console,
+    lancerMode: false,
     beta: {
       enabled: true,
       form: false,
       key: "",
       error: 0,
     },
+    steamworks: {
+      module: null,
+      name: null,
+      active: true
+    }
   }),
   computed: {
     betaKeyError() {
@@ -153,6 +157,11 @@ export default {
       var ctx = this;
       var machine_id = machineIdSync();
 
+      if(navigator.onLine == false) {
+        ctx.beta.form = true;
+        return;
+      }
+
       fetch("https://hlsr.pro/validate_betakey.php", {
         method: "post",
         body: `machine_id=${machine_id}&register=0`,
@@ -175,7 +184,7 @@ export default {
         });
     },
     steamRetry() {
-      this.$sw.command("InitSteamWorks");
+      this.steamworks.active = this.steamworks.module.SteamAPI_Init();
     },
     updateRPC() {
       if(!settings.get('config').rpc) return;
@@ -183,7 +192,7 @@ export default {
       let rpc = JSON.parse(JSON.stringify(this.standardRPC));
       let widget = SC.Widget(document.querySelector("#sc"));
 
-      if (this.steamName) rpc.smallImageText = this.steamName;
+      if (this.steamworks.name) rpc.smallImageText = this.steamworks.name;
 
       if (widget) {
         widget.isPaused((paused) => {
@@ -212,9 +221,42 @@ export default {
     },
   },
   mounted() {
-    if (this.beta.enabled) this.betaCheckRegistered();
-    let widget = SC.Widget(document.querySelector("#sc"));
     let ctx = this;
+
+    // Beta and SteamWorks
+    
+    if(this.beta.enabled) this.betaCheckRegistered();
+
+    this.steamworks.module = this.$steamworks;
+    
+    this.steamworks.active = this.steamworks.module.SteamAPI_Init();
+    if(this.steamworks.active) {
+      this.steamworks.name = this.steamworks.module.GetPersonName();
+      this.steamworks.module.SetRichPresense("launcher", "HLSR");
+    }
+
+    // Discord RPC
+
+    const DiscordRPC = require("discord-rpc");
+
+    const clientId = "731919817346383913";
+
+    DiscordRPC.register(clientId);
+
+    const rpc = new DiscordRPC.Client({ transport: "ipc" });
+    const startTimestamp = new Date();
+    this.rpc = rpc;
+
+    rpc.on("ready", () => {
+      this.updateRPC();
+      setInterval(this.updateRPC, 8000);
+    });
+
+    rpc.login({ clientId }).catch(console.error);
+
+    // SoundCloud
+
+    let widget = SC.Widget(document.querySelector("#sc"));
 
     widget.bind(SC.Widget.Events.READY, function () {
       ctx.songsUpdater = setInterval(() => {
@@ -229,45 +271,8 @@ export default {
         });
       }, 1000);
     });
-  },
-  beforeCreate() {
-    var ctx = this;
 
-    const DiscordRPC = require("discord-rpc");
-
-    const clientId = "731919817346383913";
-
-    DiscordRPC.register(clientId);
-
-    const rpc = new DiscordRPC.Client({ transport: "ipc" });
-    const startTimestamp = new Date();
-
-    rpc.on("ready", () => {
-      this.rpc = rpc;
-      this.updateRPC();
-      setInterval(this.updateRPC, 8000);
-    });
-
-    rpc.login({ clientId }).catch(console.error);
-
-    // Steamworks API
-    var sw = new Steamworks();
-    this.$sw = sw;
-
-    sw.addCallback("MyName", (e) => {
-      this.steamName = e.nickname;
-    });
-
-    sw.addCallback("NoSteam", () => {
-      this.steam = false;
-    });
-
-    sw.addCallback("Steam", () => {
-      sw.command("setRPC");
-      this.steam = true;
-    });
-
-    sw.command("GetMyName");
+    // Autoupdater
 
     const { ipcRenderer } = require("electron");
 
@@ -281,10 +286,21 @@ export default {
       }
     });
   },
+  beforeMount() {
+    var machine_id = machineIdSync();
+
+    if(machine_id == "03b49373393a54940b53effa61609e0ae0b400ba984e9810bcc56cb7beefdbf2") { 
+      this.lancerMode = true;
+    }
+  }
 };
 </script>
 
 <style>
+*{
+  backface-visibility: hidden;
+}
+
 .transition {
   transition: 0.08s all;
 }
@@ -337,6 +353,7 @@ body {
   color: #00abff;
   text-shadow: 1px 1px 8px rgba(0, 0, 0, 0.4);
   line-height: normal;
+  display: flex;
 }
 
 .element {
@@ -377,7 +394,13 @@ body {
   left: 380px !important;
 }
 .md-dialog-container {
-  max-height: 100%;
+  width: 760px;
+  max-height: 90%;
+  background: rgb(58, 58, 58) !important;
+}
+
+.md-overlay {
+  backdrop-filter: blur(4px);
 }
 
 /* width */

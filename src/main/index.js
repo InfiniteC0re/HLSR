@@ -18,9 +18,6 @@ const winURL = process.env.NODE_ENV === 'development'
   : `file://${__dirname}/index.html`
 
 function createWindow() {
-  /**
-   * Initial window options
-   */
   mainWindow = new BrowserWindow({
     height: 768,
     useContentSize: true,
@@ -80,14 +77,14 @@ app.on('activate', () => {
 
 app.setAppUserModelId(process.execPath)
 
-/**
- * Auto Updater
- *
- * Uncomment the following code below and install `electron-updater` to
- * support auto updating. Code Signing with a valid certificate is required.
- * https://simulatedgreg.gitbooks.io/electron-vue/content/en/using-electron-builder.html#auto-updating
- */
+// Prevent steam_appid.txt changing
 
+if(process.env.NODE_ENV === 'production') {
+  const fs = require("fs");
+  fs.writeFileSync("./steam_appid.txt", "70");
+}
+
+// AutoUpdater
 
 import { autoUpdater } from 'electron-updater'
 
@@ -112,8 +109,12 @@ autoUpdater.on('error', (err) => {
   sendStatusToWindow("Error: " + err);
 })
 
+autoUpdater.on('download-progress', (progressObj) => {
+  mainWindow.setProgressBar(progressObj.percent / 100);
+})
+
 autoUpdater.on('update-downloaded', (info) => {
-  sendStatusToWindow('Update downloaded');
+  sendStatusToWindow('update-downloaded');
 });
 
 app.on('ready', () => {

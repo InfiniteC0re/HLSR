@@ -36,7 +36,8 @@ export default {
   },
   mounted() {
     let ctx = this;
-    console.log(this.id);
+    
+    if(!navigator.onLine) return;
     fetch(
       `https://api.steampowered.com/ISteamNews/GetNewsForApp/v2/?appid=${ctx.id}&count=15`
     )

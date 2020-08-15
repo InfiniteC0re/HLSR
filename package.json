@@ -1,6 +1,6 @@
 {
   "name": "hlsr",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "author": "",
   "description": "Change the way you feel speedruns",
   "license": null,
@@ -38,9 +38,7 @@
         "repo": "hlsr"
       }
     ],
-    "asarUnpack": [
-      "*.exe"
-    ],
+    "asar": false,
     "files": [
       "dist/electron/**/*"
     ],
@@ -79,7 +77,6 @@
     "jquery": "^3.5.1",
     "node-machine-id": "^1.1.12",
     "onezip": "^4.2.1",
-    "steam-integration": "^1.0.1",
     "vue": "^2.5.16",
     "vue-codemirror": "^4.0.6",
     "vue-electron": "^1.0.6",
@@ -87,7 +84,8 @@
     "vue-material": "^1.0.0-beta-14",
     "vue-router": "^3.0.1",
     "vuex": "^3.0.1",
-    "vuex-electron": "^1.0.0"
+    "vuex-electron": "^1.0.0",
+    "steamworks": "node_modules/steamworks"
   },
   "devDependencies": {
     "ajv": "^6.5.0",
@@ -108,10 +106,9 @@
     "css-loader": "^0.28.11",
     "del": "^5.1.0",
     "devtron": "^1.4.0",
-    "electron": "^9.2.0",
+    "electron": "9.2.0",
     "electron-builder": "^22.8.0",
-    "electron-debug": "^3.1.0",
-    "electron-devtools-installer": "^3.0.0",
+    "electron-rebuild": "^1.11.0",
     "eslint": "^4.19.1",
     "eslint-config-standard": "^11.0.0",
     "eslint-friendly-formatter": "^4.0.1",
@@ -146,6 +143,8 @@
     "webpack-cli": "^3.0.8",
     "webpack-dev-server": "^3.1.4",
     "webpack-hot-middleware": "^2.22.2",
-    "webpack-merge": "^4.1.3"
+    "webpack-merge": "^4.1.3",
+    "electron-debug": "^3.1.0",
+    "electron-devtools-installer": "^3.0.0"
   }
 }

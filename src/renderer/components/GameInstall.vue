@@ -241,13 +241,3 @@ export default {
   }
 };
 </script>
-
-<style type="text/css">
-.md-dialog-container.md-dialog-fullscreen.md-theme-default {
-  width: 760px;
-  max-height: 90%;
-}
-.md-overlay {
-  backdrop-filter: blur(32px);
-}
-</style>

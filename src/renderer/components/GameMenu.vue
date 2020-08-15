@@ -83,13 +83,12 @@ export default {
       section: 0,
       localization: this.$parent.localization,
       installed: false,
-      hlsrconsole: this.$parent.hlsrconsole,
-      steam: false,
+      hlsrconsole: this.$parent.hlsrconsole
     };
   },
   computed: {
     isButtonDisabled() {
-      return (!navigator.onLine && !checkInstalled(this.gameID)) || !this.steam;
+      return (!navigator.onLine && !checkInstalled(this.gameID)) || !this.$parent.steamworks.module.SteamAPI_Init();
     }
   },
   methods: {

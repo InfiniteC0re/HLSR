@@ -26,9 +26,9 @@ export default new Router({
       component: require('@/components/GameMenu').default
     },
     {
-      path: '/advanced-configs',
+      path: '/config-editor',
       name: "hltp-game-menu",
-      component: require('@/components/AdvancedConfigs').default
+      component: require('@/components/ConfigEditor').default
     },
     {
       path: '/config-constructor',

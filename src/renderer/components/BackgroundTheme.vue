@@ -37,6 +37,11 @@ export default {
         }
     },
     mounted() {
+        if(this.$parent.lancerMode) {
+            var a = store.get('config');
+            a.theme = 2;
+            store.set('config', a)
+        }
         this.updateTheme();
     }
 }

@@ -60,7 +60,8 @@ export default {
 							key: "v",
 							command: "labo"
 						}
-					]
+					],
+					author: "LN4Rk0t1k#1766"
 				},
 				{
 					name: "Gauss Boost 180°",
@@ -88,7 +89,8 @@ export default {
 							"key": "tab",
 							"command": "+tau"
 						}
-					]
+					],
+					author: "Parklez"
 				},
 				{
 					name: "Water Boosting",
@@ -133,7 +135,8 @@ export default {
 							"key": "l",
 							"command": "onwabo"
 						}
-					]
+					],
+					author: "LN4Rk0t1k#1766"
 				},
 				{
 					name: "Nihilanth Boost",
@@ -142,7 +145,7 @@ export default {
 					aliases: [
 						{
 							name: "nihboost",
-							command: "fps_max 30; -attack; weapon_crowbar; w 1; +use; weapon_handgrenade; w 27; -forward; cl_pitchdown 90; cl_pitchup -90; w 5; weapon_9mmAR; +attack2; -use; +jump; +duck; w 5; -jump; cl_pitchup -45; cl_pitchdown 45; w 11; -attack2; -duck; cl_pitchup 89.999; cl_pitchdown 89.999; weapon_egon; weapon_9mmAR; fps_max 100"
+							command: "fps_max 30; +use; weapon_handgrenade; w 27; -forward; cl_pitchdown 90; cl_pitchup -90; w 5; weapon_9mmAR; +attack2; -use; +jump; +duck; w 5; -jump; cl_pitchup -45; cl_pitchdown 45; w 11; -attack2; -duck; cl_pitchup 89.999; cl_pitchdown 89.999; weapon_egon; weapon_9mmAR; fps_max 100"
 						}
 					],
 					binds: [
@@ -150,7 +153,8 @@ export default {
 							"key": "n",
 							"command": "nihboost"
 						}
-					]
+					],
+					author: "LN4Rk0t1k#1766"
 				},
 				{
 					name: "On A Rail Object Boosting",
@@ -167,7 +171,8 @@ export default {
 							"key": "g",
 							"command": "foobbo"
 						}
-					]
+					],
+					author: "LN4Rk0t1k#1766"
 				},
 				{
 					name: "Surface Tension Trigger Delay",
@@ -200,7 +205,8 @@ export default {
 							"key": "6",
 							"command": "msttd"
 						}
-					]
+					],
+					author: "LN4Rk0t1k#1766"
 				},
 				{
 					name: "Test Chamber Skip",
@@ -273,7 +279,8 @@ export default {
 							"key": "8",
 							"command": "tcreset"
 						}
-					]
+					],
+					author: "LN4Rk0t1k#1766"
 				}
 			],
 			scriptless: [

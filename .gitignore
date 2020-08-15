@@ -3,7 +3,9 @@ dist/electron/*
 dist/web/*
 build/*
 !build/icons
-node_modules/
+node_modules/*
+!node_modules
+!node_modules/steamworks*
 npm-debug.log
 npm-debug.log.*
 thumbs.db

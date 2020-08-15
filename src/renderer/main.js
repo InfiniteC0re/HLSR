@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import axios from 'axios'
-import path from 'path'
 
 import {
     MdButton,
@@ -49,11 +48,13 @@ Vue.use(MdChips)
 import App from './App'
 import router from './router'
 
+var steamworks = require("steamworks");
+
 if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
 Vue.http = Vue.prototype.$http = axios
 Vue.config.productionTip = false
 Vue.prototype.$navbarbuttons = [];
-Vue.prototype.$sw = null;
+Vue.prototype.$steamworks = steamworks;
 
 /* eslint-disable no-new */
 new Vue({

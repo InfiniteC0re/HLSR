@@ -53,6 +53,7 @@ export default {
     },
     methods: {
         themeChange() {
+            if(this.$parent.lancerMode) return;
             this.saveChoice();
             this.$parent.$refs.theme.updateTheme();
         },
@@ -61,7 +62,8 @@ export default {
             let langChanged = config.language != this.language;
 
             config.language = this.language;
-            config.theme = this.theme;
+            if(!this.$parent.lancerMode)
+                config.theme = this.theme;
             config.rpc = this.rpc;
             config.experimental = this.experimental;
             store.set('config', config);

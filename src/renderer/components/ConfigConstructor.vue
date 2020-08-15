@@ -1,7 +1,18 @@
 <template>
   <div id="wrap">
     <div id="form">
-      <div class="title">{{localization.get('#UI_CONFIGS_CONSTRUCTOR')}}</div>
+      <div class="title">
+        {{localization.get('#UI_CONFIGS_CONSTRUCTOR')}}
+        <md-badge :md-content="needsUpdate" md-dense style="margin-left: auto">
+          <md-button
+            @click.stop="updateScripts"
+            class="md-icon-button md-accent"
+          >
+            <md-icon class="fal fa-glass-citrus"></md-icon>
+            <md-tooltip>{{localization.get('#UI_SCRIPT_UPDATE')}}</md-tooltip>
+          </md-button>
+        </md-badge>
+      </div>
       <div
         style="margin-top:16px;background:rgba(0,0,0,.16);height:100%;overflow:auto;border-radius:4px"
       >
@@ -62,6 +73,7 @@
             </div>
           </div>
           <video v-if="selected.video" :src="video" width autoplay loop></video>
+          <div v-if="selected.author" style="margin-top: 10px;opacity: 0.4">{{selected.author}}</div>
         </md-dialog-content>
       </md-dialog>
     </div>
@@ -92,7 +104,8 @@ export default {
       selected: {},
       detailsOpen: false,
       scripts: {},
-    }
+      needsUpdate: 0
+    };
   },
   computed: {
     video() {
@@ -101,8 +114,34 @@ export default {
     },
   },
   methods: {
+    needUpdate() {
+      let defaultScripts = JSON.parse(JSON.stringify(StoreDefaults.scripts.data));
+      let currentScripts = JSON.parse(JSON.stringify(this.scripts));
+
+      function removeIndeed(section) {
+        for(let i = 0; i < defaultScripts[section].length; i++) {
+          delete defaultScripts[section][i].selected;
+          delete defaultScripts[section][i].binds;
+        }
+        for(let i = 0; i < currentScripts[section].length; i++) {
+          delete currentScripts[section][i].selected;
+          delete currentScripts[section][i].binds;
+        }
+      };
+
+      removeIndeed("scriptless");
+      removeIndeed("scripted");
+      if(JSON.stringify(defaultScripts) != JSON.stringify(currentScripts)) return 1;
+      else return 0;
+    },
     itemClick: (e) => {
       console.log(e.currentTarget);
+    },
+    updateScripts() {
+      console.log(StoreDefaults.scripts.data)
+      this.scripts = JSON.parse(JSON.stringify(StoreDefaults.scripts.data));
+      store.set("data", this.scripts);
+      this.needsUpdate = this.needUpdate();
     },
     checkInstalled(appid) {
       const library = new Store({
@@ -189,6 +228,7 @@ export default {
   },
   mounted() {
     this.scripts = store.get("data");
+    this.needsUpdate = this.needUpdate();
   },
 };
 </script>

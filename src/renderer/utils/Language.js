@@ -24,7 +24,7 @@ class localization {
 				"#UI_STEAM_FRIENDS": "Steam Friends",
 				"#UI_SEND_MESSAGE": "Send Message",
 				"#UI_NO_FRIENDS": "No online Steam friends detected",
-				"#UI_IN_LAUNCHER": "Playing with HLSR",
+				"#UI_IN_LAUNCHER": "Playing HLSR",
 				"#UI_IN_HL": "Playing Half-Life",
 				"#UI_ONLINE": "Online",
 				"#UI_OFFLINE": "Offline",
@@ -74,7 +74,7 @@ class localization {
 				"#UI_SCRIPT_SCRIPTLESS": "Scriptless Category",
 				"#UI_SCRIPT_SCRIPTED": "Scripted Category",
 				"#UI_SCRIPT_BINDS": "Binds",
-				"#UI_SCRIPT_GENERATE": "Generate",
+				"#UI_SCRIPT_GENERATE": "Install for all games",
 				"#UI_SCRIPT_SAVE": "Save to File",
 				"#UI_SCRIPT_KEY": "Key",
 				"#UI_SCRIPT_COMMAND": "Command",
@@ -85,7 +85,23 @@ class localization {
 				"#UI_SOUNDCLOUD": "SoundCloud Widget",
 				"#UI_UPDATE_DOWNLOADING": "Downloading an update...",
 				"#UI_UPDATE_READY": "Restart to update",
-				"#UI_RECENTGAME_NOGAME": "No game"
+				"#UI_RECENTGAME_NOGAME": "No game",
+				"#UI_IN_OTHER_GAME": "Playing other game",
+				"#UI_NO_INTERNET": "No Internet connnection",
+				"#UI_SCRIPT_UPDATE": "Update scripts DB",
+				"#UI_CHANGELOG": "Changelog",
+				"#UI_CHANGELOG_CONTENT":
+`<h4>Update from 08/15/2020 [0.1.3]</h4>
+<ul>
+	<li>Steam Intergrations works much faster now because of using native module</li>
+	<li>More info about your Steam friends</li>
+	<li>Script database refresh button in constructor</li>
+	<li>Optimization adjustments</li>
+	<li>Ability to rewind music in SoundCloud widget</li>
+	<li>Fixed display of some components in the absence of the Internet</li>
+	<li>The appearance of the changelog</li>
+</ul>
+`
 			},
 			russian: {
 				"#UI_HOME": "Главная",
@@ -151,7 +167,7 @@ class localization {
 				"#UI_SCRIPT_SCRIPTLESS": "Scriptless категория",
 				"#UI_SCRIPT_SCRIPTED": "Scripted категория",
 				"#UI_SCRIPT_BINDS": "Бинды",
-				"#UI_SCRIPT_GENERATE": "Сгенерировать",
+				"#UI_SCRIPT_GENERATE": "Установить во все игры",
 				"#UI_SCRIPT_SAVE": "Сохранить в файл",
 				"#UI_SCRIPT_KEY": "Кнопка",
 				"#UI_SCRIPT_COMMAND": "Команда",
@@ -162,7 +178,23 @@ class localization {
 				"#UI_SOUNDCLOUD": "SoundCloud Виджет",
 				"#UI_UPDATE_DOWNLOADING": "Загрузка обновления...",
 				"#UI_UPDATE_READY": "Требуется перезапуск",
-				"#UI_RECENTGAME_NOGAME": "Нет игры"
+				"#UI_RECENTGAME_NOGAME": "Нет игры",
+				"#UI_IN_OTHER_GAME": "В другой игре",
+				"#UI_NO_INTERNET": "Нет подключения к Интернету",
+				"#UI_SCRIPT_UPDATE": "Обновить базу скриптов",
+				"#UI_CHANGELOG": "Что нового?",
+				"#UI_CHANGELOG_CONTENT":
+`<h4>Обновление от 15.08.2020 [0.1.3]</h4>
+<ul>
+	<li>Steam интеграции теперь работают в разы быстрее за счёт использования нативного модуля</li>
+	<li>Более подробная информация о друзьях в стиме</li>
+	<li>Кнопка обновления базы данных скриптов в конструкторе</li>
+	<li>Обновления кода, связанные с оптимизацией работы программы</li>
+	<li>Возможность перемотки музыки в SoundCloud виджете</li>
+	<li>Фикс отображения некоторых компонентов при отсутствии Интернета</li>
+	<li>Появление ченджлога</li>
+</ul>
+`
 			}
 		};
 	}
