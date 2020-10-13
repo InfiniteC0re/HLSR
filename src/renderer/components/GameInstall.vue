@@ -1,5 +1,5 @@
 <template>
-  <md-dialog :md-active.sync="show" :mdClickOutsideToClose="first == false || third == true">
+  <md-dialog :md-active.sync="show" :mdClickOutsideToClose="first == false || third == true" :mdCloseOnEsc="false">
     <md-dialog-title>{{localization.get('#UI_GAME_INSTALL')}}</md-dialog-title>
     <md-steppers :md-active-step.sync="active" md-alternative md-linear>
       <md-step

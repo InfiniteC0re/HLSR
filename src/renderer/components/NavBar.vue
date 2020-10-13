@@ -5,9 +5,9 @@
             <NavBarButton :text="localization.get('#UI_HOME')" icon="home" standardActive="true" @click.native="goTo('home')"/>
             <NavBarButton :text="localization.get('#UI_LIBRARY')" icon="play" notActivable="true" @click.native="revealTab('games-tab')"/>
             <div class="tab" id="games-tab">
-                <NavBarButton text="Half-Life" small="true" ref="hl" @click.native="goTo('game', {id: '70'})"/>
-                <NavBarButton text="Half-Life: Opposing Force" ref="of" small="true" @click.native="goTo('game', {id: '50'})"/>
-                <NavBarButton text="Half-Life: Blue Shift" ref="bs" small="true" @click.native="goTo('game', {id: '130'})"/>
+                <NavBarButton :lambdaColor="1" text="Half-Life" small="true" ref="hl" @click.native="goTo('game', {id: '70'})"/>
+                <NavBarButton :lambdaColor="2" text="Half-Life: Opposing Force" ref="of" small="true" @click.native="goTo('game', {id: '50'})"/>
+                <NavBarButton :lambdaColor="3" text="Half-Life: Blue Shift" ref="bs" small="true" @click.native="goTo('game', {id: '130'})"/>
                 <span class="split"></span>  
             </div>
             <NavBarButton :text="localization.get('#UI_CONFIGS')" notActivable="true" icon="table" @click.native="revealTab('configs-tab')"/>
@@ -16,8 +16,8 @@
                 <NavBarButton :text="localization.get('#UI_CONFIGS_ADVANCED')" small="true" @click.native="goTo('config-editor')"/>
                 <span class="split"></span>    
             </div>
-            <!-- <NavBarButton :text="localization.get('#UI_CUSTOMIZATION')" notActivable="true" icon="sliders-h" @click.native="revealTab('customization-tab')"/>
-            <div class="tab" id="customization-tab">
+            <NavBarButton :text="localization.get('#UI_CUSTOMIZATION')" icon="sliders-h" @click.native="goTo('customization')"/>
+            <!-- <div class="tab" id="customization-tab">
                 <NavBarButton :text="localization.get('#UI_MENU_BACKGROUNDS')" small="true"/>
                 <NavBarButton :text="localization.get('#UI_CROSSHAIR_SETTINGS')" small="true"/>
                 <NavBarButton :text="localization.get('#UI_HUD_SETTINGS')" small="true"/>
@@ -26,10 +26,10 @@
                 <span class="split"></span>    
             </div> -->
             <NavBarButton :text="localization.get('#UI_SETTINGS')" icon="cog" @click.native="goTo('settings')"/>            
-            <div class="bottom">
-                <NavBarButton v-if="updateAvailable" animated="true" notActivable="true" :text="updateState" icon="sync-alt"/>
-                <!-- <NavBarButton notActivable="true" text="#UI_DOWNLOADS_MARKET" icon="arrow-alt-circle-down"/>   -->
-            </div>
+        </div>
+        <div class="bottomButtons">
+            <NavBarButton v-if="updateAvailable" animated="true" notActivable="true" :text="updateState" icon="sync-alt"/>
+            <!-- <NavBarButton notActivable="true" text="#UI_DOWNLOADS_MARKET" icon="arrow-alt-circle-down"/>   -->
         </div>
     </div>
 </template>
@@ -55,7 +55,6 @@ export default {
             return this.$parent.updateAvailable > 0;
         },
         updateState() {
-            console.log(this)
             switch(this.$parent.updateAvailable) {
                 case 0:
                     return ""
@@ -109,23 +108,18 @@ export default {
 
 <style scoped>
     #navbar{
-        min-width: 380px;
-        height: 100%;
-        position: relative;
+        flex: 0.45;
+        display: flex;
+        flex-direction: column;
     }
 
     #buttons{
         display: flex;
         flex-flow: column;
+        flex: 1;
     }  
 
     .tab{
         display: none;
-    }
-
-    .bottom{
-        position: absolute;
-        bottom: 0;
-        width: 100%;
     }
 </style>

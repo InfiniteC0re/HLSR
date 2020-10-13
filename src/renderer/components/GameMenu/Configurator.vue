@@ -21,7 +21,7 @@
 		<div class="container">
 			<md-checkbox v-model="rinput" @change="saveChoice" class="md-primary">RInput</md-checkbox>
 		</div>
-		<div class="container" style="width: 100%; position: absolute; bottom: 0">
+		<div class="container" style="width: 100%; position: absolute; bottom: 8px">
 			<md-field>
 				<label>{{localization.get('#UI_START_ARGS')}}</label>
 				<md-input @change="saveChoice" v-model="args"></md-input>

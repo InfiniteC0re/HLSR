@@ -25,12 +25,15 @@ export default {
         updateTheme() {
             switch(store.get('config').theme) {
                 case 0:
-                    this.background = require("@/assets/blue.jpg");
+                    this.background = require("@/assets/gradient.jpg");
                     break;
                 case 1:
-                    this.background = require("@/assets/red.jpg");
+                    this.background = require("@/assets/blue.jpg");
                     break;
                 case 2:
+                    this.background = require("@/assets/red.jpg");
+                    break;
+                case 3:
                     this.background = require("@/assets/lancer.png");
                     break;
             }

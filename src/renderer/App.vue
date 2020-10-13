@@ -1,8 +1,16 @@
 <template>
   <div id="app">
     <Frame />
+    <div class="hidden_elements" hidden>
+      <iframe
+      id="sc"
+      allow="autoplay"
+      src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/playlists/1024488982%3Fsecret_token%3Ds-Is2HJ3P7dhu&amp;color=%23511bcd&amp;auto_play=false&amp;hide_related=false&amp;show_comments=false&amp;show_user=true&amp;show_reposts=false&amp;show_teaser=true"
+      @load="widgetLoaded = true"
+    ></iframe>
+    </div>
     <BackgroundTheme class="background" ref="theme" />
-    <div style="display:flex;height:100%;max-height: 736px">
+    <div id="app__container">
       <NavBar v-if="$router.currentRoute.name != 'hltp-loading'" ref="navbar" />
       <transition name="slide" mode="out-in" class="full">
         <router-view id="router" :key="$route.fullPath"></router-view>
@@ -18,16 +26,7 @@
       <md-button class="md-primary" @click="steamRetry">{{localization.get('#UI_RETRY')}}</md-button>
     </md-snackbar>
     <GameInstall ref="gameinstall" />
-    <iframe
-      style="display:none"
-      width="100%"
-      height="100%"
-      id="sc"
-      allow="autoplay"
-      src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/playlists/1024488982%3Fsecret_token%3Ds-Is2HJ3P7dhu&amp;color=%23511bcd&amp;auto_play=false&amp;hide_related=false&amp;show_comments=false&amp;show_user=true&amp;show_reposts=false&amp;show_teaser=true"
-      @load="widgetLoaded = true"
-    ></iframe>
-    <md-dialog :md-active.sync="beta.form" :mdClickOutsideToClose="false">
+    <md-dialog :md-active.sync="beta.form" :mdClickOutsideToClose="false" :mdCloseOnEsc="false">
       <md-dialog-title>Beta Authorization</md-dialog-title>
       <md-dialog-content>
         <md-field :class="betaKeyError">
@@ -180,7 +179,7 @@ export default {
           }
         })
         .catch((e) => {
-          console.log("Error reading hlsr.pro answer");
+          console.error("Error reading hlsr.pro answer");
         });
     },
     steamRetry() {
@@ -289,7 +288,7 @@ export default {
   beforeMount() {
     var machine_id = machineIdSync();
 
-    if(machine_id == "03b49373393a54940b53effa61609e0ae0b400ba984e9810bcc56cb7beefdbf2") { 
+    if (machine_id == "03b49373393a54940b53effa61609e0ae0b400ba984e9810bcc56cb7beefdbf2") { 
       this.lancerMode = true;
     }
   }
@@ -299,6 +298,7 @@ export default {
 <style>
 *{
   backface-visibility: hidden;
+  margin: 0;
 }
 
 .transition {
@@ -306,10 +306,8 @@ export default {
 }
 
 body {
-  margin: 0;
   font-family: Rubik;
   user-select: none;
-  overflow: hidden;
   display: flex;
 }
 
@@ -320,7 +318,14 @@ body {
 #app {
   display: flex;
   flex-direction: column;
-  width: 100%;
+  width: 100vw;
+  height: 100vh;
+}
+
+#app__container {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
 }
 
 .split {
@@ -328,18 +333,15 @@ body {
   margin: 8px;
 }
 
-#wrapper,
 #router {
+  flex: 1;
   display: flex;
-  height: 100%;
-}
-
-#router {
-  width: 100%;
+  border-radius: 16px 0 0 0;
+  overflow: hidden;
 }
 
 #form {
-  width: 100%;
+  flex: 1;
   padding: 32px;
   display: flex;
   flex-direction: column;
@@ -349,11 +351,12 @@ body {
   font-size: 36px;
   font-weight: 900;
   text-transform: uppercase;
-  /* color: rgb(210,210,210); */
   color: #00abff;
   text-shadow: 1px 1px 8px rgba(0, 0, 0, 0.4);
   line-height: normal;
   display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .element {
@@ -401,6 +404,7 @@ body {
 
 .md-overlay {
   backdrop-filter: blur(4px);
+  z-index: 6;
 }
 
 /* width */

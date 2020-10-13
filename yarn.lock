@@ -5739,10 +5739,10 @@ hipchat-notifier@^1.1.0:
     lodash "^4.0.0"
     request "^2.0.0"
 
-hlsr-console@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/hlsr-console/-/hlsr-console-1.0.0.tgz#3142a1fd18399c1dcda8a407224cf2c0f0915b41"
-  integrity sha512-0kLkpKKYf0BeUIXZrdNo9JaCkT+Mp7A/f+tXFlrkxpz01HtM1Nisu5CXRDqOMaZIOcOw/tIIM9/2BT06u82FRA==
+hlsr-console@1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/hlsr-console/-/hlsr-console-1.0.1.tgz#a1c3489d7f779a1c67c21a2c3499963123431f5b"
+  integrity sha512-U6TB7K8Xoa8GoOqdugN8oFjlv+wnaEvWMEWTWybk8r/USQpZfsEJiJoKNDJHpUa7tmYdIsIVo8MjfrQbErrWHQ==
 
 hmac-drbg@^1.0.0:
   version "1.0.1"
@@ -10494,6 +10494,9 @@ stdout-stream@^1.4.0:
   integrity sha512-j4emi03KXqJWcIeF8eIXkjMFN1Cmb8gUlDYGeBALLPo5qdyTfA9bOtl8m33lRoC+vFMkP3gl0WsDr6+gzxbbTA==
   dependencies:
     readable-stream "^2.0.1"
+
+steamworks@./node_modules/steamworks:
+  version "1.0.0"
 
 stream-browserify@^2.0.1:
   version "2.0.2"

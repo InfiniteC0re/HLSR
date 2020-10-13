@@ -28,15 +28,8 @@ export default {
     components: { checkbox, dropdown },
     data() {
         return {
-            languages: [
-                this.$parent.localization.get('#UI_ENGLISH'),
-                this.$parent.localization.get('#UI_RUSSIAN')
-            ],
-            themes: [
-                this.$parent.localization.get('#UI_BLUE_THEME'),
-                this.$parent.localization.get('#UI_RED_THEME'),
-                this.$parent.localization.get('#UI_LANCER_THEME')
-            ],
+            languages: [],
+            themes: [],
             language: 0,
             theme: 0,
             rpc: true,
@@ -50,8 +43,22 @@ export default {
         this.theme = config.theme;
         this.rpc = config.rpc;
         this.experimental = config.experimental;
+        this.updateLocale();
     },
     methods: {
+        updateLocale() {
+            this.languages = [
+                this.$parent.localization.get('#UI_ENGLISH'),
+                this.$parent.localization.get('#UI_RUSSIAN')
+            ];
+
+            this.themes = [
+                this.$parent.localization.get('#UI_GRADIENT_THEME'),
+                this.$parent.localization.get('#UI_BLUE_THEME'),
+                this.$parent.localization.get('#UI_RED_THEME'),
+                this.$parent.localization.get('#UI_LANCER_THEME')
+            ];
+        },
         themeChange() {
             if(this.$parent.lancerMode) return;
             this.saveChoice();
@@ -72,16 +79,7 @@ export default {
                 this.localization.update();
                 this.$parent.$refs.navbar.$forceUpdate(); // Обновить панель навигации
 
-                // Обновить себя
-                this.languages = [
-                    this.localization.get('#UI_ENGLISH'),
-                    this.localization.get('#UI_RUSSIAN')
-                ];
-                this.themes = [
-                    this.localization.get('#UI_BLUE_THEME'),
-                    this.localization.get('#UI_RED_THEME'),
-                    this.localization.get('#UI_LANCER_THEME')
-                ]
+                this.updateLocale();
             }
         },
         pink() {

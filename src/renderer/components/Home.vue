@@ -77,6 +77,9 @@
                 </div>
               </div>
             </div>
+            <div class="player-volume" @click.stop="SCVolumeChange">
+              <div class="bar" :style="{height: `${this.SCVolume}%`}"></div>
+            </div>
           </div>
           <div class="player-songs" v-if="song && navigator.onLine">
             <div
@@ -130,6 +133,7 @@ export default {
       localization: this.$parent.localization,
       navigator: navigator,
       changelog: false,
+      SCVolume: 100
     };
   },
   computed: {
@@ -257,6 +261,7 @@ export default {
           ctx.song = song;
         });
       });
+
       widget.bind(SC.Widget.Events.PAUSE, (e) => {
         this.playing = false;
 
@@ -275,6 +280,10 @@ export default {
         ctx.song = song;
       });
 
+      widget.getVolume(volume => {
+        ctx.SCVolume = volume;
+      })
+
       this.widget = widget;
     },
     SCUpdate() {
@@ -290,6 +299,11 @@ export default {
           this.SCUpdate();
         }, 20);
       }
+    },
+    SCVolumeChange(e) {
+      this.SCVolume = ((e.offsetY) * 100) / e.currentTarget.clientHeight;
+      this.widget.setVolume(this.SCVolume);
+      console.log(e.currentTarget.clientHeight, e.offsetY)
     },
     checkState(friend) {
       if (!friend.gamePlayed && friend.personaState > 0) return 2;
@@ -353,8 +367,6 @@ export default {
 
 <style scoped>
 #grid {
-  width: 100%;
-  height: 100%;
   margin-top: 24px;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -499,6 +511,20 @@ iframe {
   color: rgba(255, 255, 255, 0.4);
 }
 
+.player-volume {
+  width: 6px;
+  background: rgba(255,255,255,.1);
+  display: flex;
+  transform: rotate3d(0, 0, 1, 180deg);
+  -webkit-transform-origin: 58% 50%;
+}
+
+.player-volume .bar {
+  height: 50%;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.2);
+}
+
 .progress {
   width: 100%;
   height: 4px;
@@ -550,6 +576,7 @@ iframe {
   overflow: hidden;
   margin-left: 8px;
   align-items: center;
+  font-size: 13px;
 }
 .song-name {
   overflow: hidden;

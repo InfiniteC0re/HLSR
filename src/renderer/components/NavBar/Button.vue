@@ -3,6 +3,9 @@
         <div :class="{icon: true, animated: isAnimated}" v-if="icon">
             <i :class="'fas fa-' + icon"></i>
         </div>
+        <div v-if="lambdaVisible" class="lambda__container">
+            <div :class="{lambda: true, green: lambdaColor == 2, blue: lambdaColor == 3}"></div>
+        </div>
         <div class="text">
             {{text}}
         </div>
@@ -20,6 +23,10 @@ export default {
     props: {
         text: String,
         icon: String,
+        lambdaColor: {
+            type: Number,
+            default: 0
+        },
         small: {
             type: String,
             default: "false"
@@ -63,6 +70,9 @@ export default {
         isAnimated() {
             if(this.animated == "true" && !document.hidden) return true
             else return false;
+        },
+        lambdaVisible() {
+            return this.lambdaColor > 0;
         }
     },
     data() {
@@ -79,23 +89,31 @@ export default {
 </script>
 
 <style>
-    .button{
-        width: 100%;
-        height: 64px;
-        display: flex;
-        align-items:center;
-        padding: 0 48px;
-        box-sizing: border-box;
-        font-size: 16px;
-        color: rgb(210,210,210);
-        cursor: pointer;
-    }
-
     .button .icon{
         width: 30px;
         margin-right: 8px;
         display: flex;
         justify-content:center;
+    }
+
+    .button, .button2 {
+        width: 100%;
+        display: flex;
+        align-items:center;
+        box-sizing: border-box;
+        font-size: 16px;
+        color: rgb(210,210,210);
+        cursor: pointer;
+        transition: color 100ms ease,
+                    background-position-x 500ms ease;
+        background: linear-gradient(90deg, rgba(0,0,0,.15) 60%, transparent);
+        background-repeat: no-repeat;
+        background-position-x: -500px;
+    }
+
+    .button{
+        height: 64px;
+        padding: 0 48px;
     }
       
     .button2{
@@ -104,9 +122,7 @@ export default {
         display: flex;
         align-items:center;
         padding: 0 88px;
-        box-sizing: border-box;
-        font-size: 16px;
-        color: rgb(210,210,210);
+        position: relative;
     }
       
     .button:hover, .button2:hover, .navbutton:hover{
@@ -114,13 +130,47 @@ export default {
     }
       
     .button2.active, .button.active{
-        background: linear-gradient(90deg, rgba(0,0,0,.15) 60%, transparent);
+        background-position-x: 0;
         color: white !important;
     }
 
     .animated{
         animation: spin 1.6s infinite linear;
         will-change: transform;
+    }
+
+    .lambda__container {
+        position: absolute;
+        left: 52px;
+    }
+
+    .lambda {
+        background: url(../../assets/lambda.svg);
+        background-size: cover;
+        background-position: center;
+        width: 18px;
+        height: 18px;
+        filter: invert(0.4);
+        transition: filter 150ms ease,
+                    opacity 150ms ease;
+        position: relative;
+        opacity: 0.5;
+    }
+
+    .button2:hover .lambda, .button2.active .lambda {
+        filter: invert(0.4) sepia(1) saturate(1.9);
+    }
+
+    .button2.active .lambda {
+        opacity: 1;
+    }
+
+    .button2:hover .lambda.blue, .button2.active .lambda.blue {
+        filter: invert(0.4) sepia(1) hue-rotate(180deg) saturate(1.9);
+    }
+
+    .button2:hover .lambda.green, .button2.active .lambda.green {
+        filter: invert(0.4) sepia(1) hue-rotate(90deg) saturate(1.9);
     }
 
     @keyframes spin {

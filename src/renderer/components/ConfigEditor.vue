@@ -17,7 +17,7 @@
         </div>
         <div style="margin-left:auto;margin-right:10px">{{fileName}}</div>
       </div>
-      <codemirror v-model="code" @ready="onCmReady" :options="cmOption" style="height:100%;max-height: 585px;max-width: 836px;" />
+      <codemirror v-model="code" @ready="onCmReady" :options="cmOption" style="height:100%;" />
     </div>
   </div>
 </template>
@@ -85,7 +85,6 @@ export default {
             this.saveFile();
           },
           "Ctrl-O": () => {
-            console.log(this);
             this.openFile();
           },
         },

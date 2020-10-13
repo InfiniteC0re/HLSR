@@ -20,10 +20,12 @@ const winURL = process.env.NODE_ENV === 'development'
 function createWindow() {
   mainWindow = new BrowserWindow({
     height: 768,
-    useContentSize: true,
     width: 1280,
+    useContentSize: true,
     show: false,
     frame: false,
+    transparent: true,
+    resizable: false,
     webPreferences: {
       nodeIntegration: true,
       webSecurity: false
@@ -77,7 +79,7 @@ app.on('activate', () => {
 
 app.setAppUserModelId(process.execPath)
 
-// Prevent steam_appid.txt changing
+// Prevent steam_appid.txt from changing
 
 if(process.env.NODE_ENV === 'production') {
   const fs = require("fs");
@@ -121,7 +123,7 @@ app.on('ready', () => {
   if (process.env.NODE_ENV === 'production') {
     autoUpdater.checkForUpdatesAndNotify();
     setInterval(function() {
-      if(!detected) autoUpdater.checkForUpdatesAndNotify();
+      if (!detected) autoUpdater.checkForUpdatesAndNotify();
     }, 60000)
   }
 })

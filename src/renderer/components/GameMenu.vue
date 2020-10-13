@@ -8,7 +8,12 @@
         <div class="main">
           <div class="game-title">{{gameTitle}}</div>
           <div style="display:flex;align-items:center;margin-top:32px">
-            <md-button class="md-raised" @click="gameButton" style="margin:0" :disabled="isButtonDisabled">
+            <md-button
+              :class='{"md-raised": true, "installedGame": installed}'
+              @click="gameButton"
+              style="margin:0"
+              :disabled="isButtonDisabled"
+            >
               <div class="icon">
                 <i class="fas fa-play"></i>
               </div>
@@ -27,7 +32,11 @@
               </md-button>
 
               <md-menu-content style="margin-top: 3px">
-                <md-menu-item @click="uninstallGame">
+                <md-menu-item @click="gameFolder">
+                  <span>{{localization.get('#UI_GAME_FOLDER')}}</span>
+                  <md-icon class="fas fa-folder"></md-icon>
+                </md-menu-item>
+                <md-menu-item @click="uninstallGame" class="gamemenu_uninstallButton">
                   <span>{{localization.get('#UI_UNINSTALL')}}</span>
                   <md-icon class="fas fa-trash"></md-icon>
                 </md-menu-item>
@@ -82,18 +91,22 @@ export default {
       background: "linear-gradient(rgb(140, 140, 140), rgb(140, 140, 140))",
       section: 0,
       localization: this.$parent.localization,
+      hlsrconsole: this.$parent.hlsrconsole,
+      steamworks: this.$parent.steamworks,
+      steamactive: false,
       installed: false,
-      hlsrconsole: this.$parent.hlsrconsole
     };
   },
   computed: {
     isButtonDisabled() {
-      return (!navigator.onLine && !checkInstalled(this.gameID)) || !this.$parent.steamworks.module.SteamAPI_Init();
-    }
+      return (
+        (!navigator.onLine && !checkInstalled(this.gameID)) || !this.steamactive
+      );
+    },
   },
   methods: {
     updateBackground(fn) {
-      this.background = `url(${require("@/assets/" + fn)})`;
+      this.background = `url(${require("@/assets/screenshots/" + fn)})`;
     },
     checkInstalled(appid) {
       let installed = store.get("installed");
@@ -124,8 +137,8 @@ export default {
       let shell = require("electron").remote.shell;
       let url = "https://wiki.sourceruns.org/wiki/Category:Half-Life_1";
 
-      switch(this.gameID) {
-        case "50": 
+      switch (this.gameID) {
+        case "50":
           url = "https://wiki.sourceruns.org/wiki/Category:Opposing_Force";
           break;
         case "130":
@@ -134,7 +147,29 @@ export default {
       }
 
       shell.openExternal(url);
-    },  
+    },
+    gameFolder() {
+      const libraryPath = require("path").join(
+        require("electron").remote.app.getPath("userData"),
+        "library"
+      );
+
+      let shell = require("electron").remote.shell;
+      let path = "";
+
+      if (this.gameID == "70")
+        path = require("path").join(libraryPath, "Half-Life");
+      else if (this.gameID == "50")
+        path = require("path").join(libraryPath, "Half-Life", "gearbox_WON");
+      else if (this.gameID == "130")
+        path = require("path").join(libraryPath, "Half-Life", "bshift");
+
+      try {
+        shell.openPath(path);
+      }catch(e) {
+        console.error(e);
+      }
+    },
     uninstallGame() {
       const libraryPath = require("path").join(
         require("electron").remote.app.getPath("userData"),
@@ -180,9 +215,11 @@ export default {
   },
   mounted() {
     let section = this.$route.query.section;
-    if(section) {
+    if (section) {
       this.section = section;
     }
+
+    this.steamactive = this.steamworks.module.SteamAPI_Init();
 
     this.gameID = this.$route.query.id;
     switch (this.gameID) {
@@ -209,8 +246,6 @@ export default {
 
 <style type="text/css" scoped>
 #form {
-  height: 100%;
-  width: 100%;
   display: flex;
   padding: 0;
   flex-direction: row;
@@ -221,14 +256,14 @@ export default {
   background-size: cover !important;
   background-position: center !important;
   background-repeat: no-repeat !important;
-  width: 100%;
+  flex: 1;
   display: flex;
   align-items: center;
-  flex-flow: column;
-  margin-top: -32px;
+  flex-direction: column;
+  box-shadow: 0 0 8px white;
 }
 
-#mainview .main {
+#mainview > .main {
   margin-top: 112px;
   display: flex;
   flex-direction: column;
@@ -255,19 +290,23 @@ export default {
   border-radius: 2px;
 }
 
+.md-raised.installedGame {
+  background: rgba(52, 255, 152, 0.62) !important;
+  color: #fff !important;
+}
+
 .main .button:hover {
   color: #fff;
   background: rgba(255, 255, 255, 0.33);
 }
 
-.panels {
+#mainview > .panels {
   display: flex;
+  flex: 1;
   width: 100%;
-  box-sizing: border-box;
-  height: 100%;
   padding: 16px;
   padding-top: 32px;
-  max-height: 548px;
+  overflow: hidden;
 }
 
 .navpanel {
@@ -275,7 +314,6 @@ export default {
   background: rgba(33, 33, 33, 0.5);
   min-width: 260px;
   padding: 16px 0;
-  box-sizing: border-box;
   margin-right: 16px;
   backdrop-filter: blur(16px);
   border-radius: 2px;
@@ -322,5 +360,9 @@ export default {
 
 .icon {
   margin-right: 8px;
+}
+
+.gamemenu_uninstallButton * {
+  color: #ff5252 !important;
 }
 </style>
