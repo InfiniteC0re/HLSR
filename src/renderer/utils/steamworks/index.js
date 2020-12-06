@@ -5,5 +5,4 @@ if(process.arch == "x64")
 else
     steamworks = require('./steamworks-binding-ia32.node');
 
-
 module.exports = steamworks;

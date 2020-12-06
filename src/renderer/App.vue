@@ -224,7 +224,7 @@ export default {
 
     // Beta and SteamWorks
     
-    if(this.beta.enabled) this.betaCheckRegistered();
+    // if(this.beta.enabled) this.betaCheckRegistered();
 
     this.steamworks.module = this.$steamworks;
     
