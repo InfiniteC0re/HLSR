@@ -5739,10 +5739,10 @@ hipchat-notifier@^1.1.0:
     lodash "^4.0.0"
     request "^2.0.0"
 
-hlsr-console@1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/hlsr-console/-/hlsr-console-1.0.1.tgz#a1c3489d7f779a1c67c21a2c3499963123431f5b"
-  integrity sha512-U6TB7K8Xoa8GoOqdugN8oFjlv+wnaEvWMEWTWybk8r/USQpZfsEJiJoKNDJHpUa7tmYdIsIVo8MjfrQbErrWHQ==
+hlsr-console@1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/hlsr-console/-/hlsr-console-1.0.2.tgz#efe13519781bfd18d5edc6f3f3cacc064198e1a0"
+  integrity sha512-VfzwHezvLqcQ2Lzadi7XrhRnYAJUVjkVlOGk3RW3eUOWbR8a0X5yN7/Uwxd5IXeomBpRScQe83A5XtPwFLVLvg==
 
 hmac-drbg@^1.0.0:
   version "1.0.1"
@@ -11484,6 +11484,11 @@ vue-router@^3.0.1:
   version "3.4.2"
   resolved "https://registry.yarnpkg.com/vue-router/-/vue-router-3.4.2.tgz#541221d7ac467786c1c9381bcf36019d883b9cf8"
   integrity sha512-n3Ok70hW0EpcJF4lcWIwSHAQbFTnIOLl/fhO8+oTs4jHNtBNsovcVvPZeTOyKEd8C3xF1Crft2ASuOiVT5K1mw==
+
+vue-slide-up-down@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/vue-slide-up-down/-/vue-slide-up-down-2.0.1.tgz#4f5ab8610e435c1fa907ca87d5857930bbded157"
+  integrity sha512-2crtzW3oeasRrDMNrKMUW5cz0HV7qhj2BPM9UNtPZwVXiHZT5qjdcn1GwpRxKK7DMBhD6OeTmEumwWxXK5XdHw==
 
 vue-style-loader@^4.1.0:
   version "4.1.2"

@@ -132,6 +132,19 @@ export default {
     .button2.active, .button.active{
         background-position-x: 0;
         color: white !important;
+        position: relative;
+    }
+
+    .button2.active::before, .button.active::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 3px;
+        background: #00abff;
+        opacity: 0;
+        animation: appear 1s forwards;
     }
 
     .animated{
@@ -179,6 +192,12 @@ export default {
         }
         100%{
             transform: rotateZ(360deg);
+        }
+    }
+
+    @keyframes appear {
+        to {
+            opacity: 1;
         }
     }
 </style>

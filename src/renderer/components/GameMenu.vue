@@ -3,41 +3,56 @@
     <div id="form">
       <div
         id="mainview"
-        :style="{backgroundImage: `linear-gradient(0deg, #070707 10%, transparent 200%), ${background}`}"
+        :style="{
+          backgroundImage: `linear-gradient(0deg, #070707 10%, transparent 200%), ${background}`,
+        }"
       >
         <div class="main">
-          <div class="game-title">{{gameTitle}}</div>
-          <div style="display:flex;align-items:center;margin-top:32px">
+          <div class="game-title">{{ gameTitle }}</div>
+          <div style="display: flex; align-items: center; margin-top: 32px">
             <md-button
-              :class='{"md-raised": true, "installedGame": installed}'
+              :class="{ 'md-raised': true, installedGame: installed }"
               @click="gameButton"
-              style="margin:0"
+              style="margin: 0"
               :disabled="isButtonDisabled"
             >
               <div class="icon">
                 <i class="fas fa-play"></i>
               </div>
-              <div
-                class="text"
-              >{{checkInstalled(gameID) ? localization.get('#UI_PLAY') : localization.get('#UI_INSTALL')}}</div>
+              <div class="text">
+                {{
+                  checkInstalled(gameID)
+                    ? localization.get("#UI_PLAY")
+                    : localization.get("#UI_INSTALL")
+                }}
+              </div>
             </md-button>
             <md-menu
               md-size="big"
               md-direction="bottom-start"
-              style="margin-left: 16px;backdrop-filter: blur(8px);background: rgba(255, 255, 255, 0.22) !important;padding: 4px;border-radius: 2px;"
+              style="
+                margin-left: 16px;
+                backdrop-filter: blur(8px);
+                background: rgba(255, 255, 255, 0.22) !important;
+                padding: 4px;
+                border-radius: 2px;
+              "
               v-if="installed"
             >
               <md-button class="md-icon-button" md-menu-trigger>
                 <md-icon class="fas fa-cog"></md-icon>
               </md-button>
 
-              <md-menu-content style="margin-top: 3px">
+              <md-menu-content style="margin-top: 3px; width: 256px">
                 <md-menu-item @click="gameFolder">
-                  <span>{{localization.get('#UI_GAME_FOLDER')}}</span>
+                  <span>{{ localization.get("#UI_GAME_FOLDER") }}</span>
                   <md-icon class="fas fa-folder"></md-icon>
                 </md-menu-item>
-                <md-menu-item @click="uninstallGame" class="gamemenu_uninstallButton">
-                  <span>{{localization.get('#UI_UNINSTALL')}}</span>
+                <md-menu-item
+                  @click="uninstallGame"
+                  class="gamemenu_uninstallButton"
+                >
+                  <span>{{ localization.get("#UI_UNINSTALL") }}</span>
                   <md-icon class="fas fa-trash"></md-icon>
                 </md-menu-item>
               </md-menu-content>
@@ -46,17 +61,31 @@
         </div>
         <div class="panels">
           <div class="navpanel">
-            <div :class="['navbutton', section == 0 ? 'active' : '']" @click="section = 0">
-              <div class="text">{{localization.get('#UI_OVERVIEW')}}</div>
+            <div
+              :class="['navbutton', section == 0 ? 'active' : '']"
+              @click="section = 0"
+            >
+              <div class="text">{{ localization.get("#UI_OVERVIEW") }}</div>
             </div>
             <div
-              :class="['navbutton', section == 1 ? 'active' : '', !installed ? 'disabled' : '']"
-              @click="() => {if(installed) section = 1}"
+              :class="[
+                'navbutton',
+                section == 1 ? 'active' : '',
+                !installed ? 'disabled' : '',
+              ]"
+              @click="
+                () => {
+                  if (installed) section = 1;
+                }
+              "
             >
-              <div class="text">{{localization.get('#UI_CONFIGURATOR')}}</div>
+              <div class="text">{{ localization.get("#UI_CONFIGURATOR") }}</div>
             </div>
-            <div :class="['navbutton', section == 2 ? 'active' : '']" @click="sourceRunsWiki">
-              <div class="text">{{localization.get('#UI_WIKI')}}</div>
+            <div
+              :class="['navbutton', section == 2 ? 'active' : '']"
+              @click="sourceRunsWiki"
+            >
+              <div class="text">{{ localization.get("#UI_WIKI") }}</div>
             </div>
           </div>
           <div class="mainpanel">
@@ -126,6 +155,24 @@ export default {
           config[this.gameID].rinput ? "-ri" : "",
           config[this.gameID].livesplit ? "-livesplit" : "",
           config[this.gameID].steam ? "-steam" : "",
+          config[this.gameID].allcores ? "-allcores" : "",
+          config[this.gameID].allcores == false &&
+          config[this.gameID].corescount == "1"
+            ? "-onecore"
+            : "",
+          config[this.gameID].allcores == false &&
+          config[this.gameID].corescount == "2"
+            ? "-twocores"
+            : "",
+          config[this.gameID].allcores == false &&
+          config[this.gameID].corescount == "3"
+            ? "-threecores"
+            : "",
+          config[this.gameID].allcores == false &&
+          config[this.gameID].corescount == "4"
+            ? "-fourcores"
+            : "",
+          "-" + config[this.gameID].priority,
           config[this.gameID].args,
         ]);
         store.set("lastLaunched", this.gameID);
@@ -166,7 +213,7 @@ export default {
 
       try {
         shell.openPath(path);
-      }catch(e) {
+      } catch (e) {
         console.error(e);
       }
     },
@@ -249,6 +296,12 @@ export default {
   display: flex;
   padding: 0;
   flex-direction: row;
+  max-height: 100vh;
+  overflow: hidden;
+  /* position: fixed;
+  top: 0;
+  height: 100vh;
+  width: calc(100vw - 397.23px); */
 }
 
 #mainview {
@@ -260,7 +313,6 @@ export default {
   display: flex;
   align-items: center;
   flex-direction: column;
-  box-shadow: 0 0 8px white;
 }
 
 #mainview > .main {
@@ -291,7 +343,7 @@ export default {
 }
 
 .md-raised.installedGame {
-  background: rgba(52, 255, 152, 0.62) !important;
+  background: #00abffc7 !important;
   color: #fff !important;
 }
 

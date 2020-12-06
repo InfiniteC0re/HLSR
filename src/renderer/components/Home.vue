@@ -282,7 +282,11 @@ export default {
 
       widget.getVolume(volume => {
         ctx.SCVolume = volume;
-      })
+      });
+
+      widget.isPaused(paused => {
+        ctx.playing = !paused;
+      });
 
       this.widget = widget;
     },
@@ -313,7 +317,8 @@ export default {
       return 1;
     },
     updateSteamWidget() {
-      let steam = (this.$parent.steamworks.active = this.steamworks.SteamAPI_Init());
+      let steam = this.$parent.steamworks.active = this.steamworks.SteamAPI_Init();
+      
       if (steam) {
         var friends = this.steamworks.GetFriends("launcher", true);
 
@@ -373,6 +378,7 @@ export default {
   grid-template-rows: repeat(4, 1fr);
   grid-gap: 24px;
   min-height: 0;
+  height: 100%;
 }
 
 .box {

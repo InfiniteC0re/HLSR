@@ -8,7 +8,7 @@
                     <i class="fas fa-sort-down"></i>
                 </div>
             </div>
-            <div class="list" v-if="shown">
+            <div class="list" ref="list" hidden>
                 <div v-for="(item, index) in items" :num="index" @click="setItem($event)" :key="item.id">
                     <div class="item basictext">{{ item }}</div>
                 </div>
@@ -18,8 +18,12 @@
 </template>
 
 <script>
+import $ from "jquery";
+import SlideUpDown from 'vue-slide-up-down'
+
 export default {
     name: "dropdown-component",
+    components: {SlideUpDown},
     model: {
         prop: 'value',
         event: 'change'
@@ -45,13 +49,19 @@ export default {
     },
     data() {
         return {
-            shown: false,
             locked: false
         }
     },
     methods: {
         toggleMenu() {
-            this.shown = !this.shown;
+            if($(this.$refs.list).is(":hidden"))
+            {
+                $(".list").slideUp(300);
+                $(this.$refs.list).slideToggle(300);
+            }
+            else {
+                $(this.$refs.list).slideToggle(300);
+            }
         },
         setLocked(state){
             if(state === true || state === false)
@@ -60,7 +70,6 @@ export default {
         setItem(e){
             let id = parseInt(e.currentTarget.getAttribute("num"));
             this.selected = e.currentTarget.innerText;
-            this.shown = false;
             this.$emit("change", id);
         }
     }
@@ -97,8 +106,8 @@ export default {
         overflow: hidden;
         border-radius: 4px;
         z-index: 2;
-        margin-top: 8px;
         border-radius: 4px;
+        margin-top: 8px;
     }
 
     .item{

@@ -5,7 +5,7 @@
       <iframe
       id="sc"
       allow="autoplay"
-      src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/playlists/1024488982%3Fsecret_token%3Ds-Is2HJ3P7dhu&amp;color=%23511bcd&amp;auto_play=false&amp;hide_related=false&amp;show_comments=false&amp;show_user=true&amp;show_reposts=false&amp;show_teaser=true"
+      src="https://w.soundcloud.com/player/?url=https://api.soundcloud.com/playlists/1160726326&color=%23e81387&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true"
       @load="widgetLoaded = true"
     ></iframe>
     </div>
@@ -193,7 +193,7 @@ export default {
 
       if (this.steamworks.name) rpc.smallImageText = this.steamworks.name;
 
-      if (widget) {
+      if (widget && navigator.onLine) {
         widget.isPaused((paused) => {
           if (!paused) {
             widget.getPosition((position) => {
@@ -326,6 +326,7 @@ body {
   display: flex;
   flex: 1;
   overflow: hidden;
+  position: relative;
 }
 
 .split {
@@ -379,7 +380,7 @@ body {
 
 .slide-leave-active,
 .slide-enter-active {
-  transition: 0.22s;
+  transition: 0.22s transform, 0.22s opacity;
 }
 .slide-enter {
   will-change: transform, opacity;
@@ -399,7 +400,7 @@ body {
 .md-dialog-container {
   width: 760px;
   max-height: 90%;
-  background: rgb(58, 58, 58) !important;
+  background: rgb(62, 62, 62) !important;
 }
 
 .md-overlay {

@@ -83,4 +83,6 @@ export default {
         backdrop-filter: blur(48px);
         background: rgba(23, 46, 86, 0.7);
     }
+    /* background: linear-gradient(0deg, rgba(23, 46, 86, 0.7), rgba(23, 46, 86, 0.7)), url(image.png); */
 </style>
+

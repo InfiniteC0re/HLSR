@@ -94,5 +94,9 @@ export default {
         margin-left: 26px;
         margin-top: 16px;
         margin-bottom: 16px;
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 12px;
+        letter-spacing: 0.05em;
     }
 </style>

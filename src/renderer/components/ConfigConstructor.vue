@@ -2,11 +2,16 @@
   <div id="wrap">
     <div id="form">
       <div class="title">
-        {{localization.get('#UI_CONFIGS_CONSTRUCTOR')}}
-        <div style="flex: 1;margin: 0px 32px;margin-right: 100px;">
+        {{ localization.get("#UI_CONFIGS_CONSTRUCTOR") }}
+        <div style="flex: 1; margin: 0px 32px; margin-right: 100px">
           <md-field>
-            <label for="movie">Game</label>
-            <md-select v-model="game" name="games" id="games" @md-selected="onGameSelect">
+            <label for="games">Game</label>
+            <md-select
+              v-model="game"
+              name="games"
+              id="games"
+              @md-selected="onGameSelect"
+            >
               <md-option value="hl">Half-Life</md-option>
               <md-option value="hlof">Half-Life: Opposing Force</md-option>
               <md-option value="hlbs">Half-Life: Blue Shift</md-option>
@@ -14,67 +19,92 @@
           </md-field>
         </div>
         <md-badge :md-content="needsUpdate" md-dense style="margin-left: auto">
-          <md-button @click.stop="updateScripts" class="md-icon-button md-accent">
+          <md-button
+            @click.stop="updateScripts"
+            class="md-icon-button md-accent"
+          >
             <md-icon class="fal fa-glass-citrus"></md-icon>
-            <md-tooltip>{{localization.get('#UI_SCRIPT_UPDATE')}}</md-tooltip>
+            <md-tooltip>{{ localization.get("#UI_SCRIPT_UPDATE") }}</md-tooltip>
           </md-button>
         </md-badge>
       </div>
       <div class="constructor__configs">
-        <md-list style="background:transparent" v-if="scripts.scriptless">
-          <md-subheader>{{localization.get('#UI_SCRIPT_SCRIPTLESS')}}</md-subheader>
+        <md-list style="background: transparent" v-if="scripts.scriptless">
+          <md-subheader>{{
+            localization.get("#UI_SCRIPT_SCRIPTLESS")
+          }}</md-subheader>
           <md-list-item
             class="md-inset"
             v-for="script in scripts.scriptless"
             :key="script._id"
-            @click="itemClick;if(script.binds){selected=script;detailsOpen=true}"
+            @click="
+              itemClick;
+              if (script.binds) {
+                selected = script;
+                detailsOpen = true;
+              }
+            "
           >
             <md-checkbox v-model="script.selected" class="md-primary" />
-            <span class="md-list-item-text">{{script.name}}</span>
+            <span class="md-list-item-text">{{ script.name }}</span>
           </md-list-item>
-          <md-subheader>{{localization.get('#UI_SCRIPT_SCRIPTED')}}</md-subheader>
+          <md-subheader>{{
+            localization.get("#UI_SCRIPT_SCRIPTED")
+          }}</md-subheader>
           <md-list-item
             class="md-inset"
             v-for="script in scripts.scripted"
             :key="script._id"
-            @click="itemClick;if(script.binds){selected=script;detailsOpen=true}"
+            @click="
+              itemClick;
+              if (script.binds) {
+                selected = script;
+                detailsOpen = true;
+              }
+            "
           >
             <md-checkbox v-model="script.selected" />
-            <span class="md-list-item-text">{{script.name}}</span>
+            <span class="md-list-item-text">{{ script.name }}</span>
           </md-list-item>
         </md-list>
       </div>
       <div class="constructor__buttons">
-        <md-button
-          class="md-accent md-raised"
-          @click="save"
-          :disabled="!checkInstalled('70')"
-        >{{localization.get('#UI_SCRIPT_GENERATE')}}</md-button>
-        <md-button
-          class="md-primary md-raised"
-          @click="saveToFile"
-        >{{localization.get('#UI_SCRIPT_SAVE')}}</md-button>
+        <ButtonAlt @click="save" :disabled="!checkInstalled('70')">
+          <p>{{ localization.get("#UI_SCRIPT_GENERATE") }}</p>
+          <i class="fas fa-save"></i>
+        </ButtonAlt>
+        <ButtonAlt @click="saveToFile" :red="true">
+          <p>{{ localization.get("#UI_SCRIPT_SAVE") }}</p>
+          <i class="fas fa-file-alt"></i>
+        </ButtonAlt>
       </div>
+
+      <!-- Диалоговое окно  -->
+
       <md-dialog :md-active.sync="detailsOpen" :mdClickOutsideToClose="true">
-        <md-dialog-title v-html="localization.get('#UI_SCRIPT_SETTINGS', selected.name)"></md-dialog-title>
+        <md-dialog-title
+          v-html="localization.get('#UI_SCRIPT_SETTINGS', selected.name)"
+        ></md-dialog-title>
         <md-dialog-content v-if="selected">
-          <span
-            style="opacity:0.2;margin-bottom:12px;display:flex"
-          >{{localization.get('#UI_SCRIPT_BINDS')}}</span>
+          <span style="opacity: 0.2; margin-bottom: 12px; display: flex">{{
+            localization.get("#UI_SCRIPT_BINDS")
+          }}</span>
           <div class="binds">
             <div class="inline" v-for="bind in selected.binds" :key="bind._id">
               <md-field style="margin-right: 4px">
-                <label>{{localization.get('#UI_SCRIPT_KEY')}}</label>
+                <label>{{ localization.get("#UI_SCRIPT_KEY") }}</label>
                 <md-input v-model="bind.key"></md-input>
               </md-field>
               <md-field style="margin-left: 4px">
-                <label>{{localization.get('#UI_SCRIPT_COMMAND')}}</label>
+                <label>{{ localization.get("#UI_SCRIPT_COMMAND") }}</label>
                 <md-input v-model="bind.command" readonly></md-input>
               </md-field>
             </div>
           </div>
           <video v-if="selected.video" :src="video" width autoplay loop></video>
-          <div v-if="selected.author" style="margin-top: 10px;opacity: 0.4">{{selected.author}}</div>
+          <div v-if="selected.author" style="margin-top: 10px; opacity: 0.4">
+            {{ selected.author }}
+          </div>
         </md-dialog-content>
       </md-dialog>
     </div>
@@ -82,6 +112,7 @@
 </template>
 
 <script>
+import ButtonAlt from "./Elements/Button";
 import electron from "electron";
 import Store from "../utils/Store.js";
 import StoreDefaults from "../utils/StoreDefaults.js";
@@ -99,6 +130,9 @@ const store = new Store({
 
 export default {
   name: "config-constructor",
+  components: {
+    ButtonAlt,
+  },
   data() {
     return {
       localization: this.$parent.localization,
@@ -106,7 +140,7 @@ export default {
       detailsOpen: false,
       scripts: {},
       needsUpdate: 0,
-      game: 'hl'
+      game: "hl",
     };
   },
   computed: {
@@ -119,7 +153,11 @@ export default {
     needUpdate() {
       this.updateScriptsData();
       let defaultScripts = JSON.parse(
-        JSON.stringify(StoreDefaults.scripts.data.db[StoreDefaults.scripts.data.games[this.game].db])
+        JSON.stringify(
+          StoreDefaults.scripts.data.db[
+            StoreDefaults.scripts.data.games[this.game].db
+          ]
+        )
       );
       let currentScripts = JSON.parse(JSON.stringify(this.scripts));
 
@@ -145,7 +183,8 @@ export default {
     },
     updateScripts() {
       let settingsData = StoreDefaults.scripts.data;
-      settingsData.games[this.game].store = settingsData.db[settingsData.games[this.game].db];
+      settingsData.games[this.game].store =
+        settingsData.db[settingsData.games[this.game].db];
       store.set("data", settingsData);
 
       this.needsUpdate = this.needUpdate();
@@ -203,13 +242,13 @@ export default {
       if (fs.existsSync(gamesPath)) {
         var paths = [];
 
-        if(this.game == "hl") {
+        if (this.game == "hl") {
           paths.push(path.join(gamesPath, "valve", "hlsr.cfg"));
           paths.push(path.join(gamesPath, "valve_WON", "hlsr.cfg"));
-        }else if(this.game == "hlof") {
+        } else if (this.game == "hlof") {
           paths.push(path.join(gamesPath, "gearbox", "hlsr.cfg"));
           paths.push(path.join(gamesPath, "gearbox_WON", "hlsr.cfg"));
-        }else if(this.game == "hlbs") {
+        } else if (this.game == "hlbs") {
           paths.push(path.join(gamesPath, "bshift", "hlsr.cfg"));
         }
 
@@ -250,15 +289,15 @@ export default {
       let db = data.db;
 
       this.scripts = data.games[this.game].store;
-    
-      if(Object.keys(this.scripts).length == 0) {
+
+      if (Object.keys(this.scripts).length == 0) {
         this.scripts = data.db[data.games[this.game].db];
       }
     },
     onGameSelect() {
       this.needsUpdate = this.needUpdate();
-      console.log(this.game)
-    }
+      console.log(this.game);
+    },
   },
   mounted() {
     this.needsUpdate = this.needUpdate();
@@ -298,5 +337,11 @@ video {
 
 .md-field {
   margin: 4px 0 6px;
+}
+
+.md-subheader {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
 }
 </style>

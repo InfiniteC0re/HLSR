@@ -35,7 +35,7 @@ class localization {
                 "#UI_WIKI": "SourceRuns Wiki",
                 "#UI_GAME_VERSION": "Version Selection",
                 "#UI_EDITED_DLL": "Edited WON DLL (NOT for speedruns)",
-                "#UI_EXTERNAL_TOOLS": "External Tools Settings",
+                "#UI_EXTERNAL_TOOLS": "Advanced Settings",
                 "#UI_START_ARGS": "Start Arguments",
                 "#UI_INTERFACE_SETTINGS": "Interface Settings",
                 "#UI_INTERFACE_LANGUAGE": "Interface Language",
@@ -92,6 +92,13 @@ class localization {
                 "#UI_CHANGELOG": "Changelog",
                 "#UI_GAME_FOLDER": "Open Game Folder",
                 "#UI_GRADIENT_THEME": "Default",
+                "#UI_GOLDSRC": "GoldSrc Engine Games",
+                "#UI_GAME_ALLCORES": "Use all of CPU cores",
+                "#UI_GAME_PRIORITY": "Process Priority",
+                "#UI_GAME_PRIORITY_NORMAL": "Normal",
+                "#UI_GAME_PRIORITY_ABOVENORMAL": "Above normal",
+                "#UI_GAME_PRIORITY_HIGH": "High",
+                "#UI_GAME_PRIORITY_REALTIME": "Real Time",
                 "#UI_CHANGELOG_CONTENT": `<h4>Update from 08/15/2020 [0.1.3]</h4>
 <ul>
 	<li>Steam Intergrations works much faster now because of using native module</li>
@@ -129,7 +136,7 @@ class localization {
                 "#UI_WIKI": "SourceRuns Вики",
                 "#UI_GAME_VERSION": "Выбор версии",
                 "#UI_EDITED_DLL": "Изменённый WON DLL (НЕ для спидранов)",
-                "#UI_EXTERNAL_TOOLS": "Настройки внешних инструментов",
+                "#UI_EXTERNAL_TOOLS": "Дополнительные настройки",
                 "#UI_START_ARGS": "Параметры запуска",
                 "#UI_INTERFACE_SETTINGS": "Настройки интерфейса",
                 "#UI_INTERFACE_LANGUAGE": "Язык интерфейса",
@@ -186,6 +193,13 @@ class localization {
                 "#UI_CHANGELOG": "Что нового?",
                 "#UI_GAME_FOLDER": "Открыть папку с игрой",
                 "#UI_GRADIENT_THEME": "Стандартная",
+                "#UI_GOLDSRC": "Игры движка GoldSrc",
+                "#UI_GAME_ALLCORES": "Использовать все ядра CPU",
+                "#UI_GAME_PRIORITY": "Приоритет процесса",
+                "#UI_GAME_PRIORITY_NORMAL": "Нормальный",
+                "#UI_GAME_PRIORITY_ABOVENORMAL": "Выше среднего",
+                "#UI_GAME_PRIORITY_HIGH": "Высокий",
+                "#UI_GAME_PRIORITY_REALTIME": "Реального времени",
                 "#UI_CHANGELOG_CONTENT": `<h4>Обновление от 15.08.2020 [0.1.3]</h4>
 <ul>
 	<li>Steam интеграции теперь работают в разы быстрее за счёт использования нативного модуля</li>

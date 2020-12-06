@@ -26,12 +26,12 @@ export default new Router({
         },
         {
             path: '/config-editor',
-            name: "hltp-game-menu",
+            name: "hltp-config-editor",
             component: require('@/components/ConfigEditor').default
         },
         {
             path: '/config-constructor',
-            name: "hltp-game-menu",
+            name: "hltp-config-constructor",
             component: require('@/components/ConfigConstructor').default
         },
         {
