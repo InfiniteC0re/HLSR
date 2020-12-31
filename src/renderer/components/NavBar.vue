@@ -79,6 +79,7 @@
       <NavBarButton
         v-if="updateAvailable"
         notActivable="true"
+        animated="true"
         :text="updateState"
         icon="sync-alt"
       />

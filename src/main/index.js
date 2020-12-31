@@ -155,11 +155,13 @@ app.on("ready", () => {
 
   // Проверить обновления
 
-  if (process.env.NODE_ENV === "production") {
-    autoUpdater.checkForUpdatesAndNotify();
+  ipcMain.on("ready", () => {
+    if (process.env.NODE_ENV === "production") {
+      autoUpdater.checkForUpdatesAndNotify();
 
-    setInterval(function() {
-      if (!detected) autoUpdater.checkForUpdatesAndNotify();
-    }, 2 * 60 * 3600);
-  }
+      setInterval(function() {
+        if (!detected) autoUpdater.checkForUpdatesAndNotify();
+      }, 2 * 60 * 3600);
+    }
+  });
 });

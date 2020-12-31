@@ -143,6 +143,15 @@ export default {
     },
   },
   mounted() {
+    // Autoupdater
+
+    ipcRenderer.on("message", (event, text) => {
+      console.log(event);
+      if (text == "update-available") this.updateAvailable = 1;
+      else if (text == "update-downloaded") this.updateAvailable = 2;
+      else this.updateAvailable = 0;
+    });
+
     let window = require("electron").remote.getCurrentWindow();
 
     window.on("focus", () => {
@@ -244,13 +253,7 @@ export default {
 
     rpc.login({ clientId }).catch(console.error);
 
-    // Autoupdater
-
-    ipcRenderer.on("message", function (event, text) {
-      if (text == "update-available") ctx.updateAvailable = 1;
-      else if (text == "update-downloaded") ctx.updateAvailable = 2;
-      else ctx.updateAvailable = 0;
-    });
+    ipcRenderer.send("ready");
   },
 };
 </script>
