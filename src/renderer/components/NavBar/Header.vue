@@ -4,8 +4,7 @@
     <div class="title">
       HLSR
       <span style="color: rgba(255,255,255,.2);">
-        BETA
-        <span class="header__version">0.1.4</span>
+        <span class="header__version">BETA</span>
       </span>
     </div>
   </div>
@@ -64,7 +63,7 @@ export default {
 }
 .header__version {
   font-size: 12px;
-  letter-spacing: 0px;
+  letter-spacing: 0.5px;
   margin-left: -16px;
 }
 </style>

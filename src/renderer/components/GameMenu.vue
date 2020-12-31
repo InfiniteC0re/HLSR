@@ -9,41 +9,27 @@
       >
         <div class="main">
           <div class="game-title">{{ gameTitle }}</div>
-          <div style="display: flex; align-items: center; margin-top: 32px">
+          <div class="game-top">
             <md-button
               :class="{ 'md-raised': true, installedGame: installed }"
               @click="gameButton"
               style="margin: 0"
               :disabled="isButtonDisabled"
             >
-              <div class="icon">
-                <i class="fas fa-play"></i>
-              </div>
-              <div class="text">
-                {{
-                  checkInstalled(gameID)
-                    ? localization.get("#UI_PLAY")
-                    : localization.get("#UI_INSTALL")
-                }}
-              </div>
+              <div class="icon">{{ buttonIcon() }}</div>
+              <div class="text">{{ buttonText() }}</div>
             </md-button>
             <md-menu
               md-size="big"
               md-direction="bottom-start"
-              style="
-                margin-left: 16px;
-                backdrop-filter: blur(8px);
-                background: rgba(255, 255, 255, 0.22) !important;
-                padding: 4px;
-                border-radius: 2px;
-              "
+              class="menu-button"
               v-if="installed"
             >
               <md-button class="md-icon-button" md-menu-trigger>
                 <md-icon class="fas fa-cog"></md-icon>
               </md-button>
 
-              <md-menu-content style="margin-top: 3px; width: 256px">
+              <md-menu-content style="margin-top: 3px; width: 280px">
                 <md-menu-item @click="gameFolder">
                   <span>{{ localization.get("#UI_GAME_FOLDER") }}</span>
                   <md-icon class="fas fa-folder"></md-icon>
@@ -115,25 +101,36 @@ export default {
   methods: {},
   data() {
     return {
+      section: 0,
       gameID: null,
       gameTitle: null,
       background: "linear-gradient(rgb(140, 140, 140), rgb(140, 140, 140))",
-      section: 0,
       localization: this.$parent.localization,
       hlsrconsole: this.$parent.hlsrconsole,
-      steamworks: this.$parent.steamworks,
-      steamactive: false,
       installed: false,
     };
   },
   computed: {
     isButtonDisabled() {
       return (
-        (!navigator.onLine && !checkInstalled(this.gameID)) || !this.steamactive
+        (!navigator.onLine && !checkInstalled(this.gameID)) ||
+        (!this.steamActive && this.gameID != "220")
       );
+    },
+    steamActive() {
+      return this.$store.state.steamworks.started;
     },
   },
   methods: {
+    buttonIcon() {
+      if (this.checkInstalled(this.gameID)) return ``;
+      else return ``;
+    },
+    buttonText() {
+      if (this.checkInstalled(this.gameID))
+        return this.localization.get("#UI_PLAY");
+      else return this.localization.get("#UI_INSTALL");
+    },
     updateBackground(fn) {
       this.background = `url(${require("@/assets/screenshots/" + fn)})`;
     },
@@ -145,6 +142,7 @@ export default {
       let config = store.get("config");
       if (this.checkInstalled(this.gameID)) {
         this.hlsrconsole.execute([
+          "game",
           require("path").join(
             require("electron").remote.app.getPath("userData"),
             "library"
@@ -191,6 +189,9 @@ export default {
         case "130":
           url = "https://wiki.sourceruns.org/wiki/Category:Blue_Shift";
           break;
+        case "220":
+          url = "https://wiki.sourceruns.org/wiki/Category:Half-Life_2";
+          break;
       }
 
       shell.openExternal(url);
@@ -210,6 +211,8 @@ export default {
         path = require("path").join(libraryPath, "Half-Life", "gearbox_WON");
       else if (this.gameID == "130")
         path = require("path").join(libraryPath, "Half-Life", "bshift");
+      else if (this.gameID == "220")
+        path = require("path").join(libraryPath, "Half-Life 2");
 
       try {
         shell.openPath(path);
@@ -223,14 +226,24 @@ export default {
         "library"
       );
       if (this.gameID == "70") {
+        let installed = store.get("installed");
+
         require("fs").rmdirSync(libraryPath, { recursive: true });
+        delete installed["70"];
+        delete installed["50"];
+        delete installed["130"];
+
         store.set("installed", {});
       } else if (this.gameID == "50") {
         let installed = store.get("installed");
 
-        let gamePath;
-        gamePath = require("path").join(libraryPath, "Half-Life", "gearbox");
+        let gamePath = require("path").join(
+          libraryPath,
+          "Half-Life",
+          "gearbox"
+        );
         require("fs").rmdirSync(gamePath, { recursive: true });
+
         gamePath = require("path").join(
           libraryPath,
           "Half-Life",
@@ -243,16 +256,27 @@ export default {
       } else if (this.gameID == "130") {
         let installed = store.get("installed");
 
-        let gamePath;
-        gamePath = require("path").join(libraryPath, "Half-Life", "bshift");
+        let gamePath = require("path").join(libraryPath, "Half-Life", "bshift");
         require("fs").rmdirSync(gamePath, { recursive: true });
 
         delete installed["130"];
+        store.set("installed", installed);
+      } else if (this.gameID == "220") {
+        let installed = store.get("installed");
+
+        let gamePath = require("path").join(libraryPath, "Half-Life 2");
+        require("fs").rmdirSync(gamePath, { recursive: true });
+
+        delete installed["220"];
         store.set("installed", installed);
       }
       this.$parent.$refs.navbar.goTo("game", {
         id: this.gameID,
         refresh: true,
+      });
+
+      this.$store.commit("createNotification", {
+        text: this.localization.get("#UI_NOTIFICATION_REMOVED"),
       });
     },
   },
@@ -265,8 +289,6 @@ export default {
     if (section) {
       this.section = section;
     }
-
-    this.steamactive = this.steamworks.module.SteamAPI_Init();
 
     this.gameID = this.$route.query.id;
     switch (this.gameID) {
@@ -282,11 +304,14 @@ export default {
         this.gameTitle = "Half-Life: Blue Shift";
         this.updateBackground("blue-shift-background.jpg");
         break;
+      case "220":
+        this.gameTitle = "Half-Life 2";
+        this.updateBackground("half-life-2-background.jpg");
+        break;
       default:
         this.gameTitle = "Unknown Game";
     }
     this.installed = this.checkInstalled(this.gameID);
-    this.steam = this.$parent.steam || false;
   },
 };
 </script>
@@ -298,10 +323,6 @@ export default {
   flex-direction: row;
   max-height: 100vh;
   overflow: hidden;
-  /* position: fixed;
-  top: 0;
-  height: 100vh;
-  width: calc(100vw - 397.23px); */
 }
 
 #mainview {
@@ -320,6 +341,12 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+#mainview .game-top {
+  display: flex;
+  align-items: center;
+  margin-top: 32px;
 }
 
 #mainview .game-title {
@@ -382,6 +409,11 @@ export default {
   color: #00abff !important;
 }
 
+.md-button.md-theme-default.md-raised.installedGame[disabled] {
+  background: #7cd3ffc7 !important;
+  color: #fff !important;
+}
+
 .navpanel .navbutton {
   width: 100%;
   height: 32px;
@@ -412,9 +444,19 @@ export default {
 
 .icon {
   margin-right: 8px;
+  font-family: "Font Awesome 5 Pro";
+  font-weight: 900;
 }
 
 .gamemenu_uninstallButton * {
   color: #ff5252 !important;
+}
+
+.menu-button {
+  margin-left: 16px;
+  backdrop-filter: blur(8px);
+  background: rgba(255, 255, 255, 0.22) !important;
+  padding: 4px;
+  border-radius: 2px;
 }
 </style>

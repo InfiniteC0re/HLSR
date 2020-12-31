@@ -69,7 +69,7 @@
         </md-list>
       </div>
       <div class="constructor__buttons">
-        <ButtonAlt @click="save" :disabled="!checkInstalled('70')">
+        <ButtonAlt @click="save" :disabled="!installed">
           <p>{{ localization.get("#UI_SCRIPT_GENERATE") }}</p>
           <i class="fas fa-save"></i>
         </ButtonAlt>
@@ -116,6 +116,7 @@ import ButtonAlt from "./Elements/Button";
 import electron from "electron";
 import Store from "../utils/Store.js";
 import StoreDefaults from "../utils/StoreDefaults.js";
+import GameControl from "../utils/GameControl";
 
 const gamesPath = require("path").join(
   (electron.app || electron.remote.app).getPath("userData"),
@@ -126,6 +127,11 @@ const gamesPath = require("path").join(
 const store = new Store({
   configName: "scripts",
   defaults: StoreDefaults.scripts,
+});
+
+const library = new Store({
+  configName: "library",
+  defaults: StoreDefaults.library,
 });
 
 export default {
@@ -141,6 +147,9 @@ export default {
       scripts: {},
       needsUpdate: 0,
       game: "hl",
+      library,
+      GameControl,
+      installed: false
     };
   },
   computed: {
@@ -188,15 +197,6 @@ export default {
       store.set("data", settingsData);
 
       this.needsUpdate = this.needUpdate();
-    },
-    checkInstalled(appid) {
-      const library = new Store({
-        configName: "library",
-        defaults: StoreDefaults.library,
-      });
-
-      let installed = library.get("installed");
-      return Object.keys(installed).indexOf(appid) >= 0;
     },
     compile() {
       let scriptedSelected = this.scripts.scripted.filter((x) => {
@@ -262,6 +262,11 @@ export default {
         let settingsData = store.get("data");
         settingsData.games[this.game].store = ctx.scripts;
         store.set("data", settingsData);
+
+        // Send a notification
+        this.$store.commit("createNotification", {
+          text: this.localization.get("#UI_NOTIFICATION_SAVED")
+        });
       }
     },
     saveToFile() {
@@ -301,6 +306,7 @@ export default {
   },
   mounted() {
     this.needsUpdate = this.needUpdate();
+    this.installed = GameControl.checkInstalled(library, "70");
   },
 };
 </script>
@@ -343,5 +349,9 @@ video {
   font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;
+}
+
+.md-dialog-container {
+  width: 680px;
 }
 </style>

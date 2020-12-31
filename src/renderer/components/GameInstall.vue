@@ -1,6 +1,12 @@
 <template>
-  <md-dialog :md-active.sync="show" :mdClickOutsideToClose="first == false || third == true" :mdCloseOnEsc="false">
-    <md-dialog-title>{{localization.get('#UI_GAME_INSTALL')}}</md-dialog-title>
+  <md-dialog
+    :md-active.sync="show"
+    :mdClickOutsideToClose="first == false || third == true"
+    :mdCloseOnEsc="false"
+  >
+    <md-dialog-title>{{
+      localization.get("#UI_GAME_INSTALL")
+    }}</md-dialog-title>
     <md-steppers :md-active-step.sync="active" md-alternative md-linear>
       <md-step
         id="first"
@@ -8,21 +14,25 @@
         :md-editable="false"
         :md-done.sync="first"
       >
-        <p>{{localization.get('#UI_INSTALLATION', game)}}</p>
+        <p>{{ localization.get("#UI_INSTALLATION", game) }}</p>
         <ul>
-          <li v-for="item in items" :key="item._id">{{item}}</li>
+          <li v-for="item in items" :key="item._id">{{ item }}</li>
         </ul>
-        <div style="display:flex;align-items:center;margin-bottom:8px">
-          <span
-            style="margin-top: auto;margin-left: 8px;opacity: 0.2"
-          >{{localization.get('#UI_SPACE_REQUIRED')}} {{memory}} MB</span>
+        <div style="display: flex; align-items: center; margin-bottom: 8px">
+          <span style="margin-top: auto; margin-left: 8px; opacity: 0.2"
+            >{{ localization.get("#UI_SPACE_REQUIRED") }} {{ memory }} MB</span
+          >
           <md-button
             class="md-primary md-raised"
             style="margin-left: auto"
             @click="setDone('first', 'second')"
-          >{{localization.get('#UI_NEXT')}}</md-button>
+            >{{ localization.get("#UI_NEXT") }}</md-button
+          >
         </div>
-        <md-progress-bar class="md-primary" md-mode="indeterminate"></md-progress-bar>
+        <md-progress-bar
+          class="md-primary"
+          md-mode="indeterminate"
+        ></md-progress-bar>
       </md-step>
 
       <md-step
@@ -31,23 +41,36 @@
         :md-editable="false"
         :md-done.sync="second"
       >
-        <div style="display:flex;align-items:center;margin-bottom:8px">
+        <div style="display: flex; align-items: center; margin-bottom: 8px">
+          <span style="margin-top: auto; margin-left: 8px; opacity: 0.2"
+            >{{ localization.get("#UI_PROGRESS") }} {{ progress }}%</span
+          >
           <span
-            style="margin-top: auto;margin-left: 8px;opacity: 0.2"
-          >{{localization.get('#UI_PROGRESS')}} {{progress}}%</span>
-          <span
-            style="margin-top: auto;margin-left: auto;margin-right:8px;opacity: 0.2"
+            style="
+              margin-top: auto;
+              margin-left: auto;
+              margin-right: 8px;
+              opacity: 0.2;
+            "
             v-if="progress != 100"
-          >{{status}}</span>
-          <span style="margin-top: auto;margin-left: auto;margin-right:8px" v-if="unpacked == true">
+            >{{ status }}</span
+          >
+          <span
+            style="margin-top: auto; margin-left: auto; margin-right: 8px"
+            v-if="unpacked == true"
+          >
             <md-button
               class="md-primary md-raised"
               style="margin-left: auto"
               @click="setDone('second', 'third')"
-            >{{localization.get('#UI_NEXT')}}</md-button>
+              >{{ localization.get("#UI_NEXT") }}</md-button
+            >
           </span>
         </div>
-        <md-progress-bar md-mode="determinate" :md-value="progress"></md-progress-bar>
+        <md-progress-bar
+          md-mode="determinate"
+          :md-value="progress"
+        ></md-progress-bar>
       </md-step>
 
       <md-step
@@ -56,16 +79,22 @@
         :md-editable="false"
         :md-done.sync="third"
       >
-		<div style="display:flex;align-items:center">
-			<p style="opacity:0.2">{{localization.get('#UI_NOTIFICATION_INSTALLED', this.game)}}</p>
-			<span style="margin-top: auto;margin-left: auto;margin-right:8px" v-if="unpacked == true">
-			<md-button
-				class="md-primary md-raised"
-				style="margin-left: auto"
-				@click="show = false"
-			>{{localization.get('#UI_DONE')}}</md-button>
-			</span>
-		</div>
+        <div style="display: flex; align-items: center">
+          <p style="opacity: 0.2">
+            {{ localization.get("#UI_NOTIFICATION_INSTALLED", this.game) }}
+          </p>
+          <span
+            style="margin-top: auto; margin-left: auto; margin-right: 8px"
+            v-if="unpacked == true"
+          >
+            <md-button
+              class="md-primary md-raised"
+              style="margin-left: auto"
+              @click="show = false"
+              >{{ localization.get("#UI_DONE") }}</md-button
+            >
+          </span>
+        </div>
       </md-step>
     </md-steppers>
   </md-dialog>
@@ -81,13 +110,13 @@ const onezip = require("onezip");
 
 const store = new Store({
   configName: "library",
-  defaults: StoreDefaults.library
+  defaults: StoreDefaults.library,
 });
 
 export default {
   name: "game-install",
   components: {},
-  data(){
+  data() {
     return {
       active: "first",
       show: false,
@@ -101,8 +130,8 @@ export default {
       unpacked: false,
       status: null,
       appid: null,
-      localization: this.$parent.localization
-    }
+      localization: this.$parent.localization,
+    };
   },
   methods: {
     setDone(id, index) {
@@ -132,9 +161,14 @@ export default {
             directory: require("path").join(
               require("electron").remote.app.getPath("userData"),
               "temp"
-            )
-          }
+            ),
+          },
         };
+
+        if (this.game == "Half-Life 2") {
+          info.url =
+            "https://www.googleapis.com/drive/v3/files/1uH0lG_mcMWkKB-n_iISPJ47kcV29Lf0A?alt=media&key=AIzaSyC3z2h6iulAv-GjyHcJAAbuoMCzAkfk8QU";
+        }
 
         ipcRenderer.send("game-download", info);
         ipcRenderer.on("game-download-complete", (e, path) => {
@@ -146,13 +180,15 @@ export default {
           this.progress = 0;
 
           let extract_path = install_path;
-          if (this.appid != "70")
+          if (this.appid != "70" && this.appid != "220")
             extract_path = require("path").join(extract_path, "Half-Life");
           const extract = onezip.extract(path, extract_path);
 
-          extract.on("progress", percent => {
-			this.progress = percent;
-			require('electron').remote.getCurrentWindow().setProgressBar(percent / 100);
+          extract.on("progress", (percent) => {
+            this.progress = percent;
+            require("electron")
+              .remote.getCurrentWindow()
+              .setProgressBar(percent / 100);
           });
           extract.on("end", () => {
             let installed = store.get("installed");
@@ -162,18 +198,21 @@ export default {
             installed[this.appid].directory = install_path;
 
             store.set("installed", installed);
+
             new Notification("HLSR", {
               body: this.localization.get(
                 "#UI_NOTIFICATION_INSTALLED",
                 this.game
-              )
+              ),
             });
+
             this.unpacked = true;
             this.$parent.$refs.navbar.goTo("game", {
               id: this.appid,
-              refresh: true
-			});
-			require('electron').remote.getCurrentWindow().setProgressBar(0);
+              refresh: true,
+            });
+            let window = require("electron").remote.getCurrentWindow();
+            if (window.isDestroyed() == false) window.setProgressBar(0);
           });
         });
         ipcRenderer.on("game-download-progress", (e, data) => {
@@ -210,7 +249,7 @@ export default {
               "Edited DLL with HUD settings",
               "Bunnymod XT",
               "LiveSplit",
-              "RInput"
+              "RInput",
             ];
             break;
           case "50":
@@ -221,7 +260,7 @@ export default {
               this.localization.get("#UI_STEAM"),
               "Bunnymod XT",
               "LiveSplit",
-              "RInput"
+              "RInput",
             ];
             break;
           case "130":
@@ -231,13 +270,22 @@ export default {
               this.localization.get("#UI_STEAM"),
               "Bunnymod XT",
               "LiveSplit",
-              "RInput"
+              "RInput",
             ];
             break;
+          case "220":
+            this.game = "Half-Life 2";
+            this.memory = 3464;
+            this.items = [
+              "Source Unpack (New Engine)",
+              "Source Pause Tool",
+              "LiveSplit",
+              "RInput",
+            ];
         }
         this.appid = appid;
       }
-    }
-  }
+    },
+  },
 };
 </script>

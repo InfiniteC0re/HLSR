@@ -1,88 +1,96 @@
 <template>
-    <div id="backgroundtheme">
-        <div class="background" :style="{backgroundImage: `url(${background})`}"></div>
-    </div>
+  <div id="backgroundtheme">
+    <div
+      class="background"
+      :style="{ backgroundImage: `url(${background})` }"
+    ></div>
+  </div>
 </template>
 
 <script>
-import Store from '../utils/Store.js'
-import StoreDefaults from '../utils/StoreDefaults.js'
+import Store from "../utils/Store.js";
+import StoreDefaults from "../utils/StoreDefaults.js";
 
 const store = new Store({
-    configName: 'settings',
-    defaults: StoreDefaults.settings
+  configName: "settings",
+  defaults: StoreDefaults.settings,
 });
 
 export default {
-    name: 'Background-Theme',
-    components: { },
-    data(){
-        return {
-            background: require("@/assets/blue.jpg")
-        }
+  name: "Background-Theme",
+  components: {},
+  data() {
+    return {
+      background: require("@/assets/blue.jpg"),
+    };
+  },
+  methods: {
+    updateTheme() {
+      switch (store.get("config").theme) {
+        case 0:
+          this.background = require("@/assets/gradient.jpg");
+          break;
+        case 1:
+          this.background = require("@/assets/blue.jpg");
+          break;
+        case 2:
+          this.background = require("@/assets/red.jpg");
+          break;
+        case 3:
+          // let hours = new Date().getHours();
+          // if(hours > 8 && hours < 15)
+          this.background = require("@/assets/snow.jpg");
+          // else
+          // this.background = require("@/assets/snow2.jpg");
+          break;
+        case 4:
+          this.background = require("@/assets/lancer.jpg");
+          break;
+      }
     },
-    methods: {
-        updateTheme() {
-            switch(store.get('config').theme) {
-                case 0:
-                    this.background = require("@/assets/gradient.jpg");
-                    break;
-                case 1:
-                    this.background = require("@/assets/blue.jpg");
-                    break;
-                case 2:
-                    this.background = require("@/assets/red.jpg");
-                    break;
-                case 3:
-                    this.background = require("@/assets/lancer.png");
-                    break;
-            }
-        }
-    },
-    mounted() {
-        if(this.$parent.lancerMode) {
-            var a = store.get('config');
-            a.theme = 2;
-            store.set('config', a)
-        }
-        this.updateTheme();
+  },
+  mounted() {
+    if (this.$parent.lancerMode) {
+      var a = store.get("config");
+      a.theme = 2;
+      store.set("config", a);
     }
-}
+    this.updateTheme();
+  },
+};
 </script>
 
 <style scoped>
-    #backgroundtheme{
-        height: 100%;
-        width: 100%;
-        display: flex;
-        overflow: hidden;
-        z-index: -1;
-        height: 100%;
-        width: 100%;
-        position: absolute;
-        top: 0;
-        left: 0;
-    }
+#backgroundtheme {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  overflow: hidden;
+  z-index: -5;
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
 
-    .background{
-        background-position: center !important;
-        background-size: cover !important;
-        z-index: 1;
-        height: 100%;
-        width: 100%;
-        position: relative;
-    }
+.background {
+  background-position: center !important;
+  background-size: cover !important;
+  z-index: 1;
+  height: 100%;
+  width: 100%;
+  position: relative;
+}
 
-    .background::before{
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        backdrop-filter: blur(48px);
-        background: rgba(23, 46, 86, 0.7);
-    }
-    /* background: linear-gradient(0deg, rgba(23, 46, 86, 0.7), rgba(23, 46, 86, 0.7)), url(image.png); */
+.background::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(23, 46, 86, 0.7);
+}
 </style>
 

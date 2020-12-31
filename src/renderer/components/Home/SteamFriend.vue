@@ -1,56 +1,39 @@
 <template>
   <div class="steam-friend" :key="friend.SteamID">
-    <img :src="avatar" class="steam-friend-avatar" draggable="false" />
+    <img :src="friend.url" class="steam-friend-avatar" draggable="false" />
     <div class="steam-friend-info">
       <div class="steam-friend-name">{{ friend.personaName }}</div>
       <div :class="['steam-friend-status', statusColor]">{{ statusText }}</div>
     </div>
-    <!-- <div class="steam-friend-right" v-on:click="require('electron').shell.openExternal(`steam://friends/message/${friend.SteamID}`)">
-        	<i class="fas fa-envelope"></i>
-        	<md-tooltip>{{localization.get('#UI_SEND_MESSAGE')}}</md-tooltip>
-    	</div> -->
+    <div
+      class="steam-friend-right"
+      v-on:click="
+        require('electron').shell.openExternal(
+          `steam://friends/message/${friend.friendID}`
+        )
+      "
+    >
+      <i class="fas fa-envelope"></i>
+      <md-tooltip>{{ localization.get("#UI_SEND_MESSAGE") }}</md-tooltip>
+    </div>
   </div>
 </template>
 
 <script type="text/javascript">
+import axios from "axios";
+
 export default {
   name: "steam-friend",
   props: ["friend"],
   data() {
     return {
-      localization: this.$parent.localization
+      localization: this.$parent.localization,
+      url: ""
     };
   },
-  methods: {
-    toBase64(pixels) {
-      var canvas = document.createElement("canvas");
-      canvas.width = 64;
-      canvas.height = 64;
-      var ctx = canvas.getContext("2d");
-      var imageData = ctx.createImageData(64, 64);
-
-      for (var i = 0; i < imageData.data.length; i += 4) {
-        imageData.data[i + 0] = pixels[i + 0];
-        imageData.data[i + 1] = pixels[i + 1];
-        imageData.data[i + 2] = pixels[i + 2];
-        imageData.data[i + 3] = pixels[i + 3];
-      }
-
-      ctx.putImageData(imageData, 0, 0);
-      var data = canvas.toDataURL("image/png");
-      canvas.remove();
-
-      this.friend.avatar = "";
-
-      return data;
-    },
-  },
   computed: {
-    avatar() {
-      return this.toBase64(new Uint8Array(this.friend.avatar));
-    },
     statusText() {
-      var state = this.friend.state;
+      var state = this.friend.priority;
       if (state == -1) return this.localization.get("#UI_IN_LAUNCHER");
       if (state == 0) return this.localization.get("#UI_IN_HL");
       if (state == 1) return this.localization.get("#UI_IN_OTHER_GAME");
@@ -58,7 +41,7 @@ export default {
       if (state == 3) return this.localization.get("#UI_OFFLINE");
     },
     statusColor() {
-      var state = this.friend.state;
+      var state = this.friend.priority;
       if (state == -1) return "steam-yellow";
       if (state == 0) return "steam-orange";
       if (state == 1) return "steam-blue";

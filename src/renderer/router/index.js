@@ -37,7 +37,7 @@ export default new Router({
         {
             path: '/customization',
             name: 'hltp-customization',
-            component: require('@/components/Customization').default
+            component: require('@/components/customization/Customization').default
         }
     ]
 })

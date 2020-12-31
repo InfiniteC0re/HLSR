@@ -1,18 +1,18 @@
 <template>
   <div class="game-select">
-    <div class="game hl" :class="{active: selected == 0}" @click="handleClick(0)">
+    <div class="game hl" :class="{active: selected == 0, disabled: !hlActive}" @click="handleClick(0)">
       <HLIcon iconColor="#FF6000" />
       <p>Half-Life</p>
     </div>
-    <div class="game of" :class="{active: selected == 1}" @click="handleClick(1)">
+    <div class="game of" :class="{active: selected == 1, disabled: !ofActive}" @click="handleClick(1)">
       <HLIcon iconColor="#6ED594" />
       <p>Half-Life: Opposing Force</p>
     </div>
-    <div class="game bs" :class="{active: selected == 2}" @click="handleClick(2)">
+    <div class="game bs" :class="{active: selected == 2, disabled: !bsActive}" @click="handleClick(2)">
       <HLIcon iconColor="#94BFFD" />
       <p>Half-Life: Blue Shift</p>
     </div>
-    <div class="game" :class="{active: selected == 3}" @click="handleClick(3)">
+    <div class="game" :class="{active: selected == 3, disabled: true}" @click="handleClick(3)">
       <HL2Icon iconColor="#FF6000" />
       <p>Half-Life 2</p>
     </div>
@@ -20,8 +20,16 @@
 </template>
 
 <script>
+import Store from "../../utils/Store.js";
+import StoreDefaults from "../../utils/StoreDefaults.js";
 import HLIcon from "../Icons/HL";
 import HL2Icon from "../Icons/HL2";
+import GameControl from "../../utils/GameControl";
+
+const store = new Store({
+  configName: "library",
+  defaults: StoreDefaults.library,
+});
 
 export default {
   model: {
@@ -37,6 +45,18 @@ export default {
   components: {
     HLIcon,
     HL2Icon,
+  },
+  data: () => ({
+    GameControl,
+    store,
+    hlActive: false,
+    ofActive: false,
+    bsActive: false
+  }),
+  mounted() {
+    this.hlActive = GameControl.checkInstalled(store, "70");
+    this.ofActive = GameControl.checkInstalled(store, "50");
+    this.bsActive = GameControl.checkInstalled(store, "130");
   },
   methods: {
     handleClick(i) {
@@ -67,10 +87,11 @@ export default {
   cursor: pointer;
   color: rgb(200, 200, 200);
   transition: 0.2s color;
+  padding-bottom: 12px;
 }
 
 .game:nth-child(1) {
-  min-width: 140px;
+  min-width: 142px;
 }
 
 .game:nth-child(2) {
@@ -81,8 +102,11 @@ export default {
   flex: 1;
 }
 
-.game:nth-child(4) {
+.game.disabled {
   width: 160px;
+  cursor: default;
+  opacity: 0.3;
+  pointer-events: none;
 }
 
 .game.active {
@@ -97,6 +121,12 @@ export default {
 @keyframes appear {
   to {
     border-color: #2db9ff;
+  }
+}
+
+@media screen and (max-width: 1215px) {
+  .game {
+    font-size: 14px;
   }
 }
 </style>

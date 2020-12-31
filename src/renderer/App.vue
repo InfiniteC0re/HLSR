@@ -1,13 +1,16 @@
 <template>
   <div id="app">
     <Frame />
+    <canvas
+      id="events_background"
+      :class="{ hide: !focused || noParticles }"
+    ></canvas>
     <div class="hidden_elements" hidden>
       <iframe
-      id="sc"
-      allow="autoplay"
-      src="https://w.soundcloud.com/player/?url=https://api.soundcloud.com/playlists/1160726326&color=%23e81387&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true"
-      @load="widgetLoaded = true"
-    ></iframe>
+        ref="sc"
+        allow="autoplay"
+        src="https://w.soundcloud.com/player/?url=https://api.soundcloud.com/playlists/1024488982%3Fsecret_token%3Ds-t3rIoE0luqj&color=%23e81387&auto_play=false&hide_related=false&show_comments=false&show_user=false&show_reposts=false&show_teaser=false"
+      ></iframe>
     </div>
     <BackgroundTheme class="background" ref="theme" />
     <div id="app__container">
@@ -19,27 +22,16 @@
     <md-snackbar
       md-position="center"
       :md-duration="Infinity"
-      :md-active="!steamworks.active && $router.currentRoute.name != 'hltp-loading'"
+      :md-active="!steamActive && $router.currentRoute.name != 'hltp-loading'"
       md-persistent
     >
-      <span>{{localization.get('#UI_STEAM_ERROR')}}</span>
-      <md-button class="md-primary" @click="steamRetry">{{localization.get('#UI_RETRY')}}</md-button>
+      <span>{{ localization.get("#UI_STEAM_ERROR") }}</span>
+      <md-button class="md-primary" @click="steamRetry">{{
+        localization.get("#UI_RETRY")
+      }}</md-button>
     </md-snackbar>
     <GameInstall ref="gameinstall" />
-    <md-dialog :md-active.sync="beta.form" :mdClickOutsideToClose="false" :mdCloseOnEsc="false">
-      <md-dialog-title>Beta Authorization</md-dialog-title>
-      <md-dialog-content>
-        <md-field :class="betaKeyError">
-          <label>Authorization Key</label>
-          <md-input v-model="beta.key"></md-input>
-          <span class="md-error">There is an error</span>
-        </md-field>
-      </md-dialog-content>
-      <md-dialog-actions>
-        <md-button class="md-primary" @click="betaExit">Exit</md-button>
-        <md-button class="md-primary" @click="betaAuth">Auth</md-button>
-      </md-dialog-actions>
-    </md-dialog>
+    <Notification />
   </div>
 </template>
 
@@ -47,12 +39,12 @@
 import Frame from "./components/Frame";
 import BackgroundTheme from "./components/BackgroundTheme";
 import NavBar from "./components/NavBar";
+import Notification from "./components/Elements/Notification";
 import GameInstall from "./components/GameInstall.vue";
 import localization from "@/utils/Language.js";
-import "./utils/Soundcloud";
 import Store from "./utils/Store.js";
 import StoreDefaults from "./utils/StoreDefaults.js";
-import { machineId, machineIdSync } from "node-machine-id";
+import "./utils/Soundcloud";
 import "codemirror/lib/codemirror.css";
 import "@/utils/infinite.css";
 import "codemirror/addon/selection/active-line.js";
@@ -66,14 +58,11 @@ import "codemirror/addon/search/searchcursor.js";
 import "codemirror/addon/search/match-highlighter.js";
 import "@/utils/hlscripts/hlscripts.js";
 
+import Snow from "./utils/Snow";
 import HLSRConsole from "hlsr-console";
 
 const Console = new HLSRConsole();
-
-const store = new Store({
-  configName: "beta_auth",
-  defaults: StoreDefaults.beta_auth,
-});
+const { ipcRenderer } = require("electron");
 
 const settings = new Store({
   configName: "settings",
@@ -84,155 +73,157 @@ const local = new localization();
 
 export default {
   name: "hltp",
-  components: { BackgroundTheme, NavBar, GameInstall, Frame },
+  components: { BackgroundTheme, NavBar, GameInstall, Frame, Notification },
   data: () => ({
-    steamName: null,
     localization: local,
-    widgetLoaded: false,
     rpc: null,
     standardRPC: {
       details: local.get("#UI_RPC_DETAILS"),
       startTimestamp: Date.now(),
       largeImageKey: "hlsr",
-      largeImageText: "CLOSED BETA",
+      largeImageText: "v" + require("../../package.json").version,
       smallImageKey: "steam",
       smallImageText: local.get("#UI_RPC_NOSTEAM"),
       instance: false,
     },
     lastRPC: {},
-    songs: [],
-    songsUpdater: null,
     updateAvailable: 0,
     hlsrconsole: Console,
-    lancerMode: false,
-    beta: {
-      enabled: true,
-      form: false,
-      key: "",
-      error: 0,
-    },
-    steamworks: {
-      module: null,
-      name: null,
-      active: true
-    }
+    focused: true,
   }),
   computed: {
-    betaKeyError() {
-      return {
-        "md-invalid": this.beta.error == -1,
-      };
+    isPaused() {
+      return this.$store.state.soundCloud.isPaused;
+    },
+    widget() {
+      return this.$store.state.soundCloud.widget;
+    },
+    song() {
+      return this.$store.state.soundCloud.currentSound;
+    },
+    steamActive() {
+      return this.$store.state.steamworks.started;
+    },
+    noParticles() {
+      return this.$store.state.noParticles;
     },
   },
   methods: {
-    betaExit() {
-      var browserWindow = require("electron").remote.getCurrentWindow().close();
-    },
-    betaAuth() {
-      var ctx = this;
-      var machine_id = machineIdSync();
-
-      fetch("https://hlsr.pro/validate_betakey.php", {
-        method: "post",
-        body: `key=${this.beta.key}&machine_id=${machine_id}&register=1`,
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-      })
-        .then((data) => {
-          return data.json();
-        })
-        .then((data) => {
-          ctx.beta.error = data.status;
-          if(data.status == 0) {
-            ctx.beta.form = false;
-          }
-        })
-        .catch((e) => {
-          console.log("Error reading hlsr.pro answer");
-        });
-    },
-    betaCheckRegistered() {
-      var ctx = this;
-      var machine_id = machineIdSync();
-
-      if(navigator.onLine == false) {
-        ctx.beta.form = true;
-        return;
-      }
-
-      fetch("https://hlsr.pro/validate_betakey.php", {
-        method: "post",
-        body: `machine_id=${machine_id}&register=0`,
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-      })
-        .then((data) => {
-          return data.json();
-        })
-        .then((data) => {
-          if(data.status == 0) {
-            ctx.beta.form = false;
-          }else{
-            ctx.beta.form = true;
-          }
-        })
-        .catch((e) => {
-          console.error("Error reading hlsr.pro answer");
-        });
-    },
     steamRetry() {
-      this.steamworks.active = this.steamworks.module.SteamAPI_Init();
+      ipcRenderer.send("getSteamStatus");
+      ipcRenderer.send("getSteamFriends");
+    },
+    setRPC(rpc, currentRPC) {
+      if (JSON.stringify(currentRPC) != JSON.stringify(this.lastRPC))
+        this.rpc.setActivity(rpc);
+      this.rpc.setActivity(rpc);
+      this.lastRPC = currentRPC;
     },
     updateRPC() {
-      if(!settings.get('config').rpc) return;
-      let ctx = this;
-      let rpc = JSON.parse(JSON.stringify(this.standardRPC));
-      let widget = SC.Widget(document.querySelector("#sc"));
+      if (!settings.get("config").rpc) return;
+      let rpc = Object.assign({}, this.standardRPC);
 
-      if (this.steamworks.name) rpc.smallImageText = this.steamworks.name;
+      let steamName = this.$store.state.steamworks.personaName;
+      if (steamName) rpc.smallImageText = steamName;
 
-      if (widget && navigator.onLine) {
-        widget.isPaused((paused) => {
-          if (!paused) {
-            widget.getPosition((position) => {
-              widget.getCurrentSound((sound) => {
-                rpc.details = this.localization.get("#UI_RPC_MUSIC");
-                rpc.state = sound.title;
-                rpc.endTimestamp = Date.now() + sound.duration - position;
+      if (!this.widget) return;
 
-                let current = { state: rpc.state, details: rpc.details };
-                if (JSON.stringify(current) != JSON.stringify(ctx.lastRPC))
-                  ctx.rpc.setActivity(rpc);
-                ctx.lastRPC = current;
-              });
-            });
-          } else {
-            let current = { state: rpc.state, details: rpc.details };
-            if (JSON.stringify(current) != JSON.stringify(ctx.lastRPC))
-              ctx.rpc.setActivity(rpc);
-            ctx.rpc.setActivity(rpc);
-            ctx.lastRPC = current;
-          }
-        });
-      }
+      let currentRPC = null;
+
+      this.widget.getPosition((position) => {
+        if (!this.isPaused) {
+          rpc.details = this.localization.get("#UI_RPC_MUSIC");
+          rpc.state = this.song.title;
+          rpc.endTimestamp = Date.now() + this.song.duration - position;
+        }
+
+        currentRPC = { state: rpc.state, details: rpc.details };
+        this.setRPC(rpc, currentRPC);
+      });
     },
   },
   mounted() {
-    let ctx = this;
+    let window = require("electron").remote.getCurrentWindow();
 
-    // Beta and SteamWorks
-    
-    // if(this.beta.enabled) this.betaCheckRegistered();
+    window.on("focus", () => {
+      this.focused = true;
+    });
 
-    this.steamworks.module = this.$steamworks;
-    
-    this.steamworks.active = this.steamworks.module.SteamAPI_Init();
-    if(this.steamworks.active) {
-      this.steamworks.name = this.steamworks.module.GetPersonName();
-      this.steamworks.module.SetRichPresense("launcher", "HLSR");
-    }
+    window.on("blur", () => {
+      this.focused = false;
+    });
+
+    let config = settings.get("config");
+    this.$store.commit("setParticlesState", config.noParticles);
+
+    let month = new Date().getMonth() + 1;
+    if (month == 0 || month == 1 || month == 12) Snow.start(this.$store);
+
+    // SteamWorks
+
+    setTimeout(() => {
+      ipcRenderer.on("steamStatus", (e, status) => {
+        this.$store.commit("steamworks_setStatus", status);
+
+        if (status) {
+          ipcRenderer.send("setRichPresence");
+          ipcRenderer.send("getSteamFriends");
+          ipcRenderer.send("getSteamName");
+        }
+      });
+
+      ipcRenderer.on("steamFriends", (e, friends) => {
+        this.$store.commit("steamworks_setFriends", friends);
+      });
+
+      ipcRenderer.on("steamName", (e, name) => {
+        this.$store.commit("steamworks_setName", name);
+      });
+
+      setInterval(() => {
+        let window = require("electron").remote.getCurrentWindow();
+        if (this.$store.state.steamworks.started && window.isFocused())
+          ipcRenderer.send("getSteamFriends");
+      }, 10000);
+
+      ipcRenderer.send("getSteamStatus");
+    }, 500);
+
+    // SoundCloud
+
+    let widget = SC.Widget(this.$refs.sc);
+
+    widget.bind(SC.Widget.Events.READY, () => {
+      this.$store.commit("setSCWidget", widget);
+
+      // ждём получения всех треков
+      let updateInterval = setInterval(() => {
+        !this.$store.state.soundCloud.gotSounds
+          ? this.$store.commit("getSCSounds")
+          : clearInterval(updateInterval);
+      }, 1000);
+
+      widget.bind(SC.Widget.Events.PAUSE, () => {
+        this.$store.commit("setSCPaused", true);
+      });
+
+      widget.bind(SC.Widget.Events.PLAY, (info) => {
+        let soundId = info.soundId;
+        this.$store.commit("setSCPaused", false);
+
+        if (this.$store.state.soundCloud.currentSound.id != soundId) {
+          let track = this.$store.state.soundCloud.sounds.find(
+            (sound) => sound.id == soundId
+          );
+
+          if (track) {
+            this.$store.commit("setSCSound", track);
+          }
+
+          widget.seekTo(0);
+        }
+      });
+    });
 
     // Discord RPC
 
@@ -253,50 +244,19 @@ export default {
 
     rpc.login({ clientId }).catch(console.error);
 
-    // SoundCloud
-
-    let widget = SC.Widget(document.querySelector("#sc"));
-
-    widget.bind(SC.Widget.Events.READY, function () {
-      ctx.songsUpdater = setInterval(() => {
-        widget.getSounds((e) => {
-          ctx.songs = e;
-          let missing = 0;
-          for (let i = 0; i < e.length; i++) {
-            if (!e[i].title) missing++;
-          }
-
-          if (missing == 0) clearInterval(ctx.songsUpdater);
-        });
-      }, 1000);
-    });
-
     // Autoupdater
 
-    const { ipcRenderer } = require("electron");
-
     ipcRenderer.on("message", function (event, text) {
-      if (text == "update-available") {
-        ctx.updateAvailable = 1;
-      } else if (text == "update-downloaded") {
-        ctx.updateAvailable = 2;
-      } else {
-        ctx.updateAvailable = 0;
-      }
+      if (text == "update-available") ctx.updateAvailable = 1;
+      else if (text == "update-downloaded") ctx.updateAvailable = 2;
+      else ctx.updateAvailable = 0;
     });
   },
-  beforeMount() {
-    var machine_id = machineIdSync();
-
-    if (machine_id == "03b49373393a54940b53effa61609e0ae0b400ba984e9810bcc56cb7beefdbf2") { 
-      this.lancerMode = true;
-    }
-  }
 };
 </script>
 
 <style>
-*{
+* {
   backface-visibility: hidden;
   margin: 0;
 }
@@ -327,6 +287,7 @@ body {
   flex: 1;
   overflow: hidden;
   position: relative;
+  z-index: 1;
 }
 
 .split {
@@ -417,13 +378,11 @@ body {
 /* Track */
 ::-webkit-scrollbar-track {
   background: transparent;
-  border-radius: 32px;
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.3);
-  border-radius: 32px;
 }
 
 /* Handle on hover */
@@ -433,5 +392,19 @@ body {
 
 .CodeMirror-scrollbar-filler[cm-not-content="true"] {
   display: none !important;
+}
+
+.hide {
+  opacity: 0 !important;
+}
+
+#events_background {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  opacity: 0.05;
+  transition: 0.5s;
 }
 </style>

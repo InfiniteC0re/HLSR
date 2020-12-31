@@ -13,7 +13,7 @@
       <md-radio
         v-model="version"
         @change="saveChoice"
-        :disabled="id == '130'"
+        :disabled="id == '130' || id == '220'"
         value="WON"
         >WON</md-radio
       >
@@ -31,7 +31,11 @@
     <div class="flex">
       <div>
         <div class="container">
-          <md-checkbox v-model="bxt" @change="saveChoice" class="md-primary"
+          <md-checkbox
+            v-model="bxt"
+            @change="saveChoice"
+            class="md-primary"
+            :disabled="disableBXT"
             >Bunnymod XT</md-checkbox
           >
         </div>
@@ -49,20 +53,26 @@
           >
         </div>
       </div>
-      <div style="margin-left: auto; margin-right: 32px">
+      <div style="margin-left: auto; margin-right: 32px; width: 280px">
         <div class="container">
-          <md-checkbox
-            v-model="allcores"
-            @change="saveChoice"
-            >{{ localization.get("#UI_GAME_ALLCORES") }}</md-checkbox
-          >
+          <md-checkbox v-model="allcores" @change="saveChoice">{{
+            localization.get("#UI_GAME_ALLCORES")
+          }}</md-checkbox>
         </div>
         <div class="container" v-if="!allcores">
-          <div style="max-width: 200px;display: grid;grid-template-columns: 1fr 1fr;">
-            <md-radio v-model="corescount" value="1">1 ядро</md-radio>
-            <md-radio v-model="corescount" value="2">2 ядра</md-radio>
-            <md-radio v-model="corescount" value="3">3 ядра</md-radio>
-            <md-radio v-model="corescount" value="4">4 ядра</md-radio>
+          <div style="display: grid; grid-template-columns: 1fr 1fr">
+            <md-radio v-model="corescount" value="1">{{
+              localization.get("#UI_GAME_PRIORITY_1C")
+            }}</md-radio>
+            <md-radio v-model="corescount" value="2">{{
+              localization.get("#UI_GAME_PRIORITY_2C")
+            }}</md-radio>
+            <md-radio v-model="corescount" value="3">{{
+              localization.get("#UI_GAME_PRIORITY_3C")
+            }}</md-radio>
+            <md-radio v-model="corescount" value="4">{{
+              localization.get("#UI_GAME_PRIORITY_4C")
+            }}</md-radio>
           </div>
         </div>
       </div>
@@ -71,16 +81,22 @@
       class="container"
       style="
         width: 100%;
-        position: absolute;
-        bottom: 8px;
         display: grid;
         grid-template-columns: 0.15fr 1fr;
         grid-gap: 8px;
+        margin-top: auto;
       "
     >
       <md-field>
-        <label for="priorities">{{ localization.get("#UI_GAME_PRIORITY") }}</label>
-        <md-select @md-selected="saveChoice" v-model="priority" name="priorities" id="priorities">
+        <label for="priorities">{{
+          localization.get("#UI_GAME_PRIORITY")
+        }}</label>
+        <md-select
+          @md-selected="saveChoice"
+          v-model="priority"
+          name="priorities"
+          id="priorities"
+        >
           <md-option value="normal">{{
             localization.get("#UI_GAME_PRIORITY_NORMAL")
           }}</md-option>
@@ -125,8 +141,9 @@ export default {
       version: "Steam",
       args: "",
       localization: this.$parent.localization,
-	  priority: "normal",
-	  corescount: "1"
+      priority: "normal",
+      corescount: "1",
+      disableBXT: false,
     };
   },
   props: {
@@ -136,7 +153,7 @@ export default {
     },
   },
   mounted() {
-    let config = store.get("config")[this.id];
+    let config = store.get("config")[this.id] || {};
     this.bxt = config.bxt;
     this.livesplit = config.livesplit;
     this.rinput = config.rinput;
@@ -146,16 +163,19 @@ export default {
     if (!config.steam && config.edited_dll && this.id == "70")
       this.edited_dll = true;
     this.args = config.args;
-	this.priority = config.priority || "normal";
-	this.corescount = config.corescount || "1";
+    this.priority = config.priority || "normal";
+    this.corescount = config.corescount || "1";
+
+    if (this.id == "220") this.disableBXT = true;
+    if (this.id == "220" || this.id == "130") this.version = "Steam";
   },
   watch: {
-	  args: function(newArgs, oldArgs) {
-		  this.saveChoice();
-	  },
-	  corescount: function(newArgs, oldArgs) {
-		  this.saveChoice();
-	  }
+    args: function (newArgs, oldArgs) {
+      this.saveChoice();
+    },
+    corescount: function (newArgs, oldArgs) {
+      this.saveChoice();
+    },
   },
   methods: {
     coresInput() {
@@ -167,6 +187,8 @@ export default {
     saveChoice() {
       if (this.version == "Steam") this.edited_dll = false;
       let config = store.get("config");
+      if (!config[this.id]) config[this.id] = {};
+
       config[this.id].bxt = this.bxt;
       config[this.id].livesplit = this.livesplit;
       config[this.id].rinput = this.rinput;
@@ -200,8 +222,15 @@ export default {
 }
 div#wrap {
   color: white;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 .flex {
   display: flex;
+}
+
+.md-disabled {
+  color: gray;
 }
 </style>

@@ -5,6 +5,9 @@
       <div class="post-author">{{post.feedlabel}}</div>
       <div class="post-title">{{post.title}}</div>
     </div>
+    <div class="post" v-if="posts.length == 0">
+      <div class="post-author">Loading...</div>
+    </div>
   </div>
 </template>
 
