@@ -1,6 +1,6 @@
 {
   "name": "hlsr",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "author": "",
   "description": "Change the way you feel speedruns",
   "main": "./dist/electron/main.js",

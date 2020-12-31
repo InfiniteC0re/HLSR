@@ -146,7 +146,6 @@ export default {
     // Autoupdater
 
     ipcRenderer.on("message", (event, text) => {
-      console.log(event);
       if (text == "update-available") this.updateAvailable = 1;
       else if (text == "update-downloaded") this.updateAvailable = 2;
       else this.updateAvailable = 0;
