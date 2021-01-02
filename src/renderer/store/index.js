@@ -10,6 +10,8 @@ let parser = new DOMParser();
 
 export default new vuex.Store({
   state: {
+    defaultSoundCloudPlaylist:
+      "https://api.soundcloud.com/playlists/1024488982%3Fsecret_token%3Ds-t3rIoE0luqj&color=%23e81387&auto_play=false&hide_related=false&show_comments=false&show_user=false&show_reposts=false&show_teaser=false",
     noParticles: false,
     notification: {
       text: "",
@@ -26,6 +28,7 @@ export default new vuex.Store({
       sounds: [],
       currentSound: {},
       isPaused: true,
+      startTime: 0,
     },
   },
   mutations: {
@@ -75,6 +78,7 @@ export default new vuex.Store({
       state.soundCloud.widget = widget;
     },
     setSCSound(state, sound) {
+      state.soundCloud.endTimestamp = Date.now() + sound.duration;
       state.soundCloud.currentSound = sound;
     },
     getSCSounds(state) {
@@ -94,6 +98,13 @@ export default new vuex.Store({
     },
     setSCPaused(state, paused) {
       state.soundCloud.isPaused = paused;
+
+      if (paused == false) {
+        state.soundCloud.widget.getPosition((pos) => {
+          state.soundCloud.endTimestamp =
+            Date.now() + state.soundCloud.currentSound.duration - pos;
+        });
+      }
     },
 
     // Others

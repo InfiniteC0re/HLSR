@@ -105,6 +105,9 @@ class localization {
         "#UI_GAME_PRIORITY_2C": "2 Cores",
         "#UI_GAME_PRIORITY_3C": "3 Cores",
         "#UI_GAME_PRIORITY_4C": "4 Cores",
+        "#UI_SOUNDCLOUD_SETTINGS": "SoundCloud Settings",
+        "#UI_SOUNDCLOUD_SETTINGS_DESC": "Here you can paste an URL to a SoundCloud track or playlist to make it main in HLSR",
+        "#UI_SOUNDCLOUD_PLAYLIST": "SoundCloud Link",
         "#UI_CUSTOMIZATION_BUTTON_SAVE": "Save",
         "#UI_CUSTOMIZATION_BUTTON_RESET": "Reset",
         "#UI_CUSTOMIZATION_MENU_BACKGROUNDS": "Menu Backgrounds",
@@ -113,7 +116,7 @@ class localization {
         "#UI_CUSTOMIZATION_HUD_SETTINGS": "HUD",
         "#UI_CUSTOMIZATION_LQ": "Standard Version",
         "#UI_CUSTOMIZATION_HD": "HD Version",
-        "#UI_NO_TRACKS": "Unable to get tracklist",
+        "#UI_NO_TRACKS": "Unable to get SoundCloud tracklist",
         "#UI_CUSTOMIZATION_HUGE": "Bigger Version",
         "#UI_CUSTOMIZATION_SPRITES": "Item Sprites",
         "#UI_CUSTOMIZATION_Q3": "Q3 Styled",
@@ -121,8 +124,17 @@ class localization {
         "#UI_NOTIFICATION_INSTALLED": "Installed!",
         "#UI_NOTIFICATION_DONE": "Done!",
         "#UI_NOTIFICATION_REMOVED": "Removed!",
+        "#UI_CANCEL": "Cancel",
         "#UI_NO_PARTICLES": "Disable particles",
-        "#UI_CHANGELOG_CONTENT": `<h4>Update from 12/31/2020 [v. 0.1.4]</h4>
+        "#UI_CHANGELOG_CONTENT": `<h4>Update from 01/02/2021 [v. 0.1.5; v. 0.1.6]</h4>
+<ul>
+  <li>Half-Life 2 download fix</li>
+  <li>Better rewind for SoundCloud tracks</li>
+  <li>Now you can set your own track or playlist for SoundCloud Widget</li>
+  <li>Half-Life removing bug fix</li>
+  <li>Half-Life 2 installation fix</li>
+</ul><br/>
+<h4>Update from 12/31/2020 [v. 0.1.4]</h4>
 <ul>
   <li>The open beta begins</li>
 	<li>Half-Life 2</li>
@@ -264,6 +276,9 @@ Used in launcher:
         "#UI_GAME_PRIORITY_2C": "2 ядра",
         "#UI_GAME_PRIORITY_3C": "3 ядра",
         "#UI_GAME_PRIORITY_4C": "4 ядра",
+        "#UI_SOUNDCLOUD_SETTINGS": "Настройки SoundCloud",
+        "#UI_SOUNDCLOUD_SETTINGS_DESC": "Здесь вы можете указать ссылку на трек или плейлист SoundCloud, чтобы сделать его основным в HLSR",
+        "#UI_SOUNDCLOUD_PLAYLIST": "Ссылка на SoundCloud",
         "#UI_CUSTOMIZATION_BUTTON_SAVE": "Сохранить",
         "#UI_CUSTOMIZATION_BUTTON_RESET": "Сбросить",
         "#UI_CUSTOMIZATION_MENU_BACKGROUNDS": "Фоны меню",
@@ -281,7 +296,16 @@ Used in launcher:
         "#UI_NOTIFICATION_DONE": "Готово!",
         "#UI_NOTIFICATION_REMOVED": "Удалено!",
         "#UI_NO_PARTICLES": "Отключить частицы",
-        "#UI_CHANGELOG_CONTENT": `<h4>Обновление от 31.12.2020 [v. 0.1.4]</h4>
+        "#UI_CANCEL": "Отменить",
+        "#UI_CHANGELOG_CONTENT": `<h4>Обновление от 02.01.2021 [v. 0.1.5; v. 0.1.6]</h4>
+<ul>
+  <li>Фикс загрузки Half-Life 2</li>
+  <li>Улучшенная перемотка треков SoundCloud</li>
+  <li>Возможность установить свой трек или плейлист в SoundCloud виджет</li>
+  <li>Фикс бага с удалением Half-Life</li>
+  <li>Фикс бага с установкой Half-Life 2 (была невозможна без установленной HL1)</li>
+</ul><br/>
+<h4>Обновление от 31.12.2020 [v. 0.1.4]</h4>
 <ul>
   <li>Начало открытой беты</li>
   <li>Half-Life 2</li>

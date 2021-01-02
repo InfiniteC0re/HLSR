@@ -40,7 +40,8 @@ export default {
       theme: 0,
       rpc: true,
       experimental: false,
-      noParticles: false
+      noParticles: false,
+      soundcloudPlaylist: ""
     },
   },
   scripts: {

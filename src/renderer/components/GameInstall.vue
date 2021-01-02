@@ -165,12 +165,12 @@ export default {
           },
         };
 
-        if (this.game == "Half-Life 2") {
+        if (this.game == "Half-Life 2")
           info.url =
-            "https://www.googleapis.com/drive/v3/files/1uH0lG_mcMWkKB-n_iISPJ47kcV29Lf0A?alt=media&key=AIzaSyC3z2h6iulAv-GjyHcJAAbuoMCzAkfk8QU";
-        }
+            "https://github.com/InfiniteC0re/HLSR/releases/download/HL2/Half-Life.2.zip";
 
         ipcRenderer.send("game-download", info);
+
         ipcRenderer.on("game-download-complete", (e, path) => {
           let install_path = require("path").join(
             require("electron").remote.app.getPath("userData"),
@@ -190,6 +190,7 @@ export default {
               .remote.getCurrentWindow()
               .setProgressBar(percent / 100);
           });
+
           extract.on("end", () => {
             let installed = store.get("installed");
 
@@ -212,9 +213,10 @@ export default {
               refresh: true,
             });
             let window = require("electron").remote.getCurrentWindow();
-            if (window.isDestroyed() == false) window.setProgressBar(0);
+            if (!window.isDestroyed()) window.setProgressBar(0);
           });
         });
+
         ipcRenderer.on("game-download-progress", (e, data) => {
           this.progress = Math.round(data.percent * 100);
         });
@@ -231,7 +233,11 @@ export default {
 
       let installed = store.get("installed");
       if (Object.keys(installed).indexOf(appid) < 0) {
-        if (Object.keys(installed).indexOf("70") >= 0 || appid == "70") {
+        if (
+          Object.keys(installed).indexOf("70") >= 0 ||
+          appid == "70" ||
+          appid == "220"
+        ) {
           this.show = true;
         } else {
           this.$parent.$refs.navbar.$refs.hl.toggleActive();

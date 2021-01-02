@@ -227,8 +227,9 @@ export default {
       );
       if (this.gameID == "70") {
         let installed = store.get("installed");
+        let gamePath = require("path").join(libraryPath, "Half-Life");
 
-        require("fs").rmdirSync(libraryPath, { recursive: true });
+        require("fs").rmdirSync(gamePath, { recursive: true });
         delete installed["70"];
         delete installed["50"];
         delete installed["130"];

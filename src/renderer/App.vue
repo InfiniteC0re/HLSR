@@ -9,7 +9,10 @@
       <iframe
         ref="sc"
         allow="autoplay"
-        src="https://w.soundcloud.com/player/?url=https://api.soundcloud.com/playlists/1024488982%3Fsecret_token%3Ds-t3rIoE0luqj&color=%23e81387&auto_play=false&hide_related=false&show_comments=false&show_user=false&show_reposts=false&show_teaser=false"
+        :src="
+          'https://w.soundcloud.com/player/?url=' +
+          $store.state.defaultSoundCloudPlaylist
+        "
       ></iframe>
     </div>
     <BackgroundTheme class="background" ref="theme" />
@@ -82,7 +85,7 @@ export default {
       startTimestamp: Date.now(),
       largeImageKey: "hlsr",
       largeImageText: "v" + require("../../package.json").version,
-      smallImageKey: "steam",
+      smallImageKey: "steam2",
       smallImageText: local.get("#UI_RPC_NOSTEAM"),
       instance: false,
     },
@@ -101,6 +104,9 @@ export default {
     song() {
       return this.$store.state.soundCloud.currentSound;
     },
+    songs() {
+      return this.$store.state.soundCloud.sounds;
+    },
     steamActive() {
       return this.$store.state.steamworks.started;
     },
@@ -109,15 +115,22 @@ export default {
     },
   },
   methods: {
+    waitForAllTracks() {
+      let updateInterval = setInterval(() => {
+        !this.$store.state.soundCloud.gotSounds
+          ? this.$store.commit("getSCSounds")
+          : clearInterval(updateInterval);
+      }, 300);
+    },
     steamRetry() {
       ipcRenderer.send("getSteamStatus");
       ipcRenderer.send("getSteamFriends");
     },
-    setRPC(rpc, currentRPC) {
-      if (JSON.stringify(currentRPC) != JSON.stringify(this.lastRPC))
+    setRPC(rpc) {
+      if (JSON.stringify(rpc) != JSON.stringify(this.lastRPC)) {
         this.rpc.setActivity(rpc);
-      this.rpc.setActivity(rpc);
-      this.lastRPC = currentRPC;
+        this.lastRPC = Object.assign({}, rpc);
+      }
     },
     updateRPC() {
       if (!settings.get("config").rpc) return;
@@ -126,19 +139,16 @@ export default {
       let steamName = this.$store.state.steamworks.personaName;
       if (steamName) rpc.smallImageText = steamName;
 
-      if (!this.widget) return;
-
-      let currentRPC = null;
+      if (!this.widget) return this.setRPC(rpc);
 
       this.widget.getPosition((position) => {
         if (!this.isPaused) {
           rpc.details = this.localization.get("#UI_RPC_MUSIC");
           rpc.state = this.song.title;
-          rpc.endTimestamp = Date.now() + this.song.duration - position;
+          rpc.endTimestamp = this.$store.state.soundCloud.endTimestamp;
         }
 
-        currentRPC = { state: rpc.state, details: rpc.details };
-        this.setRPC(rpc, currentRPC);
+        this.setRPC(rpc);
       });
     },
   },
@@ -204,12 +214,15 @@ export default {
     widget.bind(SC.Widget.Events.READY, () => {
       this.$store.commit("setSCWidget", widget);
 
-      // ждём получения всех треков
-      let updateInterval = setInterval(() => {
-        !this.$store.state.soundCloud.gotSounds
-          ? this.$store.commit("getSCSounds")
-          : clearInterval(updateInterval);
-      }, 1000);
+      let config = settings.get("config");
+
+      if (config.soundcloudPlaylist) {
+        widget.load(config.soundcloudPlaylist, {
+          callback: () => {
+            this.waitForAllTracks();
+          },
+        });
+      } else this.waitForAllTracks();
 
       widget.bind(SC.Widget.Events.PAUSE, () => {
         this.$store.commit("setSCPaused", true);
@@ -231,6 +244,27 @@ export default {
           widget.seekTo(0);
         }
       });
+
+      widget.bind(SC.Widget.Events.ERROR, (e) => {
+        widget.load(this.$store.state.defaultSoundCloudPlaylist, {
+          callback: () => {
+            this.waitForAllTracks();
+          },
+        });
+      });
+
+      widget.bind(SC.Widget.Events.PLAY_PROGRESS, (e) => {
+        if (e.currentPosition >= this.song.duration - 160) {
+          let track = this.song;
+
+          let lastSong = this.songs[this.songs.length - 1];
+
+          if (track.id == lastSong.id) {
+            widget.skip(this.songs[0].realIndex);
+            widget.seekTo(0);
+          }
+        }
+      });
     });
 
     // Discord RPC
@@ -247,7 +281,7 @@ export default {
 
     rpc.on("ready", () => {
       this.updateRPC();
-      setInterval(this.updateRPC, 8000);
+      setInterval(this.updateRPC, 1000);
     });
 
     rpc.login({ clientId }).catch(console.error);

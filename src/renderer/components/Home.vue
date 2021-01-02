@@ -22,7 +22,11 @@
           </div>
           <div id="quick-play-list">
             <div class="quick-play-game" @click.self="lastLaunchedGameStart">
-              <span class="quick-play-game-name" :class="{ gray: isLastLaunchedGame }">{{ lastLaunchedGame }}</span>
+              <span
+                class="quick-play-game-name"
+                :class="{ gray: isLastLaunchedGame }"
+                >{{ lastLaunchedGame }}</span
+              >
               <md-button
                 :disabled="lastLaunchedGameButton"
                 @click.stop="openPrefs"
@@ -55,63 +59,15 @@
           </div>
         </div>
         <div class="box box3">
-          <div class="mini-title">{{ localization.get("#UI_SOUNDCLOUD") }}</div>
-          <div class="center" v-if="!song.id">
-            <md-empty-state
-              class="md-accent"
-              md-rounded
-              :md-description="localization.get('#UI_NO_TRACKS')"
-              :md-size="200"
-            ></md-empty-state>
+          <div class="mini-title clickable" @click="openSCSettings">
+            {{ localization.get("#UI_SOUNDCLOUD") }}
+            <i
+              data-v-ebaf0836=""
+              class="md-icon md-icon-font fas fa-cog md-theme-default"
+              style="font-size:16px !important;float:right;line-height:21px"
+            ></i>
           </div>
-          <div class="player-info" v-if="song.id">
-            <div
-              class="artwork"
-              :style="soundcloudArtwork"
-              :class="{ pause: !isPaused }"
-              @click="widget.toggle()"
-            ></div>
-            <div class="player-song-wrapper">
-              <div class="player-song">
-                <div class="song-name">{{ song ? song.title : "" }}</div>
-                <div class="song-genre">
-                  {{ song && song.genre ? song.genre : "No specified genre" }}
-                </div>
-              </div>
-              <div style="margin-top: auto">
-                <div class="time">
-                  <div>{{ soundcloud.songPos }}</div>
-                  <div style="margin-left: auto">
-                    {{ song ? toHHMMSS(song.duration / 1000) : "00:00" }}
-                  </div>
-                </div>
-                <div class="progress" @click="SCMove">
-                  <div
-                    class="bar"
-                    :style="{ flex: `${soundcloud.barWidth}` }"
-                  ></div>
-                </div>
-              </div>
-            </div>
-            <div class="player-volume" @click.stop="SCVolumeChange">
-              <div
-                class="bar"
-                :style="{ height: `${soundcloud.volume}%` }"
-              ></div>
-            </div>
-          </div>
-          <div class="player-songs" v-if="song.id">
-            <div
-              v-for="val in songsList"
-              class="player-songs-song"
-              :class="{ active: val.id == song.id }"
-              @click="widget.skip(val.realIndex)"
-              :key="val._id"
-            >
-              <div class="song-artwork" :style="getSongArtwork(val)"></div>
-              <div class="song-title">{{ val.title }}</div>
-            </div>
-          </div>
+          <SoundCloudWidget />
         </div>
       </div>
     </div>
@@ -124,6 +80,29 @@
         v-html="localization.get('#UI_CHANGELOG_CONTENT')"
       ></md-dialog-content>
     </md-dialog>
+    <md-dialog :md-active.sync="soundCloudSettings">
+      <md-dialog-title
+        v-html="localization.get('#UI_SOUNDCLOUD_SETTINGS')"
+      ></md-dialog-title>
+      <md-dialog-content>
+        <span
+          style="opacity: 0.4"
+          v-html="localization.get('#UI_SOUNDCLOUD_SETTINGS_DESC')"
+        ></span>
+        <md-field>
+          <label>{{ localization.get("#UI_SOUNDCLOUD_PLAYLIST") }}</label>
+          <md-input v-model="playlistInput" class="playlistInput"></md-input>
+        </md-field>
+      </md-dialog-content>
+      <md-dialog-actions>
+        <md-button class="md-primary" @click="soundCloudSettings = false">{{
+          localization.get("#UI_CANCEL")
+        }}</md-button>
+        <md-button class="md-primary" @click="saveSCPlaylist">{{
+          localization.get("#UI_CUSTOMIZATION_BUTTON_SAVE")
+        }}</md-button>
+      </md-dialog-actions>
+    </md-dialog>
   </div>
 </template>
 
@@ -131,6 +110,7 @@
 import Store from "../utils/Store.js";
 import StoreDefaults from "../utils/StoreDefaults.js";
 import SteamFriend from "./Home/SteamFriend";
+import SoundCloudWidget from "./Home/SoundCloud";
 import GameControl from "../utils/GameControl";
 import { ipcRenderer } from "electron";
 
@@ -139,44 +119,25 @@ const store = new Store({
   defaults: StoreDefaults.library,
 });
 
+const settings_store = new Store({
+  configName: "settings",
+  defaults: StoreDefaults.settings,
+});
+
 export default {
   name: "home-page",
-  components: { SteamFriend },
+  components: { SteamFriend, SoundCloudWidget },
   data() {
     return {
+      soundCloudSettings: false,
       changelog: false,
       hlsrconsole: this.$parent.hlsrconsole,
       localization: this.$parent.localization,
       navigator: navigator,
-      soundcloud: {
-        songPos: "00:00",
-        barWidth: 0,
-        volume: 100,
-        updater: null,
-      },
+      playlistInput: "",
     };
   },
   computed: {
-    isPaused() {
-      return this.$store.state.soundCloud.isPaused;
-    },
-    widget() {
-      return this.$store.state.soundCloud.widget;
-    },
-    song() {
-      return this.$store.state.soundCloud.currentSound;
-    },
-    songsList() {
-      return this.$store.state.soundCloud.sounds;
-    },
-    soundcloudArtwork() {
-      return {
-        background:
-          this.song && this.song.artwork_url
-            ? `url(${this.song.artwork_url}`
-            : `rgba(0, 0, 0, .4)`,
-      };
-    },
     steamFriends() {
       return this.$store.state.steamworks.friends;
     },
@@ -186,6 +147,7 @@ export default {
     },
     lastLaunchedGame() {
       let id = store.get("lastLaunched");
+
       if (!GameControl.checkInstalled(store, id))
         return this.localization.get("#UI_RECENTGAME_NOGAME");
 
@@ -217,13 +179,31 @@ export default {
     },
   },
   methods: {
-    getSongArtwork(song) {
-      return {
-        background:
-          song && song.artwork_url
-            ? `url(${song.artwork_url}`
-            : `rgba(0, 0, 0, .4)`,
-      };
+    openSCSettings() {
+      this.soundCloudSettings = true;
+    },
+    saveSCPlaylist() {
+      let playlistURL = this.playlistInput
+        ? this.playlistInput
+        : this.$store.state.defaultSoundCloudPlaylist;
+
+      this.$store.state.soundCloud.gotSounds = false;
+      this.$store.state.soundCloud.widget.load(playlistURL, {
+        callback: () => {
+          this.$store.state.soundCloud.isPaused = true;
+          this.$parent.waitForAllTracks();
+        },
+      });
+
+      let config = settings_store.get("config");
+      config.soundcloudPlaylist = this.playlistInput;
+      settings_store.set("config", config);
+
+      this.soundCloudSettings = false;
+
+      this.$store.commit("createNotification", {
+        text: this.localization.get("#UI_NOTIFICATION_SAVED"),
+      });
     },
     openPrefs() {
       let gameID = store.get("lastLaunched");
@@ -250,53 +230,10 @@ export default {
         ]);
       }
     },
-    toHHMMSS: (secs) => {
-      var sec_num = parseInt(secs, 10);
-      var hours = Math.floor(sec_num / 3600);
-      var minutes = Math.floor(sec_num / 60) % 60;
-      var seconds = sec_num % 60;
-
-      return [hours, minutes, seconds]
-        .map((v) => (v < 10 ? "0" + v : v))
-        .filter((v, i) => v !== "00" || i > 0)
-        .join(":");
-    },
-    SCUpdate() {
-      if (this.widget) {
-        this.widget.getPosition((pos) => {
-          this.soundcloud.barWidth = pos / this.song.duration;
-          this.soundcloud.songPos = this.toHHMMSS(pos / 1000);
-        });
-
-        this.widget.getVolume((volume) => {
-          this.soundcloud.volume = volume;
-        });
-      }
-    },
-    SCMove(e) {
-      if (this.song) {
-        this.widget.seekTo(
-          (e.offsetX * this.song.duration) / e.currentTarget.clientWidth
-        );
-        this.SCUpdate();
-      }
-    },
-    SCVolumeChange(e) {
-      this.soundcloud.volume =
-        ((e.currentTarget.clientHeight - e.offsetY) * 100) /
-        e.currentTarget.clientHeight;
-      this.widget.setVolume(this.soundcloud.volume);
-    },
   },
   mounted() {
-    this.SCUpdate();
-
-    this.soundcloud.updater = setInterval(() => {
-      this.SCUpdate();
-    }, 1000);
-  },
-  beforeDestroy() {
-    clearInterval(this.soundcloud.updater);
+    let config = settings_store.get("config");
+    this.playlistInput = config.soundcloudPlaylist || "";
   },
 };
 </script>
@@ -372,7 +309,7 @@ export default {
 }
 
 .mini-title {
-  color: #fff !important;
+  color: #fff;
   font-size: 20px;
   font-weight: bold;
   opacity: 0.2;
@@ -396,151 +333,23 @@ iframe {
   height: 100%;
   color: rgba(255, 255, 255, 0.4);
 }
+
 .quick-play-game-name {
   font-size: 18px;
   color: rgba(255, 255, 255, 0.7);
   margin-left: 16px;
 }
-.player-info {
-  display: flex;
-  padding: 16px;
-}
-.artwork {
-  min-width: 96px;
-  min-height: 96px;
-  position: relative;
-}
-
-.artwork::after {
-  font-family: "Font Awesome 5 Pro";
-  font-weight: 900;
-  font-size: 48px;
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 100%;
-  backdrop-filter: blur(0px);
-  transition: color 0.2s, background 0.2s;
-  color: transparent;
-  cursor: pointer;
-}
-
-.artwork:hover::after {
-  background: rgba(0, 0, 0, 0.4);
-  color: rgba(255, 255, 255, 0.6);
-}
-
-.artwork:hover::after {
-  content: "";
-}
-
-.artwork.pause:hover::after {
-  content: "";
-}
-
-.player-song-wrapper {
-  padding: 8px;
-  padding-bottom: 0;
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-}
-
-.player-song {
-  margin-top: -8px;
-  color: rgba(255, 255, 255, 0.4);
-}
-
-.player-volume {
-  width: 6px;
-  background: rgba(255, 255, 255, 0.1);
-  display: flex;
-  position: relative;
-}
-
-.player-volume .bar {
-  height: 50%;
-  width: 100%;
-  background: rgba(255, 255, 255, 0.2);
-  pointer-events: none;
-  position: absolute;
-  bottom: 0;
-}
-
-.progress {
-  width: 100%;
-  height: 4px;
-  background: rgba(255, 255, 255, 0.1);
-  display: flex;
-}
-
-.progress .bar {
-  height: 100%;
-  background: rgba(255, 255, 255, 0.2);
-}
-.time {
-  color: rgba(255, 255, 255, 0.2);
-  display: flex;
-  margin-top: auto;
-}
-.song-genre {
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.2);
-}
-.player-songs {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  overflow: auto;
-}
-.player-songs-song {
-  width: 100%;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  padding: 4px 16px;
-}
-.player-songs-song.active {
-  background: rgba(255, 255, 255, 0.05) !important;
-  cursor: default;
-}
-.player-songs-song.active .song-title {
-  color: #00abff;
-  opacity: 0.8;
-}
-.player-songs-song:hover {
-  background: rgba(255, 255, 255, 0.1);
-}
-.song-artwork {
-  min-height: 32px;
-  min-width: 32px;
-  background-color: rgba(0, 0, 0, 0.4);
-  background-position: center !important;
-  background-size: cover !important;
-}
-.song-title {
-  white-space: nowrap;
-  color: rgba(255, 255, 255, 0.3);
-  text-overflow: ellipsis;
-  overflow: hidden;
-  margin-left: 8px;
-  align-items: center;
-  font-size: 13px;
-}
-.song-name {
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-}
 
 .gray {
   color: rgba(255, 255, 255, 0.3);
+}
+
+.clickable {
+  cursor: pointer;
+  transition: 0.1s;
+}
+
+.clickable:hover {
+  opacity: 0.4;
 }
 </style>
