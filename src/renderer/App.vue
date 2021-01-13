@@ -93,6 +93,8 @@ export default {
     updateAvailable: 0,
     hlsrconsole: Console,
     focused: true,
+    lastScreenWidth: window.screen.availWidth,
+    lastScreenHeight: window.screen.availHeight,
   }),
   computed: {
     isPaused() {
@@ -112,6 +114,16 @@ export default {
     },
     noParticles() {
       return this.$store.state.noParticles;
+    },
+  },
+  watch: {
+    lastScreenWidth(newState, oldState) {
+      console.log("Разрешение экрана сменилось - width");
+      ipcRenderer.send("updateSize");
+    },
+    lastScreenHeight(newState, oldState) {
+      console.log("Разрешение экрана сменилось - height");
+      ipcRenderer.send("updateSize");
     },
   },
   methods: {
@@ -135,6 +147,14 @@ export default {
     updateRPC() {
       if (!settings.get("config").rpc) return;
       let rpc = Object.assign({}, this.standardRPC);
+
+      if (settings.get("config").mlpMode && settings.get("config").theme == 4) {
+        rpc.largeImageKey = "mlp";
+        rpc.smallImageKey = "pony-steam";
+        rpc.details = this.localization.get("#RPC_MLP");
+      } else {
+        rpc.details = this.localization.get("#UI_RPC_DETAILS");
+      }
 
       let steamName = this.$store.state.steamworks.personaName;
       if (steamName) rpc.smallImageText = steamName;
@@ -161,13 +181,13 @@ export default {
       else this.updateAvailable = 0;
     });
 
-    let window = require("electron").remote.getCurrentWindow();
+    let ewindow = require("electron").remote.getCurrentWindow();
 
-    window.on("focus", () => {
+    ewindow.on("focus", () => {
       this.focused = true;
     });
 
-    window.on("blur", () => {
+    ewindow.on("blur", () => {
       this.focused = false;
     });
 
@@ -202,7 +222,7 @@ export default {
         let window = require("electron").remote.getCurrentWindow();
         if (this.$store.state.steamworks.started && window.isFocused())
           ipcRenderer.send("getSteamFriends");
-      }, 10000);
+      }, 5000);
 
       ipcRenderer.send("getSteamStatus");
     }, 500);
@@ -281,10 +301,23 @@ export default {
 
     rpc.on("ready", () => {
       this.updateRPC();
-      setInterval(this.updateRPC, 1000);
+      setInterval(this.updateRPC, 5000);
     });
 
     rpc.login({ clientId }).catch(console.error);
+
+    setInterval(() => {
+      this.lastScreenWidth = window.screen.width;
+      this.lastScreenHeight = window.screen.height;
+    }, 1000);
+
+    // HLSRC
+
+    ipcRenderer.on("hlsrc", (event, data) => {
+      this.$store.commit("createNotification", {
+        text: "Данные HLSRC файла прочитаны!",
+      });
+    });
 
     ipcRenderer.send("ready");
   },
@@ -405,23 +438,20 @@ body {
   z-index: 6;
 }
 
-/* width */
 ::-webkit-scrollbar {
   width: 4px;
   height: 4px;
 }
 
-/* Track */
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 
-/* Handle */
 ::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.3);
+  transition: 100ms;
 }
 
-/* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.4);
 }

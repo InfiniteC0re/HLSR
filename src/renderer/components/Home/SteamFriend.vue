@@ -28,7 +28,7 @@ export default {
   data() {
     return {
       localization: this.$parent.localization,
-      url: ""
+      url: "",
     };
   },
   computed: {
@@ -62,7 +62,8 @@ export default {
 }
 
 .steam-friend:hover {
-  background: rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  transition: 100ms;
 }
 
 .steam-friend-avatar {

@@ -1,9 +1,11 @@
 <template>
   <div id="header" :style="isAbsolute">
-    <div class="logo"></div>
+    <div class="logo" :style="{ color }" @dblclick="changeColor">
+      <div class="inner" :style="{ backgroundColor: color }"></div>
+    </div>
     <div class="title">
       HLSR
-      <span style="color: rgba(255,255,255,.2);">
+      <span style="color: rgba(255, 255, 255, 0.2)">
         <span class="header__version">BETA</span>
       </span>
     </div>
@@ -11,6 +13,14 @@
 </template>
 
 <script>
+import Store from "../../utils/Store.js";
+import StoreDefaults from "../../utils/StoreDefaults.js";
+
+const store = new Store({
+  configName: "settings",
+  defaults: StoreDefaults.settings,
+});
+
 export default {
   name: "NavBarHeader",
   props: ["absolute"],
@@ -19,6 +29,34 @@ export default {
       return "position: " + (this.absolute == "true" ? "absolute" : "inherit");
     },
   },
+  methods: {
+    changeColor() {
+      let config = store.get("config");
+
+      if (this.c >= 2 && !config.mlpMode) {
+        config.mlpMode = true;
+        store.set("config", config);
+        this.$store.commit("createNotification", {
+          text: "My Little Pony!",
+        });
+      }
+
+      this.color = `rgb(${Math.floor(Math.random() * 250)}, ${Math.floor(
+        Math.random() * 250
+      )}, ${Math.floor(Math.random() * 250)})`;
+
+      clearTimeout(this.timeout);
+      this.timeout = setTimeout(() => {
+        this.color = "white";
+        this.c += 1;
+      }, 1500);
+    },
+  },
+  data: () => ({
+    color: "white",
+    timeout: null,
+    c: 0,
+  }),
 };
 </script>
 
@@ -34,11 +72,12 @@ export default {
   background: transparent;
   background-size: cover;
   border-radius: 50%;
-  border: 4px solid white;
+  border: 4px solid;
+  color: #fff;
   position: relative;
+  transition: 0.5s color;
 }
-.logo::after {
-  content: "";
+.logo .inner {
   width: 20px;
   height: 20px;
   background: white;
@@ -47,9 +86,9 @@ export default {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  transition: 0.2s all;
+  transition: 0.2s width, 0.2s height, 0.5s background;
 }
-.logo:hover::after {
+.logo:hover .inner {
   width: 26px;
   height: 26px;
 }

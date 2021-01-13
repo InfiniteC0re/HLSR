@@ -1,43 +1,50 @@
 <template>
-  <div id="wrap">
+  <div id="wrap" ref="settings">
     <div id="form">
       <div class="title">{{ localization.get("#UI_SETTINGS") }}</div>
-      <div class="section basictext">
-        {{ localization.get("#UI_INTERFACE_SETTINGS") }}
-      </div>
-      <dropdown
-        v-model="language"
-        :text="localization.get('#UI_INTERFACE_LANGUAGE')"
-        @change="saveChoice"
-        :items="languages"
-      />
-      <dropdown
-        v-model="theme"
-        :text="localization.get('#UI_INTERFACE_THEME')"
-        @change="themeChange"
-        :items="themes"
-      />
-      <div class="section basictext">
-        {{ localization.get("#UI_MISC_SETTINGS") }}
-      </div>
-      <checkbox
-        v-model="rpc"
-        @change="saveChoice"
-        :text="localization.get('#UI_DISCORD_RPC_SETTINGS')"
-      />
-      <checkbox
-        v-model="noParticles"
-        @change="saveChoice"
-        :text="localization.get('#UI_NO_PARTICLES')"
-      />
-      <div class="social">
-        <div class="social-button" @click="openDiscord">
-          <i class="fab fa-discord"></i>
+      <div id="settings-scroll">
+        <div class="section basictext">
+          {{ localization.get("#UI_INTERFACE_SETTINGS") }}
         </div>
-        <div class="social-button" @click="openDialog">
-          <i class="fal fa-question-circle"></i>
+        <dropdown
+          v-model="language"
+          :text="localization.get('#UI_INTERFACE_LANGUAGE')"
+          @change="saveChoice"
+          :items="languages"
+        />
+        <dropdown
+          v-model="theme"
+          :text="localization.get('#UI_INTERFACE_THEME')"
+          @change="themeChange"
+          :items="themes"
+        />
+        <div class="section basictext">
+          {{ localization.get("#UI_MISC_SETTINGS") }}
+        </div>
+        <checkbox
+          v-model="rpc"
+          @change="saveChoice"
+          :text="localization.get('#UI_DISCORD_RPC_SETTINGS')"
+        />
+        <checkbox
+          v-model="noParticles"
+          @change="saveChoice"
+          :text="localization.get('#UI_NO_PARTICLES')"
+        />
+      </div>
+      <div id="bottom">
+        <div class="social">
+          <div class="social-button" @click="openDiscord">
+            <i class="fab fa-discord"></i>
+            <md-tooltip>{{ localization.get("#UI_DISCORD") }}</md-tooltip>
+          </div>
+          <div class="social-button" @click="openDialog">
+            <i class="fal fa-info-circle"></i>
+            <md-tooltip>{{ localization.get("#UI_ABOUT_PROGRAM") }}</md-tooltip>
+          </div>
         </div>
       </div>
+
       <!-- <checkbox v-model="experimental" @change="saveChoice" :text="localization.get('#UI_EXPERIMENTAL_MODE_SETTINGS')"/> -->
 
       <!-- Диалоговое окно  -->
@@ -120,6 +127,8 @@ export default {
         this.$parent.localization.get("#UI_RED_THEME"),
         this.$parent.localization.get("#UI_SNOW_THEME"),
       ];
+
+      if (store.get("config").mlpMode) this.themes.push("My Little Pony");
     },
     themeChange() {
       if (this.$parent.lancerMode) return;
@@ -139,7 +148,7 @@ export default {
 
       if (langChanged) {
         this.localization.update();
-        this.$parent.$refs.navbar.$forceUpdate(); // Обновить панель навигации
+        this.$parent.$refs.navbar.$forceUpdate();
 
         this.updateLocale();
       }
@@ -164,14 +173,26 @@ export default {
   letter-spacing: 0.05em;
 }
 
+#settings-scroll {
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  flex: 1;
+  margin-bottom: 32px;
+}
+
+#bottom {
+  width: 100%;
+  position: relative;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
 .social {
   color: rgba(255, 255, 255, 0.3);
-  position: absolute;
-  right: 0;
-  bottom: 0;
   display: flex;
   font-size: 24px;
-  padding: 16px;
 }
 
 .social .social-button {

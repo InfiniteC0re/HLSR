@@ -11,7 +11,7 @@
     <div class="player-info" v-if="song.id">
       <div
         class="artwork"
-        :style="artwork"
+        :style="getSongArtwork(song)"
         :class="{ pause: !isPaused }"
         @click="widget.toggle()"
       ></div>
@@ -72,14 +72,6 @@ export default {
     songsList() {
       return this.$store.state.soundCloud.sounds;
     },
-    artwork() {
-      return {
-        background:
-          this.song && this.song.artwork_url
-            ? `url(${this.song.artwork_url}`
-            : `rgba(0, 0, 0, .4)`,
-      };
-    },
     isPaused() {
       return this.$store.state.soundCloud.isPaused;
     },
@@ -96,7 +88,7 @@ export default {
         background:
           song && song.artwork_url
             ? `url(${song.artwork_url}`
-            : `rgba(0, 0, 0, .4)`,
+            : null,
       };
     },
     update() {
@@ -192,6 +184,9 @@ export default {
   min-width: 96px;
   min-height: 96px;
   position: relative;
+  background-image: url(../../assets/nocover.jpg);
+  background-size: cover;
+  background-position: center;
 }
 
 .artwork::after {
@@ -207,7 +202,6 @@ export default {
   align-items: center;
   width: 100%;
   height: 100%;
-  backdrop-filter: blur(0px);
   transition: color 0.2s, background 0.2s;
   color: transparent;
   cursor: pointer;
@@ -295,23 +289,26 @@ export default {
 }
 
 .player-songs-song.active {
-  background: rgba(255, 255, 255, 0.05) !important;
+  background: rgba(255, 255, 255, 0.1) !important;
   cursor: default;
+  transition: 100ms;
 }
 
 .player-songs-song.active .song-title {
+  transition: 100ms;
   color: #00abff;
   opacity: 0.8;
 }
 
 .player-songs-song:hover {
-  background: rgba(255, 255, 255, 0.1);
+  transition: 100ms;
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .song-artwork {
   min-height: 32px;
   min-width: 32px;
-  background-color: rgba(0, 0, 0, 0.4);
+  background-image: url(../../assets/nocover.jpg);
   background-position: center !important;
   background-size: cover !important;
 }

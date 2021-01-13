@@ -211,23 +211,9 @@ export default {
     },
     lastLaunchedGameStart() {
       let gameID = store.get("lastLaunched");
-      let config = store.get("config");
 
       if (GameControl.checkInstalled(store, gameID)) {
-        this.hlsrconsole.execute([
-          "game",
-          require("path").join(
-            require("electron").remote.app.getPath("userData"),
-            "library"
-          ),
-          gameID,
-          config[gameID].edited_dll ? "-dll" : "",
-          config[gameID].bxt ? "-bxt" : "",
-          config[gameID].rinput ? "-ri" : "",
-          config[gameID].livesplit ? "-livesplit" : "",
-          config[gameID].steam ? "-steam" : "",
-          config[gameID].args,
-        ]);
+        GameControl.startGame(this.hlsrconsole, store, gameID, this.$store);
       }
     },
   },

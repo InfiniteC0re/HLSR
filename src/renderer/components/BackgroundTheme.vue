@@ -2,6 +2,7 @@
   <div id="backgroundtheme">
     <div
       class="background"
+      :class="{ blur }"
       :style="{ backgroundImage: `url(${background})` }"
     ></div>
   </div>
@@ -21,11 +22,16 @@ export default {
   components: {},
   data() {
     return {
-      background: require("@/assets/blue.jpg"),
+      background: require("@/assets/gradient.jpg"),
+      blur: false,
     };
   },
   methods: {
     updateTheme() {
+      if (store.get("config").mlpMode && store.get("config").theme == 4) {
+        this.blur = true;
+      }
+
       switch (store.get("config").theme) {
         case 0:
           this.background = require("@/assets/gradient.jpg");
@@ -37,24 +43,25 @@ export default {
           this.background = require("@/assets/red.jpg");
           break;
         case 3:
-          // let hours = new Date().getHours();
-          // if(hours > 8 && hours < 15)
-          this.background = require("@/assets/snow.jpg");
-          // else
-          // this.background = require("@/assets/snow2.jpg");
+          let hours = new Date().getHours();
+          if (hours > 8 && hours < 15)
+            this.background = require("@/assets/snow2.jpg");
+          else this.background = require("@/assets/snow.jpg");
           break;
         case 4:
+          if (this.blur) {
+            if (Math.random() >= 0.5)
+              this.background = require("@/assets/mlp.gif");
+            else this.background = require("@/assets/mlp2.gif");
+          } else this.background = require("@/assets/lancer.jpg");
+          break;
+        case 5:
           this.background = require("@/assets/lancer.jpg");
           break;
       }
     },
   },
   mounted() {
-    if (this.$parent.lancerMode) {
-      var a = store.get("config");
-      a.theme = 2;
-      store.set("config", a);
-    }
     this.updateTheme();
   },
 };
@@ -91,6 +98,10 @@ export default {
   width: 100%;
   height: 100%;
   background: rgba(23, 46, 86, 0.7);
+}
+
+.background.blur::before {
+  backdrop-filter: blur(24px);
 }
 </style>
 

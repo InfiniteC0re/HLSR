@@ -1,6 +1,6 @@
 {
   "name": "hlsr",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "author": "",
   "description": "Change the way you feel speedruns",
   "main": "./dist/electron/main.js",
@@ -35,6 +35,14 @@
         "provider": "github",
         "owner": "infinitec0re",
         "repo": "hlsr"
+      }
+    ],
+    "fileAssociations": [
+      {
+        "ext": "hlsrc",
+        "name": "HLSR Config Module",
+        "role": "None",
+        "icon": "./build/icons/hlsrc.ico"
       }
     ],
     "asar": false,
@@ -73,10 +81,10 @@
     "electron-unhandled": "^3.0.2",
     "electron-updater": "^4.3.4",
     "hlsr-console": "1.0.3",
-    "steamworks": "./node_modules/steamworks",
     "jquery": "^3.5.1",
     "node-machine-id": "^1.1.12",
     "onezip": "^4.2.1",
+    "steamworks": "./node_modules/steamworks",
     "vue": "^2.5.16",
     "vue-codemirror": "^4.0.6",
     "vue-electron": "^1.0.6",

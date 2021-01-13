@@ -41,7 +41,8 @@ export default {
       rpc: true,
       experimental: false,
       noParticles: false,
-      soundcloudPlaylist: ""
+      soundcloudPlaylist: "",
+      mlpMode: false
     },
   },
   scripts: {
@@ -85,7 +86,7 @@ export default {
                   command: "labo",
                 },
               ],
-              author: "LN4Rk0t1k#1766",
+              author: "N4Rk0t1k#1766",
             },
             {
               name: "Gauss Boost 180°",
@@ -161,7 +162,7 @@ export default {
                   command: "onwabo",
                 },
               ],
-              author: "LN4Rk0t1k#1766",
+              author: "N4Rk0t1k#1766",
             },
             {
               name: "Nihilanth Boost",
@@ -180,7 +181,7 @@ export default {
                   command: "nihboost",
                 },
               ],
-              author: "LN4Rk0t1k#1766",
+              author: "N4Rk0t1k#1766",
             },
             {
               name: "On A Rail Object Boosting",
@@ -198,7 +199,7 @@ export default {
                   command: "foobbo",
                 },
               ],
-              author: "LN4Rk0t1k#1766",
+              author: "N4Rk0t1k#1766",
             },
             {
               name: "Surface Tension Trigger Delay",
@@ -234,7 +235,7 @@ export default {
                   command: "msttd",
                 },
               ],
-              author: "LN4Rk0t1k#1766",
+              author: "N4Rk0t1k#1766",
             },
             {
               name: "Test Chamber Skip",
@@ -317,7 +318,7 @@ export default {
                   command: "tcreset",
                 },
               ],
-              author: "LN4Rk0t1k#1766",
+              author: "N4Rk0t1k#1766",
             },
           ],
           scriptless: [

@@ -178,12 +178,6 @@ export default {
     },
   },
   methods: {
-    coresInput() {
-      console.log(parseInt(this.corescount.toString().match(/\d/g).join("")));
-      this.corescount = parseInt(
-        this.corescount.toString().match(/\d/g).join("")
-      );
-    },
     saveChoice() {
       if (this.version == "Steam") this.edited_dll = false;
       let config = store.get("config");

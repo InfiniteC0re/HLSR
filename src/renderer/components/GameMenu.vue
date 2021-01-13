@@ -89,6 +89,7 @@ import Overview from "./GameMenu/Overview";
 import Configurator from "./GameMenu/Configurator";
 import Store from "../utils/Store.js";
 import StoreDefaults from "../utils/StoreDefaults.js";
+import GameControl from "../utils/GameControl";
 
 const store = new Store({
   configName: "library",
@@ -113,7 +114,7 @@ export default {
   computed: {
     isButtonDisabled() {
       return (
-        (!navigator.onLine && !checkInstalled(this.gameID)) ||
+        (!navigator.onLine && !GameControl.checkInstalled(this.hlsrconsole, this.gameID)) ||
         (!this.steamActive && this.gameID != "220")
       );
     },
@@ -123,57 +124,20 @@ export default {
   },
   methods: {
     buttonIcon() {
-      if (this.checkInstalled(this.gameID)) return ``;
+      if (GameControl.checkInstalled(store, this.gameID)) return ``;
       else return ``;
     },
     buttonText() {
-      if (this.checkInstalled(this.gameID))
+      if (GameControl.checkInstalled(store, this.gameID))
         return this.localization.get("#UI_PLAY");
       else return this.localization.get("#UI_INSTALL");
     },
     updateBackground(fn) {
       this.background = `url(${require("@/assets/screenshots/" + fn)})`;
     },
-    checkInstalled(appid) {
-      let installed = store.get("installed");
-      return Object.keys(installed).indexOf(appid) >= 0;
-    },
     gameButton() {
-      let config = store.get("config");
-      if (this.checkInstalled(this.gameID)) {
-        this.hlsrconsole.execute([
-          "game",
-          require("path").join(
-            require("electron").remote.app.getPath("userData"),
-            "library"
-          ),
-          this.gameID,
-          config[this.gameID].edited_dll ? "-dll" : "",
-          config[this.gameID].bxt ? "-bxt" : "",
-          config[this.gameID].rinput ? "-ri" : "",
-          config[this.gameID].livesplit ? "-livesplit" : "",
-          config[this.gameID].steam ? "-steam" : "",
-          config[this.gameID].allcores ? "-allcores" : "",
-          config[this.gameID].allcores == false &&
-          config[this.gameID].corescount == "1"
-            ? "-onecore"
-            : "",
-          config[this.gameID].allcores == false &&
-          config[this.gameID].corescount == "2"
-            ? "-twocores"
-            : "",
-          config[this.gameID].allcores == false &&
-          config[this.gameID].corescount == "3"
-            ? "-threecores"
-            : "",
-          config[this.gameID].allcores == false &&
-          config[this.gameID].corescount == "4"
-            ? "-fourcores"
-            : "",
-          "-" + config[this.gameID].priority,
-          config[this.gameID].args,
-        ]);
-        store.set("lastLaunched", this.gameID);
+      if (GameControl.checkInstalled(store, this.gameID)) {
+        GameControl.startGame(this.hlsrconsole, store, this.gameID, this.$store);
       } else {
         this.$parent.$refs.gameinstall.open(this.gameID);
       }
@@ -312,7 +276,7 @@ export default {
       default:
         this.gameTitle = "Unknown Game";
     }
-    this.installed = this.checkInstalled(this.gameID);
+    this.installed = GameControl.checkInstalled(store, this.gameID);
   },
 };
 </script>
@@ -327,7 +291,6 @@ export default {
 }
 
 #mainview {
-  background: white;
   background-size: cover !important;
   background-position: center !important;
   background-repeat: no-repeat !important;

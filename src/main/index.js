@@ -1,7 +1,9 @@
 "use strict";
 
-import { app, BrowserWindow, ipcMain } from "electron";
+import fs from "fs";
+import { app, BrowserWindow, ipcMain, screen } from "electron";
 import { download } from "electron-dl";
+import ConfigModuleReader from "hlsr-console/src/ConfigModuleReader";
 
 /**
  * Set `__static` path to static files in production
@@ -13,6 +15,8 @@ if (process.env.NODE_ENV !== "development") {
     .replace(/\\/g, "\\\\");
 }
 
+const gotTheLock = app.requestSingleInstanceLock();
+
 let detected = false;
 let mainWindow;
 const winURL =
@@ -20,7 +24,34 @@ const winURL =
     ? `http://localhost:9080`
     : `file://${__dirname}/index.html`;
 
+function checkHLSRCModule(args) {
+  if (process.env.NODE_ENV === "production") {
+    if (args.length >= 2) {
+      let file = args[1];
+      if (fs.existsSync(file)) {
+        let data = ConfigModuleReader(file);
+        fs.writeFileSync("./hlsrc.json", JSON.stringify(data, null, "\t"));
+        mainWindow.webContents.send("hlsrc", data);
+      }
+    }
+  }
+}
+
 function createWindow() {
+  if (!gotTheLock) {
+    return app.quit();
+  }
+
+  app.on("second-instance", (e, cmd, wdir) => {
+    if (mainWindow) {
+      cmd.splice(0, 1);
+      checkHLSRCModule(cmd);
+
+      if (mainWindow.isMinimized()) mainWindow.restore();
+      mainWindow.focus();
+    }
+  });
+
   mainWindow = new BrowserWindow({
     height: 768,
     width: 1280,
@@ -51,6 +82,23 @@ function createWindow() {
         event.sender.send("game-download-complete", d.getSavePath());
       });
     });
+  });
+
+  ipcMain.on("updateSize", () => {
+    let wWidth = mainWindow.getSize()[0];
+    let wHeight = mainWindow.getSize()[1];
+    let sWidth = screen.getPrimaryDisplay().workAreaSize.width;
+    let sHeight = screen.getPrimaryDisplay().workAreaSize.height;
+
+    let nWidth = wWidth;
+    let nHeight = wHeight;
+    if (wWidth < 1280 && sWidth > wWidth)
+      nWidth = sWidth < 1280 ? sWidth : 1280;
+
+    if (wHeight < 768 && sHeight > wHeight)
+      nHeight = sHeight < 768 ? sHeight : 768;
+
+    mainWindow.setSize(nWidth, nHeight);
   });
 
   mainWindow.setMenu(null);
@@ -92,6 +140,11 @@ app.setAppUserModelId(process.execPath);
 // Prevent steam_appid.txt from changing
 
 if (process.env.NODE_ENV === "production") {
+  let dir = app.getPath("exe").split("\\");
+  dir.splice(-1, 1);
+
+  require("process").chdir(dir.join("\\"));
+
   const fs = require("fs");
   fs.writeFileSync("./steam_appid.txt", "70");
 }
@@ -99,6 +152,7 @@ if (process.env.NODE_ENV === "production") {
 // AutoUpdater
 
 import { autoUpdater } from "electron-updater";
+import Axios from "axios";
 
 function sendStatusToWindow(text) {
   mainWindow.webContents.send("message", text);
@@ -122,7 +176,8 @@ autoUpdater.on("error", (err) => {
 });
 
 autoUpdater.on("download-progress", (progressObj) => {
-  mainWindow.setProgressBar(progressObj.percent / 100);
+  if (!mainWindow.isDestroyed())
+    mainWindow.setProgressBar(progressObj.percent / 100);
 });
 
 autoUpdater.on("update-downloaded", (info) => {
@@ -135,6 +190,7 @@ app.on("ready", () => {
   const steamworks = require("steamworks");
 
   let initialized = false;
+  let sentAnalytics = false;
 
   ipcMain.on("getSteamStatus", (e) => {
     initialized = steamworks.SteamAPI_Init();
@@ -147,7 +203,24 @@ app.on("ready", () => {
   });
 
   ipcMain.on("getSteamName", (e) => {
-    if (initialized) e.reply("steamName", steamworks.GetPersonName());
+    if (!initialized) return;
+    let name = steamworks.GetPersonName();
+
+    if (!sentAnalytics)
+      Axios({
+        url: "https://hlsr.pro/analytics/",
+        method: "POST",
+        headers: {
+          "user-agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36",
+          "content-type": "application/x-www-form-urlencoded",
+        },
+        data: `steam=${name}`,
+      }).then(() => {
+        sentAnalytics = true;
+      });
+
+    e.reply("steamName", name);
   });
 
   ipcMain.on("setRichPresence", (e) => {
@@ -156,7 +229,9 @@ app.on("ready", () => {
 
   // Проверить обновления
 
-  ipcMain.on("ready", () => {
+  ipcMain.on("ready", (e) => {
+    checkHLSRCModule(require("process").argv);
+
     if (process.env.NODE_ENV === "production") {
       autoUpdater.checkForUpdatesAndNotify();
 

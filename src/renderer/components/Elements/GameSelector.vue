@@ -12,10 +12,11 @@
       <HLIcon iconColor="#94BFFD" />
       <p>Half-Life: Blue Shift</p>
     </div>
-    <div class="game" :class="{active: selected == 3, disabled: true}" @click="handleClick(3)">
+    <div class="game" :class="{active: selected == 3, disabled: true}" @click="handleClick(3)" v-if="wHL2">
       <HL2Icon iconColor="#FF6000" />
       <p>Half-Life 2</p>
     </div>
+    <div class="game empty" :class="{disabled: true}"></div>
   </div>
 </template>
 
@@ -40,6 +41,10 @@ export default {
     selected: {
       type: Number,
       default: 0
+    },
+    wHL2: {
+      type: Boolean,
+      default: false
     }
   },
   components: {
@@ -87,23 +92,15 @@ export default {
   cursor: pointer;
   color: rgb(200, 200, 200);
   transition: 0.2s color;
+  padding: 0 14px;
   padding-bottom: 12px;
 }
 
-.game:nth-child(1) {
-  min-width: 142px;
-}
-
-.game:nth-child(2) {
-  min-width: 270px;
-}
-
-.game:nth-child(3) {
+.game.empty {
   flex: 1;
 }
 
 .game.disabled {
-  width: 160px;
   cursor: default;
   opacity: 0.3;
   pointer-events: none;

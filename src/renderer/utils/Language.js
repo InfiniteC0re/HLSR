@@ -70,7 +70,7 @@ class localization {
         "#UI_CONFIGS_ADVANCED": "Editor",
         "#UI_RPC_DETAILS": "Preparing for speedrun",
         "#UI_RPC_NOSTEAM": "Not connected",
-        "#UI_RPC_MUSIC": "Listening to some music",
+        "#UI_RPC_MUSIC": "Listening to music",
         "#UI_SCRIPT_SETTINGS":
           "Settings of the <b style='color:#00abff;'>%0%</b> script",
         "#UI_SCRIPT_SCRIPTLESS": "Scriptless Category",
@@ -106,7 +106,8 @@ class localization {
         "#UI_GAME_PRIORITY_3C": "3 Cores",
         "#UI_GAME_PRIORITY_4C": "4 Cores",
         "#UI_SOUNDCLOUD_SETTINGS": "SoundCloud Settings",
-        "#UI_SOUNDCLOUD_SETTINGS_DESC": "Here you can paste an URL to a SoundCloud track or playlist to make it main in HLSR",
+        "#UI_SOUNDCLOUD_SETTINGS_DESC":
+          "Here you can paste an URL to a SoundCloud track or playlist to make it main in HLSR (only public tracks or playlist)",
         "#UI_SOUNDCLOUD_PLAYLIST": "SoundCloud Link",
         "#UI_CUSTOMIZATION_BUTTON_SAVE": "Save",
         "#UI_CUSTOMIZATION_BUTTON_RESET": "Reset",
@@ -126,7 +127,28 @@ class localization {
         "#UI_NOTIFICATION_REMOVED": "Removed!",
         "#UI_CANCEL": "Cancel",
         "#UI_NO_PARTICLES": "Disable particles",
-        "#UI_CHANGELOG_CONTENT": `<h4>Update from 01/02/2021 [v. 0.1.5; v. 0.1.6]</h4>
+        "#UI_ABOUT_PROGRAM": "About program",
+        "#UI_DISCORD": "Discord",
+        "#RPC_MLP": "Preparing for friendship",
+        "#UI_CHANGELOG_CONTENT": `<h4>Update from 01/13/2021 [v. 0.1.7]</h4>
+<ul>
+  <li>Quick Launch with process priority settings fix</li>
+  <li>Now you can see what of your friends are using HLSR too</li>
+  <li>Visual bug with black shadow on game screen was fixed</li>
+  <li>Only one instance of launcher can be started at time</li>
+  <li>Window size is restoring even after changing resolution to very low and back now</li>
+  <li>Fixed bug when closing launcher while updating was the reason of error</li>
+  <li>RInput and BunnymodXT start fixes</li>
+  <li>Basic HLSRC support and icon</li>
+  <li>Better Perfomance - changes in Steam friends getting algorithm</li>
+  <li>Two versions of Snow theme (depending on your system time)</li>
+  <li>Added default artwork for SoundCloud tracks without cover</li>
+  <li>Secret MLP Mode with 2 new random themes and Discord RPC</li>
+  <h4 style="margin:6px 0;">Developer Mode</h4>
+  <li>Added toggle developer tools button</li>
+  <li>Added HLSRC check button</li>
+</ul><br/>
+<h4>Update from 01/02/2021 [v. 0.1.5; v. 0.1.6]</h4>
 <ul>
   <li>Half-Life 2 download fix</li>
   <li>Better rewind for SoundCloud tracks</li>
@@ -164,11 +186,11 @@ class localization {
 	<li>The appearance of the changelog</li>
 </ul>
 `,
-        "#UI_ABOUT_TITLE": `<span style="color:#00abff;font-weight:bold;font-size:18px">HLSR 2.0 [v. ${
+        "#UI_ABOUT_TITLE": `<span style="color:#00abff;font-weight:bold;font-size:18px">HLSR [v. ${
           require("../../../package.json").version
         }]</span>`,
         "#UI_ABOUT_CONTENT": `Developers: <span style="color:#ff492c">InfiniteC0re#7307</span>, <span style="color:#ffd45b">alsbykov#8131</span><br/>
-Scripts: <span style="color:#97d4ff">LN4Rk0t1k#1766</span>, <span style="color:#c3a4ff">Parklez</span><br/>
+Scripts: <span style="color:#97d4ff">N4Rk0t1k#1766</span>, <span style="color:#c3a4ff">Parklez</span><br/>
 Help with UI design: <span style="color:#ac6cff">Дизайнер [bmd.GG]#9384</span><br/>
 Project support: <span style="color:#b7ffaa">ALLAN#0012</span><br/><br/>
 Used in launcher:
@@ -277,7 +299,8 @@ Used in launcher:
         "#UI_GAME_PRIORITY_3C": "3 ядра",
         "#UI_GAME_PRIORITY_4C": "4 ядра",
         "#UI_SOUNDCLOUD_SETTINGS": "Настройки SoundCloud",
-        "#UI_SOUNDCLOUD_SETTINGS_DESC": "Здесь вы можете указать ссылку на трек или плейлист SoundCloud, чтобы сделать его основным в HLSR",
+        "#UI_SOUNDCLOUD_SETTINGS_DESC":
+          "Здесь вы можете указать ссылку на трек или плейлист SoundCloud, чтобы сделать его основным в HLSR (только открытые треки или плейлисты)",
         "#UI_SOUNDCLOUD_PLAYLIST": "Ссылка на SoundCloud",
         "#UI_CUSTOMIZATION_BUTTON_SAVE": "Сохранить",
         "#UI_CUSTOMIZATION_BUTTON_RESET": "Сбросить",
@@ -297,7 +320,27 @@ Used in launcher:
         "#UI_NOTIFICATION_REMOVED": "Удалено!",
         "#UI_NO_PARTICLES": "Отключить частицы",
         "#UI_CANCEL": "Отменить",
-        "#UI_CHANGELOG_CONTENT": `<h4>Обновление от 02.01.2021 [v. 0.1.5; v. 0.1.6]</h4>
+        "#UI_ABOUT_PROGRAM": "О программе",
+        "#RPC_MLP": "Готовится к дружбе",
+        "#UI_CHANGELOG_CONTENT": `<h4>Обновление от 13.01.2021 [v. 0.1.7]</h4>
+<ul>
+  <li>Фикс кнопки быстрого запуска с настройкой приоритета процесса</li>
+  <li>Теперь ты можешь увидеть, если твой друг из Steam использует HLSR</li>
+  <li>Исправлен визуальный баг с чёрной тенью у экрана игры</li>
+  <li>Только один экземпляр лаунчера может быть запущен в одно время</li>
+  <li>Размер окна теперь восстанавливается после смены разрешения на очень низкое и обратно</li>
+  <li>Фикс запуска RInput и BunnymodXT</li>
+  <li>Исправлен баг, когда при закрытии лаунчера во время обновления появлялась ошибка</li>
+  <li>Базовая поддержка HLSRC</li>
+  <li>Улучшение производительности - изменения в алгоритме получения списка друзей Steam</li>
+  <li>Две версии снежной темы (в зависимости от системного времени)</li>
+  <li>Добавлены обложки по умолчанию для SoundCloud треков без них</li>
+  <li>Секретный режим MLP с двумя случайными темами и Discord RPC</li>
+  <h3 style="margin:6px 0;">Режим разработчика</h3>
+  <li>Кнопка переключения инструментов разработчика</li>
+  <li>Кнопка проверки загруженного HLSRC</li>
+</ul><br/>
+<h4>Обновление от 02.01.2021 [v. 0.1.5; v. 0.1.6]</h4>
 <ul>
   <li>Фикс загрузки Half-Life 2</li>
   <li>Улучшенная перемотка треков SoundCloud</li>
@@ -334,11 +377,11 @@ Used in launcher:
 	<li>Появление ченджлога</li>
 </ul>
 `,
-        "#UI_ABOUT_TITLE": `<span style="color:#00abff;font-weight:bold;font-size:18px">HLSR 2.0 [v. ${
+        "#UI_ABOUT_TITLE": `<span style="color:#00abff;font-weight:bold;font-size:18px">HLSR [v. ${
           require("../../../package.json").version
         }]</span>`,
         "#UI_ABOUT_CONTENT": `Разработчики: <span style="color:#ff492c">InfiniteC0re#7307</span>, <span style="color:#ffd45b">alsbykov#8131</span><br/>
-Скрипты: <span style="color:#97d4ff">LN4Rk0t1k#1766</span>, <span style="color:#c3a4ff">Parklez</span><br/>
+Скрипты: <span style="color:#97d4ff">N4Rk0t1k#1766</span>, <span style="color:#c3a4ff">Parklez</span><br/>
 Помощь в UI дизайне: <span style="color:#ac6cff">Дизайнер [bmd.GG]#9384</span><br/>
 Поддержка проекта: <span style="color:#b7ffaa">ALLAN#0012</span><br/><br/>
 В лаунчере использовано:

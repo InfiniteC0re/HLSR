@@ -3,6 +3,7 @@ import vue from "vue";
 import axios from "axios";
 
 import sortFriends from "./sortFriends";
+import { existsSync, readFileSync } from "fs";
 
 vue.use(vuex);
 
@@ -13,6 +14,7 @@ export default new vuex.Store({
     defaultSoundCloudPlaylist:
       "https://api.soundcloud.com/playlists/1024488982%3Fsecret_token%3Ds-t3rIoE0luqj&color=%23e81387&auto_play=false&hide_related=false&show_comments=false&show_user=false&show_reposts=false&show_teaser=false",
     noParticles: false,
+    debugMenu: false,
     notification: {
       text: "",
     },
@@ -30,6 +32,10 @@ export default new vuex.Store({
       isPaused: true,
       startTime: 0,
     },
+    lastGame: {
+      id: "",
+      date: null
+    }
   },
   mutations: {
     // Steamworks
@@ -38,11 +44,39 @@ export default new vuex.Store({
       state.steamworks.started = status;
     },
     steamworks_setFriends(state, friends) {
-      friends = sortFriends(friends);
+      friends = sortFriends(friends, true);
 
-      let c = 0;
+      let needToUpdate = [];
+      let newFriends = [];
 
       friends.map((friend, i) => {
+        let result = state.steamworks.friends.find(
+          (f) => f.friendID == friend.friendID
+        );
+
+        if (!result) needToUpdate.push(friend);
+        else {
+          result.appID = friend.appID;
+          result.friendRPC = friend.friendRPC;
+          result.gamePlayed = friend.gamePlayed;
+          result.personaName = friend.personaName;
+          result.personaState = friend.personaState;
+          result.priority = friend.priority;
+        }
+
+        if (i == friends.length - 1) {
+          state.steamworks.friends = sortFriends(
+            state.steamworks.friends,
+            false,
+            true
+          );
+        }
+      });
+
+      if (state.steamworks.friends.length == 0) needToUpdate = friends;
+
+      let c = 0;
+      needToUpdate.map((friend, i) => {
         let id = friend.friendID;
         setTimeout(() => {
           axios
@@ -53,17 +87,17 @@ export default new vuex.Store({
 
               try {
                 friend.url = doc.querySelector("avatarFull").textContent;
-              } catch (e) {
-                navigator.clipboard.writeText(
-                  `https://steamcommunity.com/profiles/${id}?xml=1`
+              } catch (e) {}
+
+              newFriends.push(friend);
+
+              if (c == needToUpdate.length) {
+                newFriends = sortFriends(newFriends, false, true);
+
+                state.steamworks.friends = state.steamworks.friends.concat(
+                  newFriends
                 );
               }
-
-              if (
-                !friends.find((f) => f.url == undefined) ||
-                c == friends.length
-              )
-                state.steamworks.friends = friends;
             });
         }, i * 50);
       });
@@ -122,6 +156,22 @@ export default new vuex.Store({
     },
     setParticlesState(state, disabled) {
       state.noParticles = disabled;
+    },
+    setLastGame(state, id) {
+      state.lastGame.id = id;
+      state.lastGame.date = Date.now();
+    },
+    checkHLSRC() {
+      let text = "Некорректный HLSRC";
+
+      if (existsSync("./hlsrc.json")) {
+        let data = readFileSync("./hlsrc.json").toJSON();
+        if (data.title) text = `HLSRC успешно загружен`;
+      }
+
+      this.commit("createNotification", {
+        text,
+      });
     },
   },
 });
