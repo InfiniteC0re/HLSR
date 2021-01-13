@@ -27,7 +27,7 @@ export default {
   computed: {
     isAbsolute() {
       return "position: " + (this.absolute == "true" ? "absolute" : "inherit");
-    },
+    }
   },
   methods: {
     changeColor() {
