@@ -10,6 +10,7 @@ export default {
         rinput: true,
         livesplit: false,
         args: "",
+        inGameTime: 0,
       },
       "50": {
         steam: false,
@@ -17,6 +18,7 @@ export default {
         rinput: true,
         livesplit: false,
         args: "",
+        inGameTime: 0,
       },
       "130": {
         steam: true,
@@ -24,6 +26,7 @@ export default {
         rinput: true,
         livesplit: false,
         args: "",
+        inGameTime: 0,
       },
       "220": {
         steam: true,
@@ -31,6 +34,7 @@ export default {
         rinput: true,
         livesplit: true,
         args: "",
+        inGameTime: 0,
       },
     },
   },
@@ -42,7 +46,7 @@ export default {
       experimental: false,
       noParticles: false,
       soundcloudPlaylist: "",
-      mlpMode: false
+      mlpMode: false,
     },
   },
   scripts: {

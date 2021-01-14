@@ -32,10 +32,11 @@ export default new vuex.Store({
       isPaused: true,
       startTime: 0,
     },
-    lastGame: {
-      id: "",
-      date: null
-    }
+    game: {
+      name: "",
+      date: null,
+      started: false,
+    },
   },
   mutations: {
     // Steamworks
@@ -157,9 +158,11 @@ export default new vuex.Store({
     setParticlesState(state, disabled) {
       state.noParticles = disabled;
     },
-    setLastGame(state, id) {
-      state.lastGame.id = id;
-      state.lastGame.date = Date.now();
+    setLastGame(state, name) {
+      if (!name) state.game.started = false;
+      else state.game.started = true;
+      state.game.name = name;
+      state.game.date = Date.now();
     },
     checkHLSRC() {
       let text = "Некорректный HLSRC";

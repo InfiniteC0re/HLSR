@@ -18,6 +18,7 @@
         <NavBarButton
           :lambdaColor="1"
           text="Half-Life"
+          :text2="localization.get('#UI_SPENT_TIME', getPlayTime('70'))"
           small="true"
           ref="hl"
           @click.native="goTo('game', { id: '70' })"
@@ -25,6 +26,7 @@
         <NavBarButton
           :lambdaColor="2"
           text="Half-Life: Opposing Force"
+          :text2="localization.get('#UI_SPENT_TIME', getPlayTime('50'))"
           ref="of"
           small="true"
           @click.native="goTo('game', { id: '50' })"
@@ -32,6 +34,7 @@
         <NavBarButton
           :lambdaColor="3"
           text="Half-Life: Blue Shift"
+          :text2="localization.get('#UI_SPENT_TIME', getPlayTime('130'))"
           ref="bs"
           small="true"
           @click.native="goTo('game', { id: '130' })"
@@ -39,6 +42,7 @@
         <NavBarButton
           :lambdaColor="4"
           text="Half-Life 2"
+          :text2="localization.get('#UI_SPENT_TIME', getPlayTime('220'))"
           ref="hl2"
           small="true"
           @click.native="goTo('game', { id: '220' })"
@@ -92,6 +96,13 @@
 import Header from "./NavBar/Header";
 import NavBarButton from "./NavBar/Button";
 import $ from "jquery";
+import Store from "../utils/Store.js";
+import StoreDefaults from "../utils/StoreDefaults.js";
+
+const store = new Store({
+  configName: "library",
+  defaults: StoreDefaults.library,
+});
 
 export default {
   name: "NavBar",
@@ -127,6 +138,15 @@ export default {
       let shown = $("#" + id).css("display") != "none";
       $(".tab").slideUp();
       if (!shown) $("#" + id).slideToggle();
+    },
+    getPlayTime(gameid) {
+      let config = store.get("config");
+
+      if (config[gameid] && config[gameid].inGameTime)
+        return (config[gameid].inGameTime / 3600000)
+          .toFixed(1)
+          .replace(".", ",");
+      else return 0;
     },
     changeButtonsState(gameID) {
       if (!gameID) return;

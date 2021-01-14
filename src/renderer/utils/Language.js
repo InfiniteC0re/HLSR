@@ -24,7 +24,7 @@ class localization {
         "#UI_STEAM_FRIENDS": "Steam Friends",
         "#UI_SEND_MESSAGE": "Send Message",
         "#UI_NO_FRIENDS": "No online Steam friends detected",
-        "#UI_IN_LAUNCHER": "Playing HLSR",
+        "#UI_IN_LAUNCHER": "Playing %0%",
         "#UI_IN_HL": "Playing Half-Life",
         "#UI_ONLINE": "Online",
         "#UI_OFFLINE": "Offline",
@@ -68,9 +68,6 @@ class localization {
         "#UI_CONFIGS": "Configurations",
         "#UI_CONFIGS_CONSTRUCTOR": "Constructor",
         "#UI_CONFIGS_ADVANCED": "Editor",
-        "#UI_RPC_DETAILS": "Preparing for speedrun",
-        "#UI_RPC_NOSTEAM": "Not connected",
-        "#UI_RPC_MUSIC": "Listening to music",
         "#UI_SCRIPT_SETTINGS":
           "Settings of the <b style='color:#00abff;'>%0%</b> script",
         "#UI_SCRIPT_SCRIPTLESS": "Scriptless Category",
@@ -129,8 +126,27 @@ class localization {
         "#UI_NO_PARTICLES": "Disable particles",
         "#UI_ABOUT_PROGRAM": "About program",
         "#UI_DISCORD": "Discord",
+        "#UI_IN_GAME": "In game",
+        "#UI_STARTED": "Started",
+        "#UI_SPENT_TIME": "%0% h.",
         "#RPC_MLP": "Preparing for friendship",
-        "#UI_CHANGELOG_CONTENT": `<h4>Update from 01/13/2021 [v. 0.1.7]</h4>
+        "#RPC_PLAYING": "Playing in %0%",
+        "#RPC_DETAILS": "Preparing for speedrun",
+        "#RPC_NOSTEAM": "Not connected",
+        "#RPC_MUSIC": "Listening to music",
+        "#RPC_WEBSITE": "Website",
+        "#RPC_GET_FRIENDS": "Get some friends",
+        "#MLP_URL": "https://www.youtube.com/user/mlpequestriagirls",
+        "#UI_CHANGELOG_CONTENT": `<h4>Update from 01/14/2021 [v. 0.1.8]</h4>
+<ul>
+  <li>Now you can see how much hours you spent in game</li>
+  <li>Discord RPC status is changing when you start game</li>
+  <li>Since this moment your Steam friends which using HLSR can see what game you're playing right now</li>
+  <li>You can't start game twice per time anymore</li>
+  <li>Offline Steam friends are hidden now</li>
+  <li>Discord RPC buttons support</li>
+</ul><br/>
+<h4>Update from 01/13/2021 [v. 0.1.7]</h4>
 <ul>
   <li>Quick Launch with process priority settings fix</li>
   <li>Now you can see what of your friends are using HLSR too</li>
@@ -218,14 +234,14 @@ Used in launcher:
         "#UI_STEAM_FRIENDS": "Друзья в стиме",
         "#UI_SEND_MESSAGE": "Отправить сообщение",
         "#UI_NO_FRIENDS": "Не найдено онлайн друзей в стиме",
-        "#UI_IN_LAUNCHER": "Играет через HLSR",
+        "#UI_IN_LAUNCHER": "В %0%",
         "#UI_IN_HL": "Играет в Half-Life",
         "#UI_ONLINE": "В сети",
         "#UI_OFFLINE": "Не в сети",
         "#UI_PLAY": "Играть",
         "#UI_INSTALL": "Установить",
         "#UI_OVERVIEW": "Новости игры",
-        "#UI_CONFIGURATOR": "Настройки",
+        "#UI_CONFIGURATOR": "Параметры",
         "#UI_WIKI": "SourceRuns Вики",
         "#UI_GAME_VERSION": "Выбор версии",
         "#UI_EDITED_DLL": "Изменённый WON DLL (НЕ для спидранов)",
@@ -262,9 +278,6 @@ Used in launcher:
         "#UI_CONFIGS": "Конфигурации",
         "#UI_CONFIGS_CONSTRUCTOR": "Конструктор",
         "#UI_CONFIGS_ADVANCED": "Редактор",
-        "#UI_RPC_DETAILS": "Подготавливается к спидрану",
-        "#UI_RPC_NOSTEAM": "Не подключён",
-        "#UI_RPC_MUSIC": "Прослушивает треки",
         "#UI_SCRIPT_SETTINGS": "Настройки скрипта %0%",
         "#UI_SCRIPT_SCRIPTLESS": "Scriptless категория",
         "#UI_SCRIPT_SCRIPTED": "Scripted категория",
@@ -321,8 +334,27 @@ Used in launcher:
         "#UI_NO_PARTICLES": "Отключить частицы",
         "#UI_CANCEL": "Отменить",
         "#UI_ABOUT_PROGRAM": "О программе",
+        "#UI_IN_GAME": "В игре",
+        "#UI_STARTED": "Запущено",
+        "#UI_SPENT_TIME": "%0% ч.",
         "#RPC_MLP": "Готовится к дружбе",
-        "#UI_CHANGELOG_CONTENT": `<h4>Обновление от 13.01.2021 [v. 0.1.7]</h4>
+        "#RPC_PLAYING": "Играет в %0%",
+        "#RPC_DETAILS": "Подготавливается к спидрану",
+        "#RPC_NOSTEAM": "Не подключён",
+        "#RPC_MUSIC": "Прослушивает треки",
+        "#RPC_WEBSITE": "Вебсайт",
+        "#RPC_GET_FRIENDS": "Завести друзей",
+        "#MLP_URL": "https://www.youtube.com/channel/UCWaCaCyWgPk6uwKh66fl_0A",
+        "#UI_CHANGELOG_CONTENT": `<h4>Обновление от 14.01.2021 [v. 0.1.8]</h4>
+<ul>
+  <li>Теперь ты можешь увидеть сколько часов провёл в одной из игр</li>
+  <li>Discord RPC статус изменяется при входе в игру</li>
+  <li>Друзья в стиме, использующие HLSR, могут видеть игру, в которой ты</li>
+  <li>Теперь нельзя запустить игру дважды за раз</li>
+  <li>Оффлайн друзья Steam отныне скрыты</li>
+  <li>Поддержка кнопок Discord RPC</li>
+</ul><br/>
+<h4>Обновление от 13.01.2021 [v. 0.1.7]</h4>
 <ul>
   <li>Фикс кнопки быстрого запуска с настройкой приоритета процесса</li>
   <li>Теперь ты можешь увидеть, если твой друг из Steam использует HLSR</li>

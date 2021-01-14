@@ -101,14 +101,14 @@
           <ButtonAlt
             class="button-style"
             @click="saveConfigHandle"
-            :disabled="!installed"
+            :disabled="!installed || isGameStarted"
           >
             <p>{{ localization.get("#UI_CUSTOMIZATION_BUTTON_SAVE") }}</p>
             <i class="fas fa-save"></i>
           </ButtonAlt>
         </div>
         <div class="block-button-error button-style" @click="cancelSettings">
-          <ButtonAlt :red="true" :disabled="!installed">
+          <ButtonAlt :red="true" :disabled="!installed || isGameStarted">
             <p>{{ localization.get("#UI_CUSTOMIZATION_BUTTON_RESET") }}</p>
             <i class="far fa-ban"></i>
           </ButtonAlt>
@@ -447,6 +447,11 @@ export default {
       }
     },
   },
+  computed: {
+    isGameStarted() {
+      return this.$store.state.game.started
+    },
+  }
 };
 </script>
 

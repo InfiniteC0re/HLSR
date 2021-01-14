@@ -34,7 +34,7 @@ export default {
   computed: {
     statusText() {
       var state = this.friend.priority;
-      if (state == -1) return this.localization.get("#UI_IN_LAUNCHER");
+      if (state == -1) return this.localization.get("#UI_IN_LAUNCHER", this.friend.friendRPC);
       if (state == 0) return this.localization.get("#UI_IN_HL");
       if (state == 1) return this.localization.get("#UI_IN_OTHER_GAME");
       if (state == 2) return this.localization.get("#UI_ONLINE");

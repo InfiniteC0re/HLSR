@@ -64,7 +64,11 @@
             <i
               data-v-ebaf0836=""
               class="md-icon md-icon-font fas fa-cog md-theme-default"
-              style="font-size:16px !important;float:right;line-height:21px"
+              style="
+                font-size: 16px !important;
+                float: right;
+                line-height: 21px;
+              "
             ></i>
           </div>
           <SoundCloudWidget />
@@ -143,7 +147,10 @@ export default {
     },
     isLastLaunchedGame() {
       let id = store.get("lastLaunched");
-      return !GameControl.checkInstalled(store, id);
+      return !GameControl.checkInstalled(store, id) || this.isGameStarted;
+    },
+    isGameStarted() {
+      return this.$store.state.game.started;
     },
     lastLaunchedGame() {
       let id = store.get("lastLaunched");
@@ -212,9 +219,14 @@ export default {
     lastLaunchedGameStart() {
       let gameID = store.get("lastLaunched");
 
-      if (GameControl.checkInstalled(store, gameID)) {
-        GameControl.startGame(this.hlsrconsole, store, gameID, this.$store);
-      }
+      if (GameControl.checkInstalled(store, gameID) && !this.isGameStarted)
+        GameControl.startGame(
+          this.hlsrconsole,
+          store,
+          gameID,
+          this.$store,
+          this.$parent.$refs.navbar
+        );
     },
   },
   mounted() {
@@ -324,6 +336,7 @@ iframe {
   font-size: 18px;
   color: rgba(255, 255, 255, 0.7);
   margin-left: 16px;
+  pointer-events: none;
 }
 
 .gray {

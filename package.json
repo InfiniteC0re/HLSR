@@ -1,6 +1,6 @@
 {
   "name": "hlsr",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "author": "",
   "description": "Change the way you feel speedruns",
   "main": "./dist/electron/main.js",
@@ -76,12 +76,13 @@
   },
   "dependencies": {
     "axios": "^0.19.2",
-    "discord-rich-presence": "*",
+    "discord-rpc": "3.1.4",
     "electron-dl": "^3.0.1",
     "electron-unhandled": "^3.0.2",
     "electron-updater": "^4.3.4",
-    "hlsr-console": "1.0.4",
+    "hlsr-console": "1.0.6",
     "jquery": "^3.5.1",
+    "md5-file": "^5.0.0",
     "node-machine-id": "^1.1.12",
     "onezip": "^4.2.1",
     "steamworks": "./node_modules/steamworks",

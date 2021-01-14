@@ -81,13 +81,16 @@ export default {
     localization: local,
     rpc: null,
     standardRPC: {
-      details: local.get("#UI_RPC_DETAILS"),
+      details: local.get("#RPC_DETAILS"),
       startTimestamp: Date.now(),
       largeImageKey: "hlsr",
       largeImageText: "v" + require("../../package.json").version,
       smallImageKey: "steam2",
-      smallImageText: local.get("#UI_RPC_NOSTEAM"),
+      smallImageText: local.get("#RPC_NOSTEAM"),
       instance: false,
+      buttons: [
+        { label: local.get("#RPC_WEBSITE"), url: "https://hlsr.pro/" },
+      ],
     },
     lastRPC: {},
     updateAvailable: 0,
@@ -118,11 +121,9 @@ export default {
   },
   watch: {
     lastScreenWidth(newState, oldState) {
-      console.log("Разрешение экрана сменилось - width");
       ipcRenderer.send("updateSize");
     },
     lastScreenHeight(newState, oldState) {
-      console.log("Разрешение экрана сменилось - height");
       ipcRenderer.send("updateSize");
     },
   },
@@ -147,23 +148,33 @@ export default {
     updateRPC() {
       if (!settings.get("config").rpc) return;
       let rpc = Object.assign({}, this.standardRPC);
+      rpc.buttons[0].label = this.localization.get("#RPC_WEBSITE");
 
       if (settings.get("config").mlpMode && settings.get("config").theme == 4) {
         rpc.largeImageKey = "mlp";
         rpc.smallImageKey = "pony-steam";
         rpc.details = this.localization.get("#RPC_MLP");
+        rpc.buttons[0].label = this.localization.get("#RPC_GET_FRIENDS");
+        rpc.buttons[0].url = this.localization.get("#MLP_URL");
       } else {
-        rpc.details = this.localization.get("#UI_RPC_DETAILS");
+        rpc.details = this.localization.get("#RPC_DETAILS");
       }
 
       let steamName = this.$store.state.steamworks.personaName;
       if (steamName) rpc.smallImageText = steamName;
 
+      let gameState = this.$store.state.game;
+      if (gameState.started) {
+        rpc.details = this.localization.get("#RPC_PLAYING", gameState.name);
+        rpc.startTimestamp = gameState.date;
+        return this.setRPC(rpc); // Пропуск установки RPC для SoundCloud виджета (игра в приоритете)
+      }
+
       if (!this.widget) return this.setRPC(rpc);
 
       this.widget.getPosition((position) => {
         if (!this.isPaused) {
-          rpc.details = this.localization.get("#UI_RPC_MUSIC");
+          rpc.details = this.localization.get("#RPC_MUSIC");
           rpc.state = this.song.title;
           rpc.endTimestamp = this.$store.state.soundCloud.endTimestamp;
         }
@@ -201,10 +212,11 @@ export default {
 
     setTimeout(() => {
       ipcRenderer.on("steamStatus", (e, status) => {
+        let prevState = this.$store.state.steamworks.started ? true : false;
         this.$store.commit("steamworks_setStatus", status);
 
         if (status) {
-          ipcRenderer.send("setRichPresence");
+          if (!prevState) ipcRenderer.send("setRichPresence", "HLSR");
           ipcRenderer.send("getSteamFriends");
           ipcRenderer.send("getSteamName");
         }

@@ -1,18 +1,14 @@
 "use strict";
 
 import fs from "fs";
+import path from "path";
+import md5 from "md5-file";
 import { app, BrowserWindow, ipcMain, screen } from "electron";
 import { download } from "electron-dl";
 import ConfigModuleReader from "hlsr-console/src/ConfigModuleReader";
 
-/**
- * Set `__static` path to static files in production
- * https://simulatedgreg.gitbooks.io/electron-vue/content/en/using-static-assets.html
- */
 if (process.env.NODE_ENV !== "development") {
-  global.__static = require("path")
-    .join(__dirname, "/static")
-    .replace(/\\/g, "\\\\");
+  global.__static = path.join(__dirname, "/static").replace(/\\/g, "\\\\");
 }
 
 const gotTheLock = app.requestSingleInstanceLock();
@@ -24,23 +20,38 @@ const winURL =
     ? `http://localhost:9080`
     : `file://${__dirname}/index.html`;
 
+function installHLSRCModule(file, cb = () => {}) {
+  md5(file).then((id) => {
+    let data = ConfigModuleReader(file);
+    let hlsrc_path = path.join(app.getPath("userData"), "hlsrc");
+
+    if (!fs.existsSync(hlsrc_path)) fs.mkdirSync(hlsrc_path);
+
+    let hlsrc = path.join(hlsrc_path, `${id}.hlsrc`);
+    if (!fs.existsSync(hlsrc)) fs.copyFileSync(file, hlsrc);
+
+    let json = path.join(hlsrc_path, `${id}.json`);
+    if (!fs.existsSync(json)) fs.writeFileSync(json, JSON.stringify(data));
+
+    cb();
+  });
+}
+
 function checkHLSRCModule(args) {
   if (process.env.NODE_ENV === "production") {
     if (args.length >= 2) {
       let file = args[1];
       if (fs.existsSync(file)) {
-        let data = ConfigModuleReader(file);
-        fs.writeFileSync("./hlsrc.json", JSON.stringify(data, null, "\t"));
-        mainWindow.webContents.send("hlsrc", data);
+        installHLSRCModule(file, () => {
+          mainWindow.webContents.send("hlsrc", data);
+        });
       }
     }
   }
 }
 
 function createWindow() {
-  if (!gotTheLock) {
-    return app.quit();
-  }
+  if (!gotTheLock) return app.quit();
 
   app.on("second-instance", (e, cmd, wdir) => {
     if (mainWindow) {
@@ -111,9 +122,9 @@ function createWindow() {
 
   mainWindow.on("closed", () => {
     mainWindow = null;
-    let temp = require("path").join(app.getPath("userData"), "temp");
+    let temp = path.join(app.getPath("userData"), "temp");
     try {
-      require("fs").rmdirSync(temp, { recursive: true });
+      fs.rmdirSync(temp, { recursive: true });
     } catch (e) {}
   });
 }
@@ -145,7 +156,6 @@ if (process.env.NODE_ENV === "production") {
 
   require("process").chdir(dir.join("\\"));
 
-  const fs = require("fs");
   fs.writeFileSync("./steam_appid.txt", "70");
 }
 
@@ -223,8 +233,8 @@ app.on("ready", () => {
     e.reply("steamName", name);
   });
 
-  ipcMain.on("setRichPresence", (e) => {
-    if (initialized) steamworks.SetRichPresense("launcher", "HLSR");
+  ipcMain.on("setRichPresence", (e, srpc) => {
+    if (initialized) steamworks.SetRichPresense("launcher", srpc);
   });
 
   // Проверить обновления

@@ -37,6 +37,7 @@
                 <md-menu-item
                   @click="uninstallGame"
                   class="gamemenu_uninstallButton"
+                  :disabled="isGameStarted"
                 >
                   <span>{{ localization.get("#UI_UNINSTALL") }}</span>
                   <md-icon class="fas fa-trash"></md-icon>
@@ -114,9 +115,17 @@ export default {
   computed: {
     isButtonDisabled() {
       return (
-        (!navigator.onLine && !GameControl.checkInstalled(this.hlsrconsole, this.gameID)) ||
-        (!this.steamActive && this.gameID != "220")
+        (!navigator.onLine &&
+          !GameControl.checkInstalled(this.hlsrconsole, this.gameID)) ||
+        (!this.steamActive && this.gameID != "220") ||
+        this.isGameStarted
       );
+    },
+    isGameStarted() {
+      return this.$store.state.game.started
+    },
+    startedGameName() {
+      return this.$store.state.game.name
     },
     steamActive() {
       return this.$store.state.steamworks.started;
@@ -128,7 +137,9 @@ export default {
       else return ``;
     },
     buttonText() {
-      if (GameControl.checkInstalled(store, this.gameID))
+      if (this.isGameStarted && this.startedGameName == this.gameTitle)
+        return this.localization.get("#UI_STARTED");
+      else if (GameControl.checkInstalled(store, this.gameID))
         return this.localization.get("#UI_PLAY");
       else return this.localization.get("#UI_INSTALL");
     },
@@ -137,7 +148,13 @@ export default {
     },
     gameButton() {
       if (GameControl.checkInstalled(store, this.gameID)) {
-        GameControl.startGame(this.hlsrconsole, store, this.gameID, this.$store);
+        GameControl.startGame(
+          this.hlsrconsole,
+          store,
+          this.gameID,
+          this.$store,
+          this.$parent.$refs.navbar
+        );
       } else {
         this.$parent.$refs.gameinstall.open(this.gameID);
       }
@@ -251,31 +268,26 @@ export default {
   },
   mounted() {
     let section = this.$route.query.section;
-    if (section) {
-      this.section = section;
-    }
+    if (section) this.section = section;
 
     this.gameID = this.$route.query.id;
+    this.gameTitle = GameControl.getTitle(this.gameID);
+
     switch (this.gameID) {
       case "70":
-        this.gameTitle = "Half-Life";
         this.updateBackground("half-life-background.jpg");
         break;
       case "50":
-        this.gameTitle = "Half-Life: Opposing Force";
         this.updateBackground("opposing-force-background.jpg");
         break;
       case "130":
-        this.gameTitle = "Half-Life: Blue Shift";
         this.updateBackground("blue-shift-background.jpg");
         break;
       case "220":
-        this.gameTitle = "Half-Life 2";
         this.updateBackground("half-life-2-background.jpg");
         break;
-      default:
-        this.gameTitle = "Unknown Game";
     }
+
     this.installed = GameControl.checkInstalled(store, this.gameID);
   },
 };

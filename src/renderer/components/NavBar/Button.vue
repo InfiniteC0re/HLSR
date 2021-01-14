@@ -15,6 +15,7 @@
     </div>
     <div class="text">
       {{ text }}
+      <span class="alt-text">{{ text2 }}</span>
     </div>
   </div>
 </template>
@@ -29,6 +30,7 @@ export default {
   },
   props: {
     text: String,
+    text2: String,
     icon: String,
     lambdaColor: {
       type: Number,
@@ -129,6 +131,7 @@ export default {
   display: flex;
   align-items: center;
   padding: 0 88px;
+  padding-right: 40px;
   position: relative;
 }
 
@@ -202,6 +205,17 @@ export default {
 .button2:hover .lambda.orange,
 .button2.active .lambda.orange {
   filter: invert(0.4) sepia(1) saturate(40);
+}
+
+.button2 .text {
+  flex: 1;
+}
+
+.button2 .text .alt-text {
+  float: right;
+  opacity: 0.3;
+  font-size: 12px;
+  font-weight: 100;
 }
 
 @keyframes spin {
