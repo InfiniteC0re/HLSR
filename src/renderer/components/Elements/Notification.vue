@@ -1,8 +1,14 @@
 <template>
-  <div id="notification" v-if="notificationText">
+  <div
+    id="notification"
+    v-if="notificationText"
+    :class="{ red: notificationType == 1 }"
+  >
     <img
+      v-if="notificationType == 0"
       :src="require('@/assets/customization/button-icon/icon-checkbox.png')"
     />
+    <img v-else width="22px" :src="require('@/assets/error.svg')" />
     <span>{{ notificationText }}</span>
   </div>
 </template>
@@ -12,6 +18,9 @@ export default {
   computed: {
     notificationText() {
       return this.$store.state.notification.text;
+    },
+    notificationType() {
+      return this.$store.state.notification.type;
     },
   },
 };
@@ -31,6 +40,10 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+#notification.red {
+  background: #e65353;
 }
 
 span {

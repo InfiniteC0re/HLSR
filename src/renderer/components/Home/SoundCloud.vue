@@ -15,39 +15,49 @@
         :class="{ pause: !isPaused }"
         @click="widget.toggle()"
       ></div>
-      <div class="player-song-wrapper">
-        <div class="player-song">
-          <div class="song-name">{{ song ? song.title : "" }}</div>
-          <div class="song-genre">
-            {{ song && song.genre ? song.genre : "No specified genre" }}
+      <div class="info">
+        <h4>{{ song ? song.title : "" }}</h4>
+        <div class="tags">
+          <div class="tag">
+            {{ song && song.genre ? song.genre : "No tag" }}
           </div>
         </div>
-        <div style="margin-top: auto">
+        <div class="progress-wrap">
           <div class="time">
-            <div>{{ songPos }}</div>
-            <div style="margin-left: auto">
+            <div class="left">{{ songPos }}</div>
+            <div class="total">
               {{ song ? toHHMMSS(song.duration / 1000) : "00:00" }}
             </div>
           </div>
           <div class="progress" ref="progress" @mousedown="barMouseDown">
-            <div class="bar" :style="{ width: `${barWidth * 100}%` }"></div>
+            <div class="bar" :style="{ flex: `${barWidth}` }"></div>
           </div>
         </div>
       </div>
-      <div class="player-volume" @click.stop="volumeChange">
+      <div class="volume" @click.stop="volumeChange">
         <div class="bar" :style="{ height: `${volume}%` }"></div>
       </div>
     </div>
     <div class="player-songs" v-if="song.id">
       <div
         v-for="val in songsList"
-        class="player-songs-song"
+        class="song"
         :class="{ active: val.id == song.id }"
         @click="widget.skip(val.realIndex)"
         :key="val._id"
       >
-        <div class="song-artwork" :style="getSongArtwork(val)"></div>
-        <div class="song-title">{{ val.title }}</div>
+        <div class="artwork" :style="getSongArtwork(val)"></div>
+        <div class="wrap">
+          <div class="top">
+            <h5 :title="val.title">{{ val.title }}</h5>
+            <div class="total">{{ toHHMMSS(val.duration / 1000) }}</div>
+          </div>
+          <div class="tags">
+            <div class="tag">
+              {{ val.genre ? val.genre : "No tag" }}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -85,10 +95,8 @@ export default {
   methods: {
     getSongArtwork(song) {
       return {
-        background:
-          song && song.artwork_url
-            ? `url(${song.artwork_url}`
-            : null,
+        backgroundImage:
+          song && song.artwork_url ? `url(${song.artwork_url}` : null,
       };
     },
     update() {
@@ -169,172 +177,234 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 #widget-wrap {
   flex: 1;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-}
-.player-info {
-  display: flex;
-  padding: 16px;
-}
-.artwork {
-  min-width: 96px;
-  min-height: 96px;
-  position: relative;
-  background-image: url(../../assets/nocover.jpg);
-  background-size: cover;
-  background-position: center;
-}
 
-.artwork::after {
-  font-family: "Font Awesome 5 Pro";
-  font-weight: 900;
-  font-size: 48px;
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 100%;
-  transition: color 0.2s, background 0.2s;
-  color: transparent;
-  cursor: pointer;
-}
-
-.artwork:hover::after {
-  background: rgba(0, 0, 0, 0.4);
-  color: rgba(255, 255, 255, 0.6);
-}
-
-.artwork:hover::after {
-  content: "";
-}
-
-.artwork.pause:hover::after {
-  content: "";
-}
-
-.player-song-wrapper {
-  padding: 8px;
-  padding-bottom: 0;
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-}
-
-.player-song {
-  margin-top: -8px;
-  color: rgba(255, 255, 255, 0.4);
-}
-
-.player-volume {
-  width: 6px;
-  background: rgba(255, 255, 255, 0.1);
-  display: flex;
-  position: relative;
-}
-
-.player-volume .bar {
-  height: 50%;
-  width: 100%;
-  background: rgba(255, 255, 255, 0.2);
-  pointer-events: none;
-  position: absolute;
-  bottom: 0;
-}
-
-.progress {
-  width: 100%;
-  height: 4px;
-  background: rgba(255, 255, 255, 0.1);
-  display: flex;
-}
-
-.progress .bar {
-  height: 100%;
-  background: rgba(255, 255, 255, 0.2);
-}
-
-.time {
-  color: rgba(255, 255, 255, 0.2);
-  display: flex;
-  margin-top: auto;
-}
-
-.song-genre {
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.2);
+  .center {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: rgba(255, 255, 255, 0.2);
+  }
 }
 
 .player-songs {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
   overflow: auto;
+
+  .song {
+    width: 100%;
+    padding: 8px;
+    padding-left: 12px;
+    position: relative;
+    background: rgba(255, 255, 255, 0.03);
+    display: flex;
+    cursor: pointer;
+    transition: 0.05s ease;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    &::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: rgba(255, 255, 255, 0.1);
+      transition: 0.1s ease;
+    }
+
+    &.active {
+      &::before {
+        background: #00abff;
+      }
+    }
+
+    .artwork {
+      min-width: 40px;
+      height: 40px;
+      background-position: center;
+      background-size: cover;
+      background-color: rgba(0, 0, 0, 0.3);
+      border-radius: 4px;
+    }
+
+    .wrap {
+      overflow: hidden;
+      max-width: 78%;
+    }
+
+    .top {
+      margin-left: 6px;
+      display: flex;
+
+      h5 {
+        color: rgba(176, 176, 176, 1);
+        font-size: 12px;
+        white-space: nowrap;
+        overflow: hidden;
+        display: block;
+        text-overflow: ellipsis;
+        font-weight: 500;
+      }
+
+      .total {
+        color: rgba(255, 255, 255, 0.1);
+        font-size: 12px;
+        margin-left: 6px;
+      }
+    }
+
+    .tags {
+      display: flex;
+      margin-left: 6px;
+
+      .tag {
+        padding: 0px 8px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 32px;
+        color: rgba(255, 255, 255, 0.3);
+        font-size: 12px;
+      }
+    }
+  }
 }
 
-.player-songs-song {
-  width: 100%;
-  cursor: pointer;
+.player-info {
   display: flex;
-  align-items: center;
-  padding: 4px 16px;
-}
-
-.player-songs-song.active {
-  background: rgba(255, 255, 255, 0.1) !important;
-  cursor: default;
-  transition: 100ms;
-}
-
-.player-songs-song.active .song-title {
-  transition: 100ms;
-  color: #00abff;
-  opacity: 0.8;
-}
-
-.player-songs-song:hover {
-  transition: 100ms;
+  margin-bottom: 16px;
+  margin-top: 10px;
   background: rgba(255, 255, 255, 0.05);
-}
+  border-radius: 4px;
+  padding: 10px;
+  box-sizing: border-box;
 
-.song-artwork {
-  min-height: 32px;
-  min-width: 32px;
-  background-image: url(../../assets/nocover.jpg);
-  background-position: center !important;
-  background-size: cover !important;
-}
+  .info {
+    flex: 1;
+    margin: 0 8px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 
-.song-title {
-  white-space: nowrap;
-  color: rgba(255, 255, 255, 0.3);
-  text-overflow: ellipsis;
-  overflow: hidden;
-  margin-left: 8px;
-  align-items: center;
-  font-size: 13px;
-}
+    h4 {
+      margin-top: 2px;
+      font-weight: 500;
+      font-size: 14px;
+      white-space: nowrap;
+      overflow: hidden;
+      display: block;
+      text-overflow: ellipsis;
+      color: #b0b0b0;
+    }
 
-.song-name {
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-}
+    .tags {
+      margin-top: 2px;
+      display: flex;
 
-.center {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-  color: rgba(255, 255, 255, 0.4);
+      .tag {
+        padding: 0px 8px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 32px;
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 12px;
+      }
+    }
+
+    .progress-wrap {
+      width: 100%;
+      position: relative;
+      margin-top: auto;
+
+      .progress {
+        background: rgba(0, 171, 255, 0.19);
+        border-radius: 8px;
+        width: 100%;
+        height: 4px;
+        display: flex;
+
+        .bar {
+          height: 100%;
+          border-radius: 8px;
+          background: #00abff;
+        }
+      }
+
+      .time {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.5);
+        display: flex;
+
+        .total {
+          margin-left: auto;
+        }
+      }
+    }
+  }
+
+  .volume {
+    width: 4px;
+    height: 100%;
+    background: rgba(196, 196, 196, 0.1);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column-reverse;
+
+    .bar {
+      width: 100%;
+      height: 20px;
+      pointer-events: none;
+      background: #fff;
+      border-radius: 8px;
+    }
+  }
+
+  .artwork {
+    min-width: 80px;
+    min-height: 80px;
+    position: relative;
+    background-image: url(../../assets/nocover.jpg);
+    background-size: cover !important;
+    background-position: center !important;
+    border-radius: 4px;
+
+    &:hover {
+      &::after {
+        background: rgba(0, 0, 0, 0.9);
+        color: rgba(255, 255, 255, 0.6);
+
+        content: "";
+      }
+
+      &.pause::after {
+        content: "";
+      }
+    }
+
+    &::after {
+      font-family: "Font Awesome 5 Pro";
+      font-weight: 900;
+      font-size: 44px;
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      height: 100%;
+      transition: color 0.2s, background 0.2s;
+      color: transparent;
+      cursor: pointer;
+      border-radius: 3px;
+    }
+  }
 }
 </style>

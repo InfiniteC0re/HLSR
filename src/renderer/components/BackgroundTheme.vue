@@ -28,7 +28,7 @@ export default {
   },
   methods: {
     updateTheme() {
-      if (store.get("config").mlpMode && store.get("config").theme == 4) {
+      if (store.get("config").mlpMode && store.get("config").theme == 3) {
         this.blur = true;
       }
 
@@ -43,19 +43,13 @@ export default {
           this.background = require("@/assets/red.jpg");
           break;
         case 3:
-          let hours = new Date().getHours();
-          if (hours > 8 && hours < 15)
-            this.background = require("@/assets/snow2.jpg");
-          else this.background = require("@/assets/snow.jpg");
-          break;
-        case 4:
           if (this.blur) {
             if (Math.random() >= 0.5)
               this.background = require("@/assets/mlp.gif");
             else this.background = require("@/assets/mlp2.gif");
           } else this.background = require("@/assets/lancer.jpg");
           break;
-        case 5:
+        case 4:
           this.background = require("@/assets/lancer.jpg");
           break;
       }

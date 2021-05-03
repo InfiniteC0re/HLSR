@@ -108,7 +108,7 @@
           </ButtonAlt>
         </div>
         <div class="block-button-error button-style" @click="cancelSettings">
-          <ButtonAlt :red="true" :disabled="!installed || isGameStarted">
+          <ButtonAlt class="button-style" :red="true" :disabled="!installed || isGameStarted">
             <p>{{ localization.get("#UI_CUSTOMIZATION_BUTTON_RESET") }}</p>
             <i class="far fa-ban"></i>
           </ButtonAlt>

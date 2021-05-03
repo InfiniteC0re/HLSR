@@ -104,8 +104,10 @@
 import { ipcRenderer } from "electron";
 import Store from "../utils/Store.js";
 import StoreDefaults from "../utils/StoreDefaults.js";
+import GameList from "../GameList";
+import GameControl from "../utils/GameControl";
 
-const fs = require("fs");
+const path = require("path");
 const onezip = require("onezip");
 
 const store = new Store({
@@ -140,49 +142,43 @@ export default {
       if (index) this.active = index;
 
       if (id == "first") {
-        this.status = this.localization.get("#UI_DOWNLOADING");
-        let fn = "";
+        // Скачивание игры
+        let game = GameList.find((t) => t.id == this.appid);
+        if (!game) return;
 
-        switch (this.game) {
-          case "Half-Life":
-            fn = "Half-Life.zip";
-            break;
-          case "Half-Life: Opposing Force":
-            fn = "Opposing-Force.zip";
-            break;
-          case "Half-Life: Blue Shift":
-            fn = "Blue-Shift.zip";
-            break;
-        }
+        this.status = this.localization.get("#UI_DOWNLOADING");
 
         let info = {
-          url: "https://hlsr.pro/downloadable/" + fn,
+          url: game.info.url,
           properties: {
-            directory: require("path").join(
+            directory: path.join(
               require("electron").remote.app.getPath("userData"),
               "temp"
             ),
           },
         };
 
-        if (this.game == "Half-Life 2")
-          info.url =
-            "https://github.com/InfiniteC0re/HLSR/releases/download/HL2/Half-Life.2.zip";
-
+        // Начать загрузку
         ipcRenderer.send("game-download", info);
 
-        ipcRenderer.on("game-download-complete", (e, path) => {
-          let install_path = require("path").join(
+        ipcRenderer.on("game-download-complete", (e, l_path) => {
+          let game = GameList.find((t) => t.id == this.appid);
+          if (!game) return;
+
+          let install_path = path.join(
             require("electron").remote.app.getPath("userData"),
             "library"
           );
+
           this.status = this.localization.get("#UI_EXTRACTING");
           this.progress = 0;
 
           let extract_path = install_path;
-          if (this.appid != "70" && this.appid != "220")
-            extract_path = require("path").join(extract_path, "Half-Life");
-          const extract = onezip.extract(path, extract_path);
+
+          if (!game.info.isStandalone)
+            extract_path = path.join(extract_path, game.info.installPath);
+
+          const extract = onezip.extract(l_path, extract_path);
 
           extract.on("progress", (percent) => {
             this.progress = percent;
@@ -212,6 +208,7 @@ export default {
               id: this.appid,
               refresh: true,
             });
+
             let window = require("electron").remote.getCurrentWindow();
             if (!window.isDestroyed()) window.setProgressBar(0);
           });
@@ -222,7 +219,10 @@ export default {
         });
       }
     },
-    open(appid, callback) {
+    open(appid) {
+      let game = GameList.find((t) => t.id == appid);
+      if (!game) return;
+
       this.active = "first";
       this.show = false;
       this.first = false;
@@ -231,64 +231,71 @@ export default {
       this.unpacked = false;
       this.progress = 0;
 
-      let installed = store.get("installed");
-      if (Object.keys(installed).indexOf(appid) < 0) {
+      if (!GameControl.checkInstalled(store, appid)) {
         if (
-          Object.keys(installed).indexOf("70") >= 0 ||
-          appid == "70" ||
-          appid == "220"
+          game.info.isStandalone ||
+          GameControl.checkInstalled(store, game.info.requiredGame)
         ) {
           this.show = true;
         } else {
-          this.$parent.$refs.navbar.$refs.hl.toggleActive();
-          this.$parent.$refs.navbar.goTo("game", { id: "70" });
-          return this.open("70");
+          this.$parent.$refs.navbar.goTo("game", {
+            id: game.info.requiredGame,
+          });
+          return this.open(game.info.requiredGame);
         }
+
+        this.game = game.name;
 
         switch (appid) {
           case "70":
-            this.game = "Half-Life";
             this.memory = 429;
             this.items = [
               this.localization.get("#UI_WON"),
               this.localization.get("#UI_STEAM"),
               "Edited DLL with HUD settings",
               "Bunnymod XT",
-              "LiveSplit",
+              "LiveSplit with splits",
               "RInput",
             ];
             break;
           case "50":
-            this.game = "Half-Life: Opposing Force";
             this.memory = 513;
             this.items = [
               this.localization.get("#UI_WON"),
               this.localization.get("#UI_STEAM"),
               "Bunnymod XT",
-              "LiveSplit",
+              "LiveSplit with splits",
               "RInput",
             ];
             break;
           case "130":
-            this.game = "Half-Life: Blue Shift";
             this.memory = 285;
             this.items = [
               this.localization.get("#UI_STEAM"),
               "Bunnymod XT",
-              "LiveSplit",
+              "LiveSplit with splits",
               "RInput",
             ];
             break;
           case "220":
-            this.game = "Half-Life 2";
             this.memory = 3464;
             this.items = [
               "Source Unpack (New Engine)",
               "Source Pause Tool",
-              "LiveSplit",
+              "LiveSplit with splits",
+              "RInput",
+            ];
+           case "218":
+            this.memory = 4933;
+            this.items = [
+              "Ghosting Mod",
+              "Cutsceneless Mod",
+              "Half-Life 1 Movement Mod",
+              "LiveSplit with splits",
               "RInput",
             ];
         }
+        
         this.appid = appid;
       }
     },

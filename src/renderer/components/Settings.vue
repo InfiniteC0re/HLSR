@@ -18,6 +18,12 @@
           @change="themeChange"
           :items="themes"
         />
+        <checkbox
+          v-if="!lowRes"
+          v-model="compactMode"
+          @change="saveChoice(true)"
+          :text="localization.get('#UI_COMPACT_MODE')"
+        />
         <div class="section basictext">
           {{ localization.get("#UI_MISC_SETTINGS") }}
         </div>
@@ -96,6 +102,8 @@ export default {
       experimental: false,
       localization: this.$parent.localization,
       dialogOpen: false,
+      compactMode: false,
+      lowRes: false,
     };
   },
   mounted() {
@@ -105,7 +113,16 @@ export default {
     this.rpc = config.rpc;
     this.noParticles = config.noParticles;
     this.experimental = config.experimental;
+    this.compactMode = config.compactMode;
     this.updateLocale();
+
+    let screen = require("electron").remote.screen;
+
+    let display = screen.getPrimaryDisplay().size;
+
+    if (display.width <= 1366 || display.height <= 768) {
+      this.lowRes = true;
+    }
   },
   methods: {
     openDiscord() {
@@ -125,7 +142,6 @@ export default {
         this.$parent.localization.get("#UI_GRADIENT_THEME"),
         this.$parent.localization.get("#UI_BLUE_THEME"),
         this.$parent.localization.get("#UI_RED_THEME"),
-        this.$parent.localization.get("#UI_SNOW_THEME"),
       ];
 
       if (store.get("config").mlpMode) this.themes.push("My Little Pony");
@@ -135,7 +151,7 @@ export default {
       this.saveChoice();
       this.$parent.$refs.theme.updateTheme();
     },
-    saveChoice() {
+    saveChoice(restart = false) {
       let config = store.get("config");
       let langChanged = config.language != this.language;
 
@@ -144,6 +160,7 @@ export default {
       config.rpc = this.rpc;
       config.experimental = this.experimental;
       config.noParticles = this.noParticles;
+      config.compactMode = this.compactMode;
       store.set("config", config);
 
       if (langChanged) {
@@ -154,9 +171,18 @@ export default {
       }
 
       this.$store.commit("setParticlesState", config.noParticles);
-    },
-    pink() {
-      document.body.style.filter = "hue-rotate(45deg)";
+
+      if (restart && require("process").env.WEBPACK_DEV_SERVER !== "true") {
+        let app = require("electron").remote.app;
+
+        app.relaunch();
+        app.quit();
+      } else if (restart) {
+        // Send a notification
+        this.$store.commit("createNotification", {
+          text: this.localization.get("#RESTART_APP")
+        });
+      }
     },
   },
 };

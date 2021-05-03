@@ -97,7 +97,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .button .icon {
   width: 30px;
   margin-right: 8px;

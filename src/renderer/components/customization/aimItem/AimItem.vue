@@ -59,8 +59,6 @@ export default {
 .item {
   cursor: pointer;
   position: relative;
-  height: 140px;
-  width: 140px;
   overflow: hidden;
   transition: 0.1s;
   border-radius: 10px;
@@ -81,8 +79,6 @@ export default {
 
 .item .img_fonts {
   position: relative;
-  width: 140px;
-  height: 140px;
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;

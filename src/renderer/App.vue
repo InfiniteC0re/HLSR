@@ -17,7 +17,14 @@
     </div>
     <BackgroundTheme class="background" ref="theme" />
     <div id="app__container">
-      <NavBar v-if="$router.currentRoute.name != 'hltp-loading'" ref="navbar" />
+      <NavBar
+        v-if="$router.currentRoute.name != 'hltp-loading' && !compactMode"
+        ref="navbar"
+      />
+      <Side-Bar
+        v-else-if="$router.currentRoute.name != 'hltp-loading'"
+        ref="navbar"
+      />
       <transition name="slide" mode="out-in" class="full">
         <router-view id="router" :key="$route.fullPath"></router-view>
       </transition>
@@ -39,6 +46,7 @@
 </template>
 
 <script>
+import SideBar from "./components/SideBar";
 import Frame from "./components/Frame";
 import BackgroundTheme from "./components/BackgroundTheme";
 import NavBar from "./components/NavBar";
@@ -76,10 +84,18 @@ const local = new localization();
 
 export default {
   name: "hltp",
-  components: { BackgroundTheme, NavBar, GameInstall, Frame, Notification },
+  components: {
+    BackgroundTheme,
+    NavBar,
+    GameInstall,
+    Frame,
+    Notification,
+    SideBar,
+  },
   data: () => ({
     localization: local,
     rpc: null,
+    compactMode: false,
     standardRPC: {
       details: local.get("#RPC_DETAILS"),
       startTimestamp: Date.now(),
@@ -88,9 +104,7 @@ export default {
       smallImageKey: "steam2",
       smallImageText: local.get("#RPC_NOSTEAM"),
       instance: false,
-      buttons: [
-        { label: local.get("#RPC_WEBSITE"), url: "https://hlsr.pro/" },
-      ],
+      buttons: [{ label: local.get("#RPC_WEBSITE"), url: "https://hlsr.pro/" }],
     },
     lastRPC: {},
     updateAvailable: 0,
@@ -314,6 +328,7 @@ export default {
     rpc.on("ready", () => {
       this.updateRPC();
       setInterval(this.updateRPC, 5000);
+      console.log(rpc);
     });
 
     rpc.login({ clientId }).catch(console.error);
@@ -330,6 +345,8 @@ export default {
         text: "Данные HLSRC файла прочитаны!",
       });
     });
+
+    this.compactMode = settings.get("config").compactMode;
 
     ipcRenderer.send("ready");
   },
@@ -361,14 +378,20 @@ body {
   flex-direction: column;
   width: 100vw;
   height: 100vh;
+  overflow: hidden;
 }
 
 #app__container {
   display: flex;
   flex: 1;
-  overflow: hidden;
+  max-height: calc(100vh - 32px);
   position: relative;
   z-index: 1;
+}
+
+#app__container::-webkit-scrollbar {
+  visibility: hidden;
+  width: 0;
 }
 
 .split {
@@ -380,7 +403,7 @@ body {
   flex: 1;
   display: flex;
   border-radius: 16px 0 0 0;
-  overflow: hidden;
+  position: relative;
 }
 
 #form {
@@ -436,9 +459,6 @@ body {
 .md-button-content {
   display: flex;
 }
-.md-snackbar {
-  left: 380px !important;
-}
 .md-dialog-container {
   width: 760px;
   max-height: 90%;
@@ -460,12 +480,13 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.1);
   transition: 100ms;
+  border-radius: 8px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .CodeMirror-scrollbar-filler[cm-not-content="true"] {
@@ -484,5 +505,9 @@ body {
   bottom: 0;
   opacity: 0.05;
   transition: 0.5s;
+}
+
+*:focus {
+  outline: none;
 }
 </style>

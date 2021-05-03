@@ -104,7 +104,7 @@ class localization {
         "#UI_GAME_PRIORITY_4C": "4 Cores",
         "#UI_SOUNDCLOUD_SETTINGS": "SoundCloud Settings",
         "#UI_SOUNDCLOUD_SETTINGS_DESC":
-          "Here you can paste an URL to a SoundCloud track or playlist to make it main in HLSR (only public tracks or playlist)",
+          "Here you can paste an URL to any public SoundCloud track or playlist to load it in HLSR",
         "#UI_SOUNDCLOUD_PLAYLIST": "SoundCloud Link",
         "#UI_CUSTOMIZATION_BUTTON_SAVE": "Save",
         "#UI_CUSTOMIZATION_BUTTON_RESET": "Reset",
@@ -114,7 +114,7 @@ class localization {
         "#UI_CUSTOMIZATION_HUD_SETTINGS": "HUD",
         "#UI_CUSTOMIZATION_LQ": "Standard Version",
         "#UI_CUSTOMIZATION_HD": "HD Version",
-        "#UI_NO_TRACKS": "Unable to get SoundCloud tracklist",
+        "#UI_NO_TRACKS": "Updating songs",
         "#UI_CUSTOMIZATION_HUGE": "Bigger Version",
         "#UI_CUSTOMIZATION_SPRITES": "Item Sprites",
         "#UI_CUSTOMIZATION_Q3": "Q3 Styled",
@@ -129,6 +129,7 @@ class localization {
         "#UI_IN_GAME": "In game",
         "#UI_STARTED": "Started",
         "#UI_SPENT_TIME": "%0% h.",
+        "#UI_NO_TAG": "No tag",
         "#RPC_MLP": "Preparing for friendship",
         "#RPC_PLAYING": "Playing in %0%",
         "#RPC_DETAILS": "Preparing for speedrun",
@@ -137,7 +138,25 @@ class localization {
         "#RPC_WEBSITE": "Website",
         "#RPC_GET_FRIENDS": "Get some friends",
         "#MLP_URL": "https://www.youtube.com/user/mlpequestriagirls",
-        "#UI_CHANGELOG_CONTENT": `<h4>Update from 01/14/2021 [v. 0.1.8]</h4>
+        "#UI_HL1MOVEMENT": "HL1 Movement Mod",
+        "#UI_COMPACT_MODE": "Compact Mode",
+        "#RESTART_APP": "Restart HLSR to apply settings!",
+        "#UI_CHANGELOG_CONTENT": `<h4>Update from 05/03/2021 [v. 0.1.9]</h4>
+<ul>
+  <li>Compact UI Mode</li>
+  <li>Compact UI mode are forced to be enabled on low resolution screens</li>
+  <li>Half-Life 2: Ghosting Mod (HL1 Movement, Cutsceneless Mod)</li>
+  <li>Little home screen UI updates</li>
+  <li>SoundCloud Widget UI update</li>
+  <li>Buttons click effect</li>
+  <li>Game managment code optimization</li>
+  <li>Now game screen in library is covering a window frame too</li>
+  <li>Fixed images appearance in customization menu</li>
+  <li>Fixed localization bugs</li>
+  <li>New notifications type</li>
+  <li>Removed snow theme</li>
+</ul><br/>
+<h4>Update from 01/14/2021 [v. 0.1.8]</h4>
 <ul>
   <li>Now you can see how much hours you spent in game</li>
   <li>Discord RPC status is changing when you start game</li>
@@ -206,7 +225,7 @@ class localization {
           require("../../../package.json").version
         }]</span>`,
         "#UI_ABOUT_CONTENT": `Developers: <span style="color:#ff492c">InfiniteC0re#7307</span>, <span style="color:#ffd45b">alsbykov#8131</span><br/>
-Scripts: <span style="color:#97d4ff">N4Rk0t1k#1766</span>, <span style="color:#c3a4ff">Parklez</span><br/>
+Scripts: <span style="color:#97d4ff">N4Rk0t1k#0302</span>, <span style="color:#c3a4ff">Parklez</span><br/>
 Help with UI design: <span style="color:#ac6cff">Дизайнер [bmd.GG]#9384</span><br/>
 Project support: <span style="color:#b7ffaa">ALLAN#0012</span><br/><br/>
 Used in launcher:
@@ -323,7 +342,8 @@ Used in launcher:
         "#UI_CUSTOMIZATION_HUD_SETTINGS": "HUD",
         "#UI_CUSTOMIZATION_LQ": "Стандартная версия",
         "#UI_CUSTOMIZATION_HD": "HD вариант",
-        "#UI_NO_TRACKS": "Не удалось получить список треков",
+        "#UI_NO_TRACKS": "Обновление треков",
+        "#UI_NO_TAG": "Нет тега",
         "#UI_CUSTOMIZATION_HUGE": "Увеличенная версия",
         "#UI_CUSTOMIZATION_SPRITES": "Спрайты",
         "#UI_CUSTOMIZATION_Q3": "Q3 версия",
@@ -345,7 +365,25 @@ Used in launcher:
         "#RPC_WEBSITE": "Вебсайт",
         "#RPC_GET_FRIENDS": "Завести друзей",
         "#MLP_URL": "https://www.youtube.com/channel/UCWaCaCyWgPk6uwKh66fl_0A",
-        "#UI_CHANGELOG_CONTENT": `<h4>Обновление от 14.01.2021 [v. 0.1.8]</h4>
+        "#UI_HL1MOVEMENT": "Мод на движения из HL1",
+        "#UI_COMPACT_MODE": "Компактный режим",
+        "#RESTART_APP": "Перезапустите HLSR, чтобы применить настроки!",
+        "#UI_CHANGELOG_CONTENT": `<h4>Обновление от 03.05.2021 [v. 0.1.9]</h4>
+<ul>
+  <li>Компактный режим</li>
+  <li>Компактный режим невозможно отключить на экранах с низким разрешением</li>
+  <li>Half-Life 2: Ghosting Mod (HL1 Movement, Cutsceneless Mod)</li>
+  <li>Небольшое обновление интерфейса главного экрана</li>
+  <li>Обновление интерфейса виджета SoundCloud</li>
+  <li>Добавлены эффекты нажатия на кнопки</li>
+  <li>Оптимизация кода управления играми</li>
+  <li>Страница игры в лаунчере теперь покрывает и рамку</li>
+  <li>фикс бага с отображением настроек кастомизации</li>
+  <li>Фикс багов локализации</li>
+  <li>Новый тип оповещений</li>
+  <li>Удалена снежная тема</li>
+</ul><br/>
+<h4>Обновление от 14.01.2021 [v. 0.1.8]</h4>
 <ul>
   <li>Теперь ты можешь увидеть сколько часов провёл в одной из игр</li>
   <li>Discord RPC статус изменяется при входе в игру</li>
@@ -367,7 +405,6 @@ Used in launcher:
   <li>Улучшение производительности - изменения в алгоритме получения списка друзей Steam</li>
   <li>Две версии снежной темы (в зависимости от системного времени)</li>
   <li>Добавлены обложки по умолчанию для SoundCloud треков без них</li>
-  <li>Секретный режим MLP с двумя случайными темами и Discord RPC</li>
   <h3 style="margin:6px 0;">Режим разработчика</h3>
   <li>Кнопка переключения инструментов разработчика</li>
   <li>Кнопка проверки загруженного HLSRC</li>
@@ -413,7 +450,7 @@ Used in launcher:
           require("../../../package.json").version
         }]</span>`,
         "#UI_ABOUT_CONTENT": `Разработчики: <span style="color:#ff492c">InfiniteC0re#7307</span>, <span style="color:#ffd45b">alsbykov#8131</span><br/>
-Скрипты: <span style="color:#97d4ff">N4Rk0t1k#1766</span>, <span style="color:#c3a4ff">Parklez</span><br/>
+Скрипты: <span style="color:#97d4ff">N4Rk0t1k#0302</span>, <span style="color:#c3a4ff">Parklez</span><br/>
 Помощь в UI дизайне: <span style="color:#ac6cff">Дизайнер [bmd.GG]#9384</span><br/>
 Поддержка проекта: <span style="color:#b7ffaa">ALLAN#0012</span><br/><br/>
 В лаунчере использовано:

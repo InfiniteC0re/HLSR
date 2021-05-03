@@ -47,6 +47,14 @@
           small="true"
           @click.native="goTo('game', { id: '220' })"
         />
+        <NavBarButton
+          :lambdaColor="4"
+          text="Half-Life 2: Ghosting"
+          :text2="localization.get('#UI_SPENT_TIME', getPlayTime('218'))"
+          ref="hl2ghosting"
+          small="true"
+          @click.native="goTo('game', { id: '218' })"
+        />
         <span class="split"></span>
       </div>
       <NavBarButton

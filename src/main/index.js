@@ -6,6 +6,13 @@ import md5 from "md5-file";
 import { app, BrowserWindow, ipcMain, screen } from "electron";
 import { download } from "electron-dl";
 import ConfigModuleReader from "hlsr-console/src/ConfigModuleReader";
+import Store from "../renderer/utils/Store.js";
+import StoreDefaults from "../renderer/utils/StoreDefaults.js";
+
+const store = new Store({
+  configName: "settings",
+  defaults: StoreDefaults.settings,
+});
 
 if (process.env.NODE_ENV !== "development") {
   global.__static = path.join(__dirname, "/static").replace(/\\/g, "\\\\");
@@ -63,15 +70,27 @@ function createWindow() {
     }
   });
 
+  let config = store.get("config");
+
+  let screen = require("electron").screen;
+  let display = screen.getPrimaryDisplay().size;
+
+  if (display.width <= 1366 || display.height <= 768) {
+    config.compactMode = true;
+    store.set("config", config);
+  }
+
   mainWindow = new BrowserWindow({
-    height: 768,
-    width: 1280,
+    height: config.compactMode ? 690 : 768,
+    width: config.compactMode ? 950 : 1280,
     maxHeight: 768,
-    maxWidth: 1280,
+    maxWidth: config.compactMode ? 1100 : 1280,
+    minHeight: config.compactMode ? 690 : 768,
+    minWidth: config.compactMode ? 950 : 1280,
     show: false,
     frame: false,
-    transparent: true,
-    resizable: false,
+    transparent: false,
+    resizable: config.compactMode ? true : false,
     webPreferences: {
       nodeIntegration: true,
       webSecurity: false,
@@ -96,20 +115,17 @@ function createWindow() {
   });
 
   ipcMain.on("updateSize", () => {
-    let wWidth = mainWindow.getSize()[0];
-    let wHeight = mainWindow.getSize()[1];
-    let sWidth = screen.getPrimaryDisplay().workAreaSize.width;
-    let sHeight = screen.getPrimaryDisplay().workAreaSize.height;
-
-    let nWidth = wWidth;
-    let nHeight = wHeight;
-    if (wWidth < 1280 && sWidth > wWidth)
-      nWidth = sWidth < 1280 ? sWidth : 1280;
-
-    if (wHeight < 768 && sHeight > wHeight)
-      nHeight = sHeight < 768 ? sHeight : 768;
-
-    mainWindow.setSize(nWidth, nHeight);
+    // let wWidth = mainWindow.getSize()[0];
+    // let wHeight = mainWindow.getSize()[1];
+    // let sWidth = screen.getPrimaryDisplay().workAreaSize.width;
+    // let sHeight = screen.getPrimaryDisplay().workAreaSize.height;
+    // let nWidth = wWidth;
+    // let nHeight = wHeight;
+    // if (wWidth < 1280 && sWidth > wWidth)
+    //   nWidth = sWidth < 1280 ? sWidth : 1280;
+    // if (wHeight < 768 && sHeight > wHeight)
+    //   nHeight = sHeight < 768 ? sHeight : 768;
+    // mainWindow.setSize(nWidth, nHeight);
   });
 
   mainWindow.setMenu(null);

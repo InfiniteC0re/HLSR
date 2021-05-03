@@ -17,6 +17,7 @@ export default new vuex.Store({
     debugMenu: false,
     notification: {
       text: "",
+      type: 0,
     },
     notificationTimer: null,
     steamworks: {
@@ -144,11 +145,12 @@ export default new vuex.Store({
 
     // Others
     createNotification(state, obj) {
-      const { text } = obj;
+      const { text, type } = obj;
 
       if (state.notificationTimer) return;
 
       state.notification.text = text;
+      state.notification.type = typeof type !== "number" ? 0 : type;
 
       setTimeout(() => {
         state.notification.text = "";

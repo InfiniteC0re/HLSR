@@ -13,7 +13,7 @@
       <md-radio
         v-model="version"
         @change="saveChoice"
-        :disabled="id == '130' || id == '220'"
+        :disabled="id == '130' || id == '220' || id == '218'"
         value="WON"
         >WON</md-radio
       >
@@ -24,8 +24,16 @@
         @change="saveChoice"
         class="md-primary"
         :disabled="id != '70' || version == 'Steam'"
-        >{{ localization.get("#UI_EDITED_DLL") }}</md-switch
-      >
+        v-if="id != '218'"
+        >{{ localization.get("#UI_EDITED_DLL") }}
+      </md-switch>
+      <md-switch
+        v-model="hl1movement"
+        @change="saveChoice"
+        class="md-primary"
+        v-else
+        >{{ localization.get("#UI_HL1MOVEMENT") }}
+      </md-switch>
     </div>
     <div class="section">{{ localization.get("#UI_EXTERNAL_TOOLS") }}</div>
     <div class="flex">
@@ -138,6 +146,7 @@ export default {
       rinput: false,
       edited_dll: false,
       allcores: false,
+      hl1movement: false,
       version: "Steam",
       args: "",
       localization: this.$parent.localization,
@@ -166,8 +175,11 @@ export default {
     this.priority = config.priority || "normal";
     this.corescount = config.corescount || "1";
 
-    if (this.id == "220") this.disableBXT = true;
-    if (this.id == "220" || this.id == "130") this.version = "Steam";
+    if (this.id == "218") this.hl1movement = config.hl1movement || false;
+
+    if (this.id == "220" || this.id == "218") this.disableBXT = true;
+    if (this.id == "220" || this.id == "218" || this.id == "130")
+      this.version = "Steam";
   },
   watch: {
     args: function (newArgs, oldArgs) {
@@ -193,6 +205,9 @@ export default {
       config[this.id].allcores = this.allcores;
       config[this.id].priority = this.priority;
       config[this.id].corescount = this.corescount;
+
+      if (this.id == "218") config[this.id].hl1movement = this.hl1movement;
+
       store.set("config", config);
     },
   },

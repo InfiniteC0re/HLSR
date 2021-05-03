@@ -236,7 +236,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 #grid {
   margin-top: 24px;
   display: grid;
@@ -253,6 +253,7 @@ export default {
   background: rgba(0, 0, 0, 0.16);
   display: flex;
   flex-direction: column;
+  border-radius: 8px;
 }
 
 .quick-play {
@@ -276,11 +277,12 @@ export default {
   height: 47px;
   background-color: rgba(255, 255, 255, 0.06);
   transition: background-color 50ms ease-in-out;
-  border-radius: 2px;
+  border-radius: 4px;
   overflow: hidden;
   display: flex;
   align-items: center;
   cursor: pointer;
+  font-weight: 500;
 }
 
 .quick-play-game:hover {
@@ -303,13 +305,17 @@ export default {
   grid-column: 2;
   grid-row-start: 1;
   grid-row-end: 5;
-  padding: 16px 0;
+  padding: 16px;
+
+  .mini-title {
+    margin: 0;
+  }
 }
 
 .mini-title {
   color: #fff;
-  font-size: 20px;
-  font-weight: bold;
+  font-size: 18px;
+  font-weight: 500;
   opacity: 0.2;
   margin: 0 16px;
 }

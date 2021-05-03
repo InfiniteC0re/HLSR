@@ -36,6 +36,14 @@ export default {
         args: "",
         inGameTime: 0,
       },
+      "218": {
+        steam: false,
+        bxt: false,
+        rinput: false,
+        livesplit: true,
+        args: "",
+        inGameTime: 0,
+      },
     },
   },
   settings: {
@@ -90,7 +98,7 @@ export default {
                   command: "labo",
                 },
               ],
-              author: "N4Rk0t1k#1766",
+              author: "N4Rk0t1k#0302",
             },
             {
               name: "Gauss Boost 180°",
@@ -166,7 +174,7 @@ export default {
                   command: "onwabo",
                 },
               ],
-              author: "N4Rk0t1k#1766",
+              author: "N4Rk0t1k#0302",
             },
             {
               name: "Nihilanth Boost",
@@ -185,7 +193,7 @@ export default {
                   command: "nihboost",
                 },
               ],
-              author: "N4Rk0t1k#1766",
+              author: "N4Rk0t1k#0302",
             },
             {
               name: "On A Rail Object Boosting",
@@ -203,7 +211,7 @@ export default {
                   command: "foobbo",
                 },
               ],
-              author: "N4Rk0t1k#1766",
+              author: "N4Rk0t1k#0302",
             },
             {
               name: "Surface Tension Trigger Delay",
@@ -239,7 +247,7 @@ export default {
                   command: "msttd",
                 },
               ],
-              author: "N4Rk0t1k#1766",
+              author: "N4Rk0t1k#0302",
             },
             {
               name: "Test Chamber Skip",
@@ -322,7 +330,7 @@ export default {
                   command: "tcreset",
                 },
               ],
-              author: "N4Rk0t1k#1766",
+              author: "N4Rk0t1k#0302",
             },
           ],
           scriptless: [

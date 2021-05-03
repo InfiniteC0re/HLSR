@@ -35,7 +35,7 @@
                   <md-icon class="fas fa-folder"></md-icon>
                 </md-menu-item>
                 <md-menu-item
-                  @click="uninstallGame"
+                  @click="uninstallGameHandle"
                   class="gamemenu_uninstallButton"
                   :disabled="isGameStarted"
                 >
@@ -115,23 +115,41 @@ export default {
   computed: {
     isButtonDisabled() {
       return (
-        (!navigator.onLine &&
-          !GameControl.checkInstalled(this.hlsrconsole, this.gameID)) ||
-        (!this.steamActive && this.gameID != "220") ||
-        this.isGameStarted
+        (navigator.onLine == false &&
+          GameControl.checkInstalled(this.hlsrconsole, this.gameID) == false) ||
+        this.isGameStarted ||
+        (this.gameID != "220" && this.gameID != "218" && !this.steamActive)
       );
+      // return (
+      //   (!navigator.onLine &&
+      //     !GameControl.checkInstalled(this.hlsrconsole, this.gameID)) ||
+      //   (this.gameID != "220" || this.gameID != "218") ||
+      //   this.isGameStarted
+      // );
     },
     isGameStarted() {
-      return this.$store.state.game.started
+      return this.$store.state.game.started;
     },
     startedGameName() {
-      return this.$store.state.game.name
+      return this.$store.state.game.name;
     },
     steamActive() {
       return this.$store.state.steamworks.started;
     },
   },
   methods: {
+    uninstallGameHandle() {
+      GameControl.uninstallGame(store, this.gameID);
+
+      this.$parent.$refs.navbar.goTo("game", {
+        id: this.gameID,
+        refresh: true,
+      });
+
+      this.$store.commit("createNotification", {
+        text: this.localization.get("#UI_NOTIFICATION_REMOVED"),
+      });
+    },
     buttonIcon() {
       if (GameControl.checkInstalled(store, this.gameID)) return ``;
       else return ``;
@@ -161,105 +179,11 @@ export default {
     },
     sourceRunsWiki() {
       let shell = require("electron").remote.shell;
-      let url = "https://wiki.sourceruns.org/wiki/Category:Half-Life_1";
 
-      switch (this.gameID) {
-        case "50":
-          url = "https://wiki.sourceruns.org/wiki/Category:Opposing_Force";
-          break;
-        case "130":
-          url = "https://wiki.sourceruns.org/wiki/Category:Blue_Shift";
-          break;
-        case "220":
-          url = "https://wiki.sourceruns.org/wiki/Category:Half-Life_2";
-          break;
-      }
-
-      shell.openExternal(url);
+      shell.openExternal(GameControl.getSourceRunsLink(this.gameID));
     },
     gameFolder() {
-      const libraryPath = require("path").join(
-        require("electron").remote.app.getPath("userData"),
-        "library"
-      );
-
-      let shell = require("electron").remote.shell;
-      let path = "";
-
-      if (this.gameID == "70")
-        path = require("path").join(libraryPath, "Half-Life");
-      else if (this.gameID == "50")
-        path = require("path").join(libraryPath, "Half-Life", "gearbox_WON");
-      else if (this.gameID == "130")
-        path = require("path").join(libraryPath, "Half-Life", "bshift");
-      else if (this.gameID == "220")
-        path = require("path").join(libraryPath, "Half-Life 2");
-
-      try {
-        shell.openPath(path);
-      } catch (e) {
-        console.error(e);
-      }
-    },
-    uninstallGame() {
-      const libraryPath = require("path").join(
-        require("electron").remote.app.getPath("userData"),
-        "library"
-      );
-      if (this.gameID == "70") {
-        let installed = store.get("installed");
-        let gamePath = require("path").join(libraryPath, "Half-Life");
-
-        require("fs").rmdirSync(gamePath, { recursive: true });
-        delete installed["70"];
-        delete installed["50"];
-        delete installed["130"];
-
-        store.set("installed", {});
-      } else if (this.gameID == "50") {
-        let installed = store.get("installed");
-
-        let gamePath = require("path").join(
-          libraryPath,
-          "Half-Life",
-          "gearbox"
-        );
-        require("fs").rmdirSync(gamePath, { recursive: true });
-
-        gamePath = require("path").join(
-          libraryPath,
-          "Half-Life",
-          "gearbox_WON"
-        );
-        require("fs").rmdirSync(gamePath, { recursive: true });
-
-        delete installed["50"];
-        store.set("installed", installed);
-      } else if (this.gameID == "130") {
-        let installed = store.get("installed");
-
-        let gamePath = require("path").join(libraryPath, "Half-Life", "bshift");
-        require("fs").rmdirSync(gamePath, { recursive: true });
-
-        delete installed["130"];
-        store.set("installed", installed);
-      } else if (this.gameID == "220") {
-        let installed = store.get("installed");
-
-        let gamePath = require("path").join(libraryPath, "Half-Life 2");
-        require("fs").rmdirSync(gamePath, { recursive: true });
-
-        delete installed["220"];
-        store.set("installed", installed);
-      }
-      this.$parent.$refs.navbar.goTo("game", {
-        id: this.gameID,
-        refresh: true,
-      });
-
-      this.$store.commit("createNotification", {
-        text: this.localization.get("#UI_NOTIFICATION_REMOVED"),
-      });
+      GameControl.openGameFolder(this.gameID);
     },
   },
   refresh() {
@@ -286,6 +210,9 @@ export default {
       case "220":
         this.updateBackground("half-life-2-background.jpg");
         break;
+      case "218":
+        this.updateBackground("half-life-2-ghosting-background.jpg");
+        break;
     }
 
     this.installed = GameControl.checkInstalled(store, this.gameID);
@@ -300,6 +227,11 @@ export default {
   flex-direction: row;
   max-height: 100vh;
   overflow: hidden;
+  position: absolute;
+  top: -32px;
+  bottom: 0;
+  left: 0;
+  right: 0;
 }
 
 #mainview {

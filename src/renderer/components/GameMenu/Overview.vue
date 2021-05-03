@@ -1,9 +1,14 @@
 <template>
   <div id="wrap">
-    <div class="title">{{localization.get('#UI_OVERVIEW')}}</div>
-    <div class="post" v-for="post in posts" :key="post._id" @click="openLink(post.url)">
-      <div class="post-author">{{post.feedlabel}}</div>
-      <div class="post-title">{{post.title}}</div>
+    <div class="title">{{ localization.get("#UI_OVERVIEW") }}</div>
+    <div
+      class="post"
+      v-for="post in posts"
+      :key="post._id"
+      @click="openLink(post.url)"
+    >
+      <div class="post-author">{{ post.feedlabel }}</div>
+      <div class="post-title">{{ post.title }}</div>
     </div>
     <div class="post" v-if="posts.length == 0">
       <div class="post-author">Loading...</div>
@@ -29,7 +34,7 @@ export default {
     return {
       localization: this.$parent.localization,
       posts: [],
-    }
+    };
   },
   methods: {
     openLink(url) {
@@ -38,18 +43,19 @@ export default {
     },
   },
   mounted() {
-    let ctx = this;
-    
-    if(!navigator.onLine) return;
+    if (!navigator.onLine) return;
+
     fetch(
-      `https://api.steampowered.com/ISteamNews/GetNewsForApp/v2/?appid=${ctx.id}&count=15`
+      `https://api.steampowered.com/ISteamNews/GetNewsForApp/v2/?appid=${
+        this.id == "218" ? "220" : this.id
+      }&count=15`
     )
       .then((a) => {
         return a.json();
       })
       .then((data) => {
         if (!data.appnews) return;
-        ctx.posts = data.appnews.newsitems;
+        this.posts = data.appnews.newsitems;
       });
   },
 };

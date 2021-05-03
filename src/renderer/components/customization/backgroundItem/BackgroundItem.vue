@@ -58,14 +58,18 @@ export default {
 .item {
   cursor: pointer;
   position: relative;
-  height: 178px;
   overflow: hidden;
   transition: 0.1s;
   border-radius: 10px;
 }
 
-.item:nth-child(1) .img_fonts {
-  transform: translateY(-20px);
+.item::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  padding-bottom: 50%;
 }
 
 .active {
@@ -83,7 +87,6 @@ export default {
 
 .item .img_fonts {
   position: relative;
-  height: calc(100% + 20px);
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
