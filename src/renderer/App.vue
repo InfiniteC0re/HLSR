@@ -26,7 +26,7 @@
         ref="navbar"
       />
       <transition name="slide" mode="out-in" class="full">
-        <router-view id="router" :key="$route.fullPath"></router-view>
+        <router-view id="router" :key="$route.fullPath" :class="{'overflow': overflow ? 'hidden' : 'unset'}"></router-view>
       </transition>
     </div>
     <md-snackbar
@@ -55,22 +55,24 @@ import GameInstall from "./components/GameInstall.vue";
 import localization from "@/utils/Language.js";
 import Store from "./utils/Store.js";
 import StoreDefaults from "./utils/StoreDefaults.js";
+import Snow from "./utils/Snow";
+import HLSRConsole from "hlsr-console";
 import "./utils/Soundcloud";
+
+// CSS
 import "codemirror/lib/codemirror.css";
+import "codemirror/addon/hint/show-hint.css";
 import "@/utils/infinite.css";
+
+// CodeMirror Addons
 import "codemirror/addon/selection/active-line.js";
 import "codemirror/addon/hint/show-hint.js";
-import "codemirror/addon/hint/show-hint.css";
 import "codemirror/addon/hint/javascript-hint.js";
 import "codemirror/addon/selection/active-line.js";
 import "codemirror/addon/scroll/annotatescrollbar.js";
 import "codemirror/addon/search/matchesonscrollbar.js";
 import "codemirror/addon/search/searchcursor.js";
 import "codemirror/addon/search/match-highlighter.js";
-import "@/utils/hlscripts/hlscripts.js";
-
-import Snow from "./utils/Snow";
-import HLSRConsole from "hlsr-console";
 
 const Console = new HLSRConsole();
 const { ipcRenderer } = require("electron");
@@ -112,6 +114,7 @@ export default {
     focused: true,
     lastScreenWidth: window.screen.availWidth,
     lastScreenHeight: window.screen.availHeight,
+    overflow: false
   }),
   computed: {
     isPaused() {
@@ -314,7 +317,6 @@ export default {
     });
 
     // Discord RPC
-
     const DiscordRPC = require("discord-rpc");
 
     const clientId = "731919817346383913";
@@ -322,7 +324,6 @@ export default {
     DiscordRPC.register(clientId);
 
     const rpc = new DiscordRPC.Client({ transport: "ipc" });
-    const startTimestamp = new Date();
     this.rpc = rpc;
 
     rpc.on("ready", () => {
@@ -339,14 +340,22 @@ export default {
     }, 1000);
 
     // HLSRC
-
     ipcRenderer.on("hlsrc", (event, data) => {
       this.$store.commit("createNotification", {
         text: "Данные HLSRC файла прочитаны!",
       });
     });
 
+    // UI
     this.compactMode = settings.get("config").compactMode;
+
+    let currentVersion = require("../../package.json").version;
+    let lastVersion = localStorage.getItem("lastVersion");
+
+    if (lastVersion != currentVersion) {
+      this.$store.state.shouldOpenChangelog = true;
+      localStorage.setItem("lastVersion", currentVersion);
+    }
 
     ipcRenderer.send("ready");
   },
@@ -411,6 +420,7 @@ body {
   padding: 32px;
   display: flex;
   flex-direction: column;
+  max-width: calc(100vw - var(--sidebar-width));
 }
 
 #form .title {

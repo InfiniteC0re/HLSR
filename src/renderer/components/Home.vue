@@ -158,23 +158,7 @@ export default {
       if (!GameControl.checkInstalled(store, id))
         return this.localization.get("#UI_RECENTGAME_NOGAME");
 
-      switch (id) {
-        case "70":
-          return "Half-Life";
-          break;
-        case "50":
-          return "Half-Life: Opposing Force";
-          break;
-        case "130":
-          return "Half-Life: Blue Shift";
-          break;
-        case "220":
-          return "Half-Life 2";
-          break;
-        default:
-          return this.localization.get("#UI_RECENTGAME_NOGAME");
-          break;
-      }
+      return GameControl.getTitle(id);
     },
     lastLaunchedGameButton() {
       let id = store.get("lastLaunched");
@@ -232,6 +216,15 @@ export default {
   mounted() {
     let config = settings_store.get("config");
     this.playlistInput = config.soundcloudPlaylist || "";
+
+    if (this.$store.state.shouldOpenChangelog == true) {
+      this.changelog = true;
+      this.$store.state.shouldOpenChangelog = false;
+
+      this.$store.commit("createNotification", {
+        text: this.localization.get("#NEW_UPDATE_INSTALLED"),
+      });
+    }
   },
 };
 </script>

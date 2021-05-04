@@ -57,8 +57,8 @@ export default [
       installPath: "",
       removePaths: ["Ghosting"],
       url:
-        "https://dl.dropboxusercontent.com/s/s0jk3yxopbtf57d/Ghosting.zip?dl=0",
-      sourceruns: "https://wiki.sourceruns.org/wiki/Category:Half-Life_2",
+        "http://194.87.95.20/games/Ghosting.zip",
+      sourceruns: "https://wiki.sourceruns.org/wiki/Ghosting_mod",
     },
   },
 ];

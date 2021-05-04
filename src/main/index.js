@@ -253,8 +253,7 @@ app.on("ready", () => {
     if (initialized) steamworks.SetRichPresense("launcher", srpc);
   });
 
-  // Проверить обновления
-
+  // Check for updates
   ipcMain.on("ready", (e) => {
     checkHLSRCModule(require("process").argv);
 

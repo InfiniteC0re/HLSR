@@ -29,6 +29,7 @@
 
 <script>
 import { codemirror } from "vue-codemirror";
+import "@/utils/hlscripts/hlscripts.js";
 
 import fs from "fs";
 import { remote } from "electron";
@@ -73,6 +74,7 @@ export default {
       }
     },
     hints() {
+      console.log(this.cm)
       this.cm.showHint({ completeSingle: false });
     },
   },

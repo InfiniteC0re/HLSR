@@ -141,7 +141,23 @@ class localization {
         "#UI_HL1MOVEMENT": "HL1 Movement Mod",
         "#UI_COMPACT_MODE": "Compact Mode",
         "#RESTART_APP": "Restart HLSR to apply settings!",
-        "#UI_CHANGELOG_CONTENT": `<h4>Update from 05/03/2021 [v. 0.1.9]</h4>
+        "#UI_WELCOME_BACK": "Welcome Back!",
+        "#UI_WELCOME_HLSR": "Welcome to HLSR!",
+        "#NEW_UPDATE_INSTALLED": "New update successfully installed!",
+        "#UI_CHANGELOG_CONTENT": `<h4>Update from 05/04/2021 [v. 0.2.0]</h4>
+<ul>
+  <li>New launcher loading screen</li>
+  <li>Welcome message on loading screen</li>
+  <li>You can't start HLSR twice at the time anymore</li>
+  <li>Changelog will be automatically opened when new launcher updated will be installed</li>
+  <li>Customization screen is more informative now</li>
+  <li>Fixed Half-Life 2: Ghosting installation</li>
+  <li>Updated "About program" section to has relevant info</li>
+  <li>Fixed bug when Config Editor was bigger than launcher window</li>
+  <li>Fixed Config Editors autocomplete and highlighting</li>
+  <li>Fixed bug when Ghosting wasn't shown in Quick Launch</li>
+</ul><br/>
+<h4>Update from 05/03/2021 [v. 0.1.9]</h4>
 <ul>
   <li>Compact UI Mode</li>
   <li>Compact UI mode are forced to be enabled on low resolution screens</li>
@@ -235,7 +251,10 @@ Used in launcher:
   <li>LiveSplit</li>
   <li>Source Unpack</li>
   <li>Source Pause Tool</li>
-  <li>RInput</li>
+  <li>Ghosting Mod</li>
+  <li>Cutsceneless Mod</li>
+  <li>HL1 Movement Mod</li>
+  <li>SmartSteamEmu (to make Source SDK Base 2007 work properly)</li>
 </ul>
 `,
       },
@@ -367,8 +386,25 @@ Used in launcher:
         "#MLP_URL": "https://www.youtube.com/channel/UCWaCaCyWgPk6uwKh66fl_0A",
         "#UI_HL1MOVEMENT": "Мод на движения из HL1",
         "#UI_COMPACT_MODE": "Компактный режим",
+        "#UI_WELCOME_BACK": "Добро пожаловать назад!",
+        "#UI_WELCOME_HLSR": "Добро пожаловать в HLSR!",
         "#RESTART_APP": "Перезапустите HLSR, чтобы применить настроки!",
-        "#UI_CHANGELOG_CONTENT": `<h4>Обновление от 03.05.2021 [v. 0.1.9]</h4>
+        "#NEW_UPDATE_INSTALLED": "Новое обновление успешно установлено!",
+        "#UI_CHANGELOG_CONTENT": `<h4>Обновление от 04.05.2021 [v. 0.2.0]</h4>
+<ul>
+  <li>Новый загрузочный экран</li>
+  <li>Приветственное сообщение на главном экране</li>
+  <li>Отныне невозможно запустить два экземпляра программы одновременно</li>
+  <li>После установки нового обновления ченжлог будет открываться сам</li>
+  <li>Экран кастомизаций теперь более информативный</li>
+  <li>Пофикшена установка Half-Life 2: Ghosting</li>
+  <li>Открываемая папка игры Ghosting мода теперь зависит от того, включён ли HL1 Movement</li>
+  <li>Обновлён раздел "О программе"</li>
+  <li>Фикс бага редактора конфигов, когда он выплывал за экран</li>
+  <li>Исправлена работа подсказок и подсвечивания текста в редакторе кода</li>
+  <li>Исправлено отображение Ghosting мода в панеле быстрого запуска</li>
+</ul><br/>
+<h4>Обновление от 03.05.2021 [v. 0.1.9]</h4>
 <ul>
   <li>Компактный режим</li>
   <li>Компактный режим невозможно отключить на экранах с низким разрешением</li>
@@ -455,12 +491,16 @@ Used in launcher:
 Поддержка проекта: <span style="color:#b7ffaa">ALLAN#0012</span><br/><br/>
 В лаунчере использовано:
 <ul>
-<li>GoldSrc Package 2.3</li>
-<li>Bunnymod XT</li>
-<li>LiveSplit</li>
-<li>Source Unpack</li>
-<li>Source Pause Tool</li>
-<li>RInput</li>
+  <li>GoldSrc Package 2.3</li>
+  <li>Bunnymod XT</li>
+  <li>LiveSplit</li>
+  <li>Source Unpack</li>
+  <li>Source Pause Tool</li>
+  <li>Ghosting Mod</li>
+  <li>Cutsceneless Mod</li>
+  <li>HL1 Movement Mod</li>
+  <li>SmartSteamEmu (для работы Source SDK Base 2007)</li>
+  <li>RInput</li>
 </ul>
 `,
       },

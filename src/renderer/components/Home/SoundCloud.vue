@@ -323,7 +323,7 @@ export default {
       margin-top: auto;
 
       .progress {
-        background: rgba(0, 171, 255, 0.19);
+        background: rgba(196, 196, 196, 0.1);
         border-radius: 8px;
         width: 100%;
         height: 4px;

@@ -1,68 +1,97 @@
 <template>
-    <div v-bind:style="styles" class="spinner spinner--double-bounce">
-      <div class="double-bounce1" v-bind:style="bounceStyle"></div>
-      <div class="double-bounce2" v-bind:style="bounceStyle"></div>
+  <div class="dank-ass-loader">
+    <div class="row">
+      <div class="arrow up outer outer-18"></div>
+      <div class="arrow down outer outer-17"></div>
+      <div class="arrow up outer outer-16"></div>
+      <div class="arrow down outer outer-15"></div>
+      <div class="arrow up outer outer-14"></div>
     </div>
+    <div class="row">
+      <div class="arrow up outer outer-1"></div>
+      <div class="arrow down outer outer-2"></div>
+      <div class="arrow up inner inner-6"></div>
+      <div class="arrow down inner inner-5"></div>
+      <div class="arrow up inner inner-4"></div>
+      <div class="arrow down outer outer-13"></div>
+      <div class="arrow up outer outer-12"></div>
+    </div>
+    <div class="row">
+      <div class="arrow down outer outer-3"></div>
+      <div class="arrow up outer outer-4"></div>
+      <div class="arrow down inner inner-1"></div>
+      <div class="arrow up inner inner-2"></div>
+      <div class="arrow down inner inner-3"></div>
+      <div class="arrow up outer outer-11"></div>
+      <div class="arrow down outer outer-10"></div>
+    </div>
+    <div class="row">
+      <div class="arrow down outer outer-5"></div>
+      <div class="arrow up outer outer-6"></div>
+      <div class="arrow down outer outer-7"></div>
+      <div class="arrow up outer outer-8"></div>
+      <div class="arrow down outer outer-9"></div>
+    </div>
+  </div>
 </template>
 
 <script>
-export default {
-  props: {
-    size: {
-      default: '40px'
-    },
-    background: {
-      default: '#41b883'
-    },
-    duration: {
-      default: '2.0s'
+export default {};
+</script>
+
+<style lang="scss" scoped>
+// New Loader
+
+$color: #00abff;
+$size: 18px;
+$time: 2;
+
+.dank-ass-loader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  .row {
+    display: flex;
+  }
+}
+
+.arrow {
+  width: 0;
+  height: 0;
+  margin: 0 (-$size / 2);
+  border-left: $size solid transparent;
+  border-right: $size solid transparent;
+  border-bottom: ($size * 1.8) solid $color;
+  animation: blink $time + s infinite;
+  filter: drop-shadow(0 0 ($size * 1.5) $color);
+
+  &.down {
+    transform: rotate(180deg);
+  }
+
+  @for $i from 1 through 18 {
+    &.outer-#{$i} {
+      animation-delay: -($time / 18) * $i + s;
     }
-  },
-  computed: {
-    bounceStyle () {
-      return {
-        backgroundColor: this.background,
-        animationDuration: this.duration
-      }
-    },
-    styles () {
-      return {
-        width: this.size,
-        height: this.size
-      }
+  }
+
+  @for $i from 1 through 6 {
+    &.inner-#{$i} {
+      animation-delay: -($time / 6) * $i + s;
     }
   }
 }
-</script>
 
-<style scoped>
-    .spinner * {
-      line-height: 0;
-      box-sizing: border-box;
-    }
-  .spinner {
-    position: relative;
-    display: inline-block;
+@keyframes blink {
+  0% {
+    opacity: 0.1;
   }
-  .double-bounce1, .double-bounce2 {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    opacity: 0.6;
-    position: absolute;
-    top: 0;
-    left: 0;
-    animation: double-bounce 2.0s ease-in-out infinite;
+  30% {
+    opacity: 1;
   }
-  .double-bounce2 {
-    animation-delay: -1.0s;
+  100% {
+    opacity: 0.1;
   }
-  @keyframes double-bounce {
-    0%, 100% {
-     transform: scale(0.0);
-    }
-    50% {
-      transform: scale(1.0);
-    }
-  }
+}
 </style>

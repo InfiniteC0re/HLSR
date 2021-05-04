@@ -19,25 +19,6 @@
             />
           </div>
         </div>
-        <div class="block-checkbox">
-          <div class="block-checkbox-title title-form">
-            {{ localization.get("#UI_CUSTOMIZATION_SKYBOXES") }}
-          </div>
-          <div class="block-checkbox-checkbox">
-            <CheckBox
-              :text="localization.get('#UI_CUSTOMIZATION_LQ')"
-              value="LQ"
-              name="skyboxes"
-              v-model="skyboxes"
-            />
-            <CheckBox
-              :text="localization.get('#UI_CUSTOMIZATION_HD')"
-              value="HD"
-              name="skyboxes"
-              v-model="skyboxes"
-            />
-          </div>
-        </div>
         <div class="block-aim">
           <div class="block-background-title title-form">
             {{ localization.get("#UI_CUSTOMIZATION_SCOPE_SETTINGS") }}
@@ -57,42 +38,53 @@
           <div class="block-checkbox-title title-form">
             {{ localization.get("#UI_CUSTOMIZATION_HUD_SETTINGS") }}
           </div>
-          <div class="block-checkbox-checkbox">
-            <div class="checkbox">
-              <CheckBox
-                :text="localization.get('#UI_CUSTOMIZATION_LQ')"
-                value="LQ"
-                name="hud"
-                v-model="hud"
-              />
-              <CheckBox
-                :text="localization.get('#UI_CUSTOMIZATION_HUGE')"
-                value="huge"
-                name="hud"
-                v-model="hud"
-              />
-            </div>
+          <div class="selector2">
+            <Block
+              :url="require('@/assets/customization/hud/1.jpg')"
+              target="Standard"
+              v-model="hud"
+            />
+            <Block
+              :url="require('@/assets/customization/hud/2.jpg')"
+              target="Huge"
+              v-model="hud"
+            />
           </div>
         </div>
         <div class="block-checkbox">
           <div class="block-checkbox-title title-form">
             {{ localization.get("#UI_CUSTOMIZATION_SPRITES") }}
           </div>
+          <div class="selector2">
+            <Block
+              :url="require('@/assets/customization/sprites/1.jpg')"
+              target="Standard"
+              v-model="sprites"
+            />
+            <Block
+              :url="require('@/assets/customization/sprites/2.jpg')"
+              target="Q3"
+              v-model="sprites"
+            />
+          </div>
+        </div>
+        <div class="block-checkbox">
+          <div class="block-checkbox-title title-form">
+            {{ localization.get("#UI_CUSTOMIZATION_SKYBOXES") }}
+          </div>
           <div class="block-checkbox-checkbox">
-            <div class="checkbox">
-              <CheckBox
-                :text="localization.get('#UI_CUSTOMIZATION_LQ')"
-                value="LQ"
-                name="sprites"
-                v-model="sprites"
-              />
-              <CheckBox
-                :text="localization.get('#UI_CUSTOMIZATION_Q3')"
-                value="q3"
-                name="sprites"
-                v-model="sprites"
-              />
-            </div>
+            <CheckBox
+              :text="localization.get('#UI_CUSTOMIZATION_LQ')"
+              value="LQ"
+              name="skyboxes"
+              v-model="skyboxes"
+            />
+            <CheckBox
+              :text="localization.get('#UI_CUSTOMIZATION_HD')"
+              value="HD"
+              name="skyboxes"
+              v-model="skyboxes"
+            />
           </div>
         </div>
       </div>
@@ -108,7 +100,11 @@
           </ButtonAlt>
         </div>
         <div class="block-button-error button-style" @click="cancelSettings">
-          <ButtonAlt class="button-style" :red="true" :disabled="!installed || isGameStarted">
+          <ButtonAlt
+            class="button-style"
+            :red="true"
+            :disabled="!installed || isGameStarted"
+          >
             <p>{{ localization.get("#UI_CUSTOMIZATION_BUTTON_RESET") }}</p>
             <i class="far fa-ban"></i>
           </ButtonAlt>
@@ -125,6 +121,7 @@ import GameSelector from "../Elements/GameSelector";
 import BackgroundItem from "./backgroundItem/BackgroundItem";
 import AimItem from "./aimItem/AimItem";
 import CheckBox from "./checkbox/CheckBox";
+import Block from "./Block";
 import ButtonAlt from "../Elements/Button";
 import GameControl from "../../utils/GameControl";
 
@@ -141,6 +138,7 @@ export default {
     AimItem,
     ButtonAlt,
     CheckBox,
+    Block,
   },
   data() {
     return {
@@ -152,8 +150,8 @@ export default {
       localization: this.$parent.localization,
       hlsrconsole: this.$parent.hlsrconsole,
       skyboxes: "LQ",
-      hud: "LQ",
-      sprites: "LQ",
+      hud: "Standard",
+      sprites: "Standard",
       onIndexPropsBackground: 0,
       onIndexPropsAim: 0,
       background: [
@@ -225,8 +223,8 @@ export default {
       this.onIndexPropsBackground = 0;
       this.onIndexPropsAim = 0;
       this.skyboxes = "LQ";
-      this.hud = "LQ";
-      this.sprites = "LQ";
+      this.hud = "Standard";
+      this.sprites = "Standard";
     },
     saveConfigHandle() {
       const rPath = require("path");
@@ -342,10 +340,10 @@ export default {
         // Item Sprites
         let is_n = "";
         switch (settings.selectedSprites) {
-          case "LQ":
+          case "Standard":
             is_n = "Standard";
             break;
-          case "q3":
+          case "Q3":
             is_n = "Q3 Styled";
             break;
           default:
@@ -413,10 +411,10 @@ export default {
         // HUD
         let hud_n = "";
         switch (settings.selectedHud) {
-          case "LQ":
+          case "Standard":
             hud_n = "Standard";
             break;
-          case "huge":
+          case "Huge":
             hud_n = "Huge";
             break;
           default:
@@ -449,9 +447,9 @@ export default {
   },
   computed: {
     isGameStarted() {
-      return this.$store.state.game.started
+      return this.$store.state.game.started;
     },
-  }
+  },
 };
 </script>
 
@@ -513,7 +511,7 @@ export default {
   height: 52px;
 }
 .block-aim {
-  margin-top: 10px;
+  margin-top: 16px;
 }
 .button-style {
   align-items: center;
@@ -524,5 +522,12 @@ export default {
 }
 .two {
   margin-top: 15px;
+}
+.selector2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 150px;
+  grid-gap: 12px;
+  margin-top: 12px;
 }
 </style>

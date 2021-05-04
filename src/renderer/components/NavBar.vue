@@ -186,12 +186,16 @@ export default {
       }
     },
   },
+  mounted() {
+    let root = document.documentElement;
+    root.style.setProperty("--sidebar-width", "397px");
+  }
 };
 </script>
 
 <style scoped>
 #navbar {
-  flex: 0.45;
+  width: 100%;
   max-width: 397px;
   display: flex;
   flex-direction: column;

@@ -15,6 +15,7 @@ export default new vuex.Store({
       "https://api.soundcloud.com/playlists/1024488982%3Fsecret_token%3Ds-t3rIoE0luqj&color=%23e81387&auto_play=false&hide_related=false&show_comments=false&show_user=false&show_reposts=false&show_teaser=false",
     noParticles: false,
     debugMenu: false,
+    shouldOpenChangelog: false,
     notification: {
       text: "",
       type: 0,
@@ -155,7 +156,7 @@ export default new vuex.Store({
       setTimeout(() => {
         state.notification.text = "";
         state.notificationTimer = null;
-      }, 3000);
+      }, 5000);
     },
     setParticlesState(state, disabled) {
       state.noParticles = disabled;

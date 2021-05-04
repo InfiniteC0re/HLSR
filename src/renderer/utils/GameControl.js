@@ -37,7 +37,9 @@ export default {
         "-" + config[gameID].priority,
         config[gameID].hl1movement && gameID == "218"
           ? "-game ghosting " + config[gameID].args
-          : gameID == "218" ? "-game ghostingmod " + config[gameID].args : config[gameID].args,
+          : gameID == "218"
+          ? "-game ghostingmod " + config[gameID].args
+          : config[gameID].args,
       ],
       () => {
         // Завершение работы hlsr-console
@@ -129,7 +131,7 @@ export default {
     //   store.set("installed", installed);
     // }
   },
-  openGameFolder(id) {
+  openGameFolder(id, store) {
     const path = require("path");
     const libraryPath = path.join(
       require("electron").remote.app.getPath("userData"),
@@ -140,6 +142,13 @@ export default {
     if (!game) return;
 
     let open_path = path.join(libraryPath, game.info.removePaths[0]);
+
+    if (id == "218") {
+      let cfg = store.get("config")["218"];
+
+      if (cfg.hl1movement) open_path = path.join(open_path, "ghosting");
+      else open_path = path.join(open_path, "ghostingmod");
+    }
 
     try {
       require("electron").remote.shell.openPath(open_path);

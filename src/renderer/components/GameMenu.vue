@@ -183,7 +183,7 @@ export default {
       shell.openExternal(GameControl.getSourceRunsLink(this.gameID));
     },
     gameFolder() {
-      GameControl.openGameFolder(this.gameID);
+      GameControl.openGameFolder(this.gameID, store);
     },
   },
   refresh() {
@@ -332,6 +332,7 @@ export default {
   padding-left: 4px;
   cursor: pointer;
   font-weight: bold;
+  transition: 0.2s ease color;
 }
 
 .navbutton .text {

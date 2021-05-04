@@ -1,8 +1,8 @@
 <template>
   <div class="sidebar-root">
     <div class="top">
-      <div class="logo">
-        <div class="inner"></div>
+      <div class="logo" :style="{ color: color }" @dblclick="changeColor">
+        <div class="inner" :style="{ backgroundColor: color }"></div>
       </div>
     </div>
     <div class="middle">
@@ -156,7 +156,7 @@
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
         class="steam"
-        :class="{steamActive}"
+        :class="{ steamActive }"
       >
         <path
           d="M19.6758 9.62501C19.6758 14.8853 15.4343 19.1472 10.2011 19.1472C5.86047 19.1472 2.20639 16.2176 1.08499 12.2206L4.71619 13.7295C4.9603 14.9621 6.04738 15.8951 7.34423 15.8951C8.83943 15.8951 10.0867 14.6511 10.0219 13.073L13.2449 10.7615C15.2322 10.8114 16.899 9.19113 16.899 7.1715C16.899 5.19026 15.297 3.58147 13.325 3.58147C11.353 3.58147 9.75105 5.1941 9.75105 7.1715V7.21757L7.49299 10.5081C6.90178 10.4736 6.322 10.6387 5.83378 10.9727L0.756958 8.86093C1.14602 3.95775 5.22349 0.102783 10.2011 0.102783C15.4343 0.102783 19.6758 4.36475 19.6758 9.62501ZM6.6958 14.5512L5.53245 14.0674C5.74623 14.5143 6.11535 14.8667 6.56993 15.0581C7.59598 15.4881 8.77459 14.9966 9.20179 13.9676C9.40776 13.4685 9.41158 12.9194 9.20561 12.4202C8.99963 11.9211 8.61439 11.5295 8.11853 11.3221C7.62649 11.1148 7.10012 11.1225 6.63478 11.2991L7.83628 11.7982C8.59151 12.1131 8.95005 12.9847 8.63346 13.7449C8.31688 14.509 7.45103 14.8661 6.6958 14.5512ZM13.325 9.56357C12.0129 9.56357 10.9449 8.48848 10.9449 7.1715C10.9449 5.85451 12.0129 4.77942 13.325 4.77942C14.6372 4.77942 15.7052 5.85451 15.7052 7.1715C15.7052 8.48848 14.641 9.56357 13.325 9.56357ZM13.3288 8.9646C14.3168 8.9646 15.1178 8.15828 15.1178 7.16766C15.1178 6.1732 14.3168 5.37072 13.3288 5.37072C12.3409 5.37072 11.5399 6.17704 11.5399 7.16766C11.5438 8.15828 12.3448 8.9646 13.3288 8.9646Z"
@@ -185,15 +185,42 @@ const store = new Store({
   defaults: StoreDefaults.library,
 });
 
+const storeSettings = new Store({
+  configName: "settings",
+  defaults: StoreDefaults.settings,
+});
+
 export default {
   data() {
     return {
       localization: this.$parent.localization,
       gameList: false,
       configList: false,
+      color: "white",
     };
   },
   methods: {
+    changeColor() {
+      let config = storeSettings.get("config");
+
+      if (this.c >= 2 && !config.mlpMode) {
+        config.mlpMode = true;
+        storeSettings.set("config", config);
+        this.$store.commit("createNotification", {
+          text: "My Little Pony!",
+        });
+      }
+
+      this.color = `rgb(${Math.floor(Math.random() * 250)}, ${Math.floor(
+        Math.random() * 250
+      )}, ${Math.floor(Math.random() * 250)})`;
+
+      clearTimeout(this.timeout);
+      this.timeout = setTimeout(() => {
+        this.color = "white";
+        this.c += 1;
+      }, 1500);
+    },
     getPlayTime(gameid) {
       let config = store.get("config");
 
@@ -236,6 +263,9 @@ export default {
   },
   mounted() {
     document.addEventListener("click", this.clickHandle);
+
+    let root = document.documentElement;
+    root.style.setProperty("--sidebar-width", "90px");
   },
   beforeDestroy() {
     document.removeEventListener("click", this.clickHandle);
@@ -245,7 +275,7 @@ export default {
 
 <style lang="scss" scoped>
 .sidebar-root {
-  width: 90px;
+  min-width: 90px;
   height: 100%;
   position: relative;
   display: flex;
@@ -266,7 +296,7 @@ export default {
     z-index: 1;
     position: absolute;
     left: 0;
-    bottom: 0;
+    bottom: 12px;
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -367,7 +397,7 @@ export default {
                 height: 14px;
                 margin-right: 8px;
                 filter: invert(0.4);
-                transition: filter 150ms ease, opacity 150ms ease;
+                transition: 100ms ease;
                 position: relative;
                 opacity: 0.5;
               }
@@ -397,7 +427,23 @@ export default {
             }
 
             &:hover {
-              color: rgba(255, 255, 255, 1);
+              color: rgba(255, 255, 255, 0.65);
+
+              .lambda__container {
+                .lambda {
+                  opacity: 0.6;
+                }
+              }
+            }
+
+            &:active {
+              color: #fff;
+
+              .lambda__container {
+                .lambda {
+                  opacity: 0.8;
+                }
+              }
             }
 
             &.selected {
