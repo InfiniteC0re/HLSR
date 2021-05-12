@@ -1,6 +1,6 @@
 {
   "name": "hlsr",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "author": "",
   "description": "Change the way you feel speedruns",
   "main": "./dist/electron/main.js",
@@ -47,7 +47,8 @@
     ],
     "asar": false,
     "files": [
-      "dist/electron/**/*"
+      "dist/electron/**/*",
+      "icons"
     ],
     "dmg": {
       "contents": [
@@ -68,7 +69,8 @@
       "icon": "build/icons/icon.icns"
     },
     "win": {
-      "icon": "build/icons/icon.ico"
+      "icon": "build/icons/icon.ico",
+      "requestedExecutionLevel": "highestAvailable"
     },
     "linux": {
       "icon": "build/icons"
@@ -76,8 +78,9 @@
   },
   "dependencies": {
     "axios": "^0.19.2",
+    "check-disk-space": "^2.1.0",
     "discord-rpc": "3.2.0",
-    "electron-dl": "^3.0.1",
+    "electron-dl": "https://github.com/InfiniteC0re/electron-dl",
     "electron-unhandled": "^3.0.2",
     "electron-updater": "^4.3.4",
     "hlsr-console": "^1.0.8",

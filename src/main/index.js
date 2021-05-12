@@ -3,7 +3,7 @@
 import fs from "fs";
 import path from "path";
 import md5 from "md5-file";
-import { app, BrowserWindow, ipcMain, screen } from "electron";
+import { app, BrowserWindow, ipcMain, ipcRenderer, screen } from "electron";
 import { download } from "electron-dl";
 import ConfigModuleReader from "hlsr-console/src/ConfigModuleReader";
 import Store from "../renderer/utils/Store.js";
@@ -22,6 +22,8 @@ const gotTheLock = app.requestSingleInstanceLock();
 
 let detected = false;
 let mainWindow;
+let isAppReady = false;
+
 const winURL =
   process.env.NODE_ENV === "development"
     ? `http://localhost:9080`
@@ -44,12 +46,30 @@ function installHLSRCModule(file, cb = () => {}) {
   });
 }
 
-function checkHLSRCModule(args) {
+let quickLaunchInfo = {
+  appid: null,
+};
+
+function startGameQuick() {
+  if (quickLaunchInfo.appid) {
+    mainWindow.webContents.send("start-game-quick", quickLaunchInfo.appid);
+  }
+}
+
+function parseArgs(args) {
+  args = args.filter((t) => t != "--allow-file-access-from-files");
+
   if (process.env.NODE_ENV === "production") {
-    if (args.length >= 2) {
-      let file = args[1];
-      if (fs.existsSync(file)) {
-        installHLSRCModule(file, () => {
+    if (args.length >= 1) {
+      let firstArg = args[0];
+
+      if (firstArg == "-quick") {
+        // Quick Game Start
+        let appID = args[1];
+        quickLaunchInfo.appid = appID;
+      } else if (fs.existsSync(firstArg)) {
+        // HLSRC
+        installHLSRCModule(firstArg, () => {
           mainWindow.webContents.send("hlsrc", data);
         });
       }
@@ -63,7 +83,8 @@ function createWindow() {
   app.on("second-instance", (e, cmd, wdir) => {
     if (mainWindow) {
       cmd.splice(0, 1);
-      checkHLSRCModule(cmd);
+      parseArgs(cmd);
+      startGameQuick();
 
       if (mainWindow.isMinimized()) mainWindow.restore();
       mainWindow.focus();
@@ -98,34 +119,62 @@ function createWindow() {
   });
 
   mainWindow.once("ready-to-show", () => {
+    // Clean downloads folder
+    const GameControl = require("../renderer/utils/GameControl");
+
+    const LibraryStore = new Store({
+      configName: "library",
+      defaults: StoreDefaults.library,
+    });
+
+    let downloadsFolder = GameControl.default.getTempPath(LibraryStore);
+
+    try {
+      fs.rmdirSync(downloadsFolder, { recursive: true });
+    } catch (e) {}
+
+    // Show window
     mainWindow.show();
 
     ipcMain.on("game-download", async (event, info) => {
       info.properties.onProgress = (e) => {
-        event.reply("game-download-progress", e);
+        mainWindow.setProgressBar(e.percent);
+
+        e.percent *= 100;
+        event.sender.send("set-progress", e);
       };
+
+      info.properties.onCancel = () => {
+        event.sender.send("game-canceled");
+      };
+
       download(
         BrowserWindow.getFocusedWindow(),
         info.url,
         info.properties
       ).then((d) => {
+        // Game downloaded so now we can notify client
         event.sender.send("game-download-complete", d.getSavePath());
+
+        // Client asked to unpack downloaded game
+        ipcMain.once("game-unpack", (e, args) => {
+          const onezip = require("onezip");
+          const extract = onezip.extract(args.archive, args.extractTo);
+
+          extract.on("progress", (percent) => {
+            mainWindow.setProgressBar(percent / 100);
+            e.sender.send("set-progress", {
+              percent,
+            });
+          });
+
+          extract.once("end", () => {
+            mainWindow.setProgressBar(0);
+            e.sender.send("game-unpack-complete");
+          });
+        });
       });
     });
-  });
-
-  ipcMain.on("updateSize", () => {
-    // let wWidth = mainWindow.getSize()[0];
-    // let wHeight = mainWindow.getSize()[1];
-    // let sWidth = screen.getPrimaryDisplay().workAreaSize.width;
-    // let sHeight = screen.getPrimaryDisplay().workAreaSize.height;
-    // let nWidth = wWidth;
-    // let nHeight = wHeight;
-    // if (wWidth < 1280 && sWidth > wWidth)
-    //   nWidth = sWidth < 1280 ? sWidth : 1280;
-    // if (wHeight < 768 && sHeight > wHeight)
-    //   nHeight = sHeight < 768 ? sHeight : 768;
-    // mainWindow.setSize(nWidth, nHeight);
   });
 
   mainWindow.setMenu(null);
@@ -135,14 +184,6 @@ function createWindow() {
   mainWindow.isResizable(false);
 
   mainWindow.loadURL(winURL);
-
-  mainWindow.on("closed", () => {
-    mainWindow = null;
-    let temp = path.join(app.getPath("userData"), "temp");
-    try {
-      fs.rmdirSync(temp, { recursive: true });
-    } catch (e) {}
-  });
 }
 
 app.commandLine.appendSwitch("disable-features", "OutOfBlinkCors");
@@ -164,19 +205,18 @@ app.on("activate", () => {
 
 app.setAppUserModelId(process.execPath);
 
-// Prevent steam_appid.txt from changing
-
+// Only for release
 if (process.env.NODE_ENV === "production") {
   let dir = app.getPath("exe").split("\\");
   dir.splice(-1, 1);
 
   require("process").chdir(dir.join("\\"));
 
+  // Prevent steam_appid.txt from changing
   fs.writeFileSync("./steam_appid.txt", "70");
 }
 
 // AutoUpdater
-
 import { autoUpdater } from "electron-updater";
 import Axios from "axios";
 
@@ -255,7 +295,9 @@ app.on("ready", () => {
 
   // Check for updates
   ipcMain.on("ready", (e) => {
-    checkHLSRCModule(require("process").argv);
+    isAppReady = true;
+    parseArgs(require("process").argv.slice(1));
+    if (quickLaunchInfo.appid) startGameQuick();
 
     if (process.env.NODE_ENV === "production") {
       autoUpdater.checkForUpdatesAndNotify();

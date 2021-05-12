@@ -54,7 +54,7 @@ export default {
       experimental: false,
       noParticles: false,
       soundcloudPlaylist: "",
-      mlpMode: false,
+      compactMode: true
     },
   },
   scripts: {

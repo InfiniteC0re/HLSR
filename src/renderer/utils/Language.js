@@ -144,7 +144,47 @@ class localization {
         "#UI_WELCOME_BACK": "Welcome Back!",
         "#UI_WELCOME_HLSR": "Welcome to HLSR!",
         "#NEW_UPDATE_INSTALLED": "New update successfully installed!",
-        "#UI_CHANGELOG_CONTENT": `<h4>Update from 05/04/2021 [v. 0.2.0]</h4>
+        "#FOLDER_NOT_EMPTY": "The choosen folder isn't empty!",
+        "#SELECT_LIBRARY_FOLDER": "Select games library folder",
+        "#INSTALLATION_CANCELED": "The installation has been canceled",
+        "#INSTALLATION_CYRILLIC": "Cyrillic symbols in the path are disallowed!",
+        "#PATH_NOT_EXISTS": "Selected path does not exists!",
+        "#ERROR_NO_WRITE_PERMISSIONS": "HLSR has no permissons to write in the choosen folder!",
+        "#UI_SPACE_REQUIRED_AFTER": "Space required after install: ",
+        "#UI_SPACE_REQUIRED_TO": "Space required to install the game: ",
+        "#UI_FREE_SPACE": "Free space: ",
+        "#UI_INSTALLING_GAME": "Installing game — ",
+        "#UI_HLSR_LIB_WILL_BE_PLACED": "HLSR Library will be placed in:",
+        "#UI_DOWNLOADABLE_CONTENT": "Downloadable content:",
+        "#UI_LIVESPLIT": "LiveSplit with splits",
+        "#UNABLE_TO_DOWNLOAD": "Unable to install %0% due to network error!",
+        "#UI_STEAM_RECONNECT": "Reconnect to Steam",
+        "#UI_MAKE_SHORTCUT": "Make a shortcut",
+        "#CANT_START_GAME_NOSTEAM": "HLSR can't start a game without Steam connection",
+        "#WAITING_FOR_STEAM": "Waiting for Steam connection to launch game...",
+        "#REMOVE_GAMES_TO_CHANGE": "You can change the path only when no games are installed",
+        "#SHORTCUT_LAUNCH": "Launch",
+        "#UI_FOUND_CYRILLIC": "Found cyrillic symbols in game path. Work is not guaranteed",
+        "#UI_FOUND_CYRILLIC_HINT": "Recommended to reinstall the game on another path",
+        "#UI_CHANGELOG_CONTENT": `<h4>Update from 05/12/2021 [v. 0.2.1]</h4>
+<ul>
+  <li>Now HLSR can display more than just one notification</li>
+  <li>Notifications can be closed with click now</li>
+  <li>Wave effect isn't shows up on disabled buttons no more</li>
+  <li>New game installer design</li>
+  <li>Now you can change install directory of games (can be choosen only when no games are installed)</li>
+  <li>HLSR won't allow you to install game when there's no free space on drive</li>
+  <li>Game download won't stuck anymore</li>
+  <li>HLSR always gonna be started as admin to make it working fine with files</li>
+  <li>Compact mode is enabled by default now</li>
+  <li>Now you can make shortcuts of games on your desktop</li>
+  <li>Fixed bug when game screen didn't show up without Internet connection</li>
+  <li>Update indicator is moved from Sidebar to window frame</li>
+  <li>Added warning about cyrillic symbols in the game path</li>
+  <li>Notification that says HLSR is not connected to Steam is hidden in compact mode and everywhere but not on home screen</li>
+  <li>Now Steam connection indicator in compact mode is a button that can reconnect HLSR to Steam</li>
+</ul><br/>
+<h4>Update from 05/04/2021 [v. 0.2.0]</h4>
 <ul>
   <li>New launcher loading screen</li>
   <li>Welcome message on loading screen</li>
@@ -390,7 +430,47 @@ Used in launcher:
         "#UI_WELCOME_HLSR": "Добро пожаловать в HLSR!",
         "#RESTART_APP": "Перезапустите HLSR, чтобы применить настроки!",
         "#NEW_UPDATE_INSTALLED": "Новое обновление успешно установлено!",
-        "#UI_CHANGELOG_CONTENT": `<h4>Обновление от 04.05.2021 [v. 0.2.0]</h4>
+        "#FOLDER_NOT_EMPTY": "Выбранная папка не пуста!",
+        "#SELECT_LIBRARY_FOLDER": "Выберите папку для хранения игр",
+        "#INSTALLATION_CANCELED": "Установка была отменена",
+        "#INSTALLATION_CYRILLIC": "Символы кириллицы в пути запрещены!",
+        "#PATH_NOT_EXISTS": "Выбранный путь недоступен!",
+        "#ERROR_NO_WRITE_PERMISSIONS": "У HLSR нет прав на запись в выбранной папке!",
+        "#UI_SPACE_REQUIRED_AFTER": "Требуемое место после установки: ",
+        "#UI_SPACE_REQUIRED_TO": "Требуемое место для установки: ",
+        "#UI_FREE_SPACE": "Свободно на диске: ",
+        "#UI_INSTALLING_GAME": "Установка игры — ",
+        "#UI_HLSR_LIB_WILL_BE_PLACED": "Библиотека HLSR будет находиться тут:",
+        "#UI_DOWNLOADABLE_CONTENT": "В загруженном пакете будет:",
+        "#UI_LIVESPLIT": "LiveSplit со сплитами",
+        "#UNABLE_TO_DOWNLOAD": "Не удалось установить %0% из-за сетевой ошибки!",
+        "#UI_STEAM_RECONNECT": "Переподключиться к Steam",
+        "#UI_MAKE_SHORTCUT": "Создать ярлык",
+        "#CANT_START_GAME_NOSTEAM": "HLSR не может запустить игру без связи со Steam",
+        "#WAITING_FOR_STEAM": "Ожидание подключения Steam для запуска игры...",
+        "#REMOVE_GAMES_TO_CHANGE": "Путь можно изменить только когда в лаунчере не установлена ни одна игра",
+        "#SHORTCUT_LAUNCH": "Запустить",
+        "#UI_FOUND_CYRILLIC": "По пути к игре найдена кириллица. Работа не гарантируется",
+        "#UI_FOUND_CYRILLIC_HINT": "Рекоммендуется переустановить игру по другому пути",
+        "#UI_CHANGELOG_CONTENT": `<h4>Обновление от 12.05.2021 [v. 0.2.1]</h4>
+<ul>
+  <li>Теперь на экране может быть отображено более одного оповещения</li>
+  <li>Оповещение может быть закрыто кликом</li>
+  <li>Эффект волны больше не появляется при нажатии на нерабочую кнопку</li>
+  <li>Новое оформление установщика игр</li>
+  <li>Выбор пути установки игр (доступен только когда нет установленных игр)</li>
+  <li>Теперь HLSR проверяет наличие свободного места на диске перед установкой игр</li>
+  <li>Загрузка игры больше не должна застревать на одном месте при ошибке сети</li>
+  <li>HLSR всегда будет запускаться от админа для корректной работы с файлами</li>
+  <li>Компактный режим теперь по стандарту включён</li>
+  <li>Добавлена возможность создавать ярлыки к играм на рабочем столе</li>
+  <li>Исправлен баг, когда страница игры не открывалась без подключения к сети</li>
+  <li>Индикатор обновления перемещён в область рамки окна</li>
+  <li>Добавлено предупреждение о символах кириллицы в пути к игре</li>
+  <li>Оповещение о невозможности подключения к Steam теперь скрыто в компактном режиме, а также вне домашней вкладки обычного режим</li>
+  <li>Индикатор подключения к Steam в компактном режиме теперь служит кнопкой для переподключения</li>
+</ul><br/>
+<h4>Обновление от 04.05.2021 [v. 0.2.0]</h4>
 <ul>
   <li>Новый загрузочный экран</li>
   <li>Приветственное сообщение на главном экране</li>

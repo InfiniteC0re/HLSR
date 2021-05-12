@@ -1,6 +1,7 @@
 import vuex from "vuex";
 import vue from "vue";
 import axios from "axios";
+import crypto from "crypto";
 
 import sortFriends from "./sortFriends";
 import { existsSync, readFileSync } from "fs";
@@ -9,6 +10,45 @@ vue.use(vuex);
 
 let parser = new DOMParser();
 
+class Notification {
+  constructor(
+    text,
+    type,
+    lifetime,
+    deathCallback = () => {},
+    persistent = false
+  ) {
+    this.text = text;
+    this.type = type;
+    this.show = true;
+    this.timeoutID = null;
+    this.lifetime = lifetime;
+    this.deathCallback = deathCallback;
+    this.id = crypto.randomBytes(16).toString("hex");
+    this.persistent = persistent;
+
+    if (this.lifetime > 0) this._setLifetime();
+  }
+
+  _setLifetime() {
+    this.timeoutID = setTimeout(() => {
+      this.show = false;
+      this.deathCallback();
+    }, this.lifetime);
+  }
+
+  remove() {
+    this.show = false;
+    this.deathCallback();
+
+    clearTimeout(this.timeoutID);
+  }
+
+  setDeathCallback(deathCallback) {
+    this.deathCallback = deathCallback;
+  }
+}
+
 export default new vuex.Store({
   state: {
     defaultSoundCloudPlaylist:
@@ -16,11 +56,9 @@ export default new vuex.Store({
     noParticles: false,
     debugMenu: false,
     shouldOpenChangelog: false,
-    notification: {
-      text: "",
-      type: 0,
-    },
-    notificationTimer: null,
+    sidebarBlocked: false,
+    notifications: [],
+    extraNotification: null,
     steamworks: {
       started: false,
       friends: [],
@@ -42,7 +80,6 @@ export default new vuex.Store({
   },
   mutations: {
     // Steamworks
-
     steamworks_setStatus(state, status) {
       state.steamworks.started = status;
     },
@@ -146,17 +183,39 @@ export default new vuex.Store({
 
     // Others
     createNotification(state, obj) {
-      const { text, type } = obj;
+      let { text, type, lifetime } = obj;
 
-      if (state.notificationTimer) return;
+      if (type == undefined || type == null) type = 0;
+      if (lifetime == undefined || lifetime == null) lifetime = 2000;
+      let notification = new Notification(text, type, lifetime);
 
-      state.notification.text = text;
-      state.notification.type = typeof type !== "number" ? 0 : type;
+      notification.setDeathCallback(() => {
+        notification.show = false;
 
-      setTimeout(() => {
-        state.notification.text = "";
-        state.notificationTimer = null;
-      }, 5000);
+        setTimeout(() => {
+          state.notifications.splice(
+            state.notifications.findIndex((t) => t.id == notification.id),
+            1
+          );
+        }, 300);
+      });
+
+      state.notifications.push(notification);
+    },
+    setExtraNotification(state, obj) {
+      let { text } = obj;
+
+      let notification = new Notification(text, 0, 0);
+
+      notification.setDeathCallback(() => {
+        notification.show = false;
+
+        setTimeout(() => {
+          state.extraNotification = null;
+        }, 300);
+      });
+
+      state.extraNotification = notification;
     },
     setParticlesState(state, disabled) {
       state.noParticles = disabled;
@@ -169,14 +228,17 @@ export default new vuex.Store({
     },
     checkHLSRC() {
       let text = "Некорректный HLSRC";
+      let type = 1;
 
       if (existsSync("./hlsrc.json")) {
         let data = readFileSync("./hlsrc.json").toJSON();
         if (data.title) text = `HLSRC успешно загружен`;
+        type = 0;
       }
 
       this.commit("createNotification", {
         text,
+        type,
       });
     },
   },

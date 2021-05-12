@@ -9,13 +9,13 @@
         <dropdown
           v-model="language"
           :text="localization.get('#UI_INTERFACE_LANGUAGE')"
-          @change="saveChoice"
+          @change="saveChoice()"
           :items="languages"
         />
         <dropdown
           v-model="theme"
           :text="localization.get('#UI_INTERFACE_THEME')"
-          @change="themeChange"
+          @change="themeChange()"
           :items="themes"
         />
         <checkbox
@@ -29,12 +29,12 @@
         </div>
         <checkbox
           v-model="rpc"
-          @change="saveChoice"
+          @change="saveChoice()"
           :text="localization.get('#UI_DISCORD_RPC_SETTINGS')"
         />
         <checkbox
           v-model="noParticles"
-          @change="saveChoice"
+          @change="saveChoice()"
           :text="localization.get('#UI_NO_PARTICLES')"
         />
       </div>

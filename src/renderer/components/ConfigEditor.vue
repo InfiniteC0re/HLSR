@@ -30,9 +30,17 @@
 <script>
 import { codemirror } from "vue-codemirror";
 import "@/utils/hlscripts/hlscripts.js";
+import Store from "../utils/Store.js";
+import StoreDefaults from "../utils/StoreDefaults.js";
+import GameControl from "@/Utils/GameControl";
 
 import fs from "fs";
 import { remote } from "electron";
+
+const library = new Store({
+  configName: "library",
+  defaults: StoreDefaults.library,
+});
 
 export default {
   name: "advanced-configs",
@@ -44,10 +52,7 @@ export default {
       this.cm = cm;
     },
     openFile() {
-      const libraryPath = require("path").join(
-        require("electron").remote.app.getPath("userData"),
-        "library"
-      );
+      const libraryPath = GameControl.getLibraryPath(library);
 
       remote.dialog
         .showOpenDialog({
@@ -74,7 +79,7 @@ export default {
       }
     },
     hints() {
-      console.log(this.cm)
+      console.log(this.cm);
       this.cm.showHint({ completeSingle: false });
     },
   },

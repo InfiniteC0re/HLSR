@@ -1,7 +1,7 @@
 <template>
   <div id="navbar">
     <Header />
-    <div id="buttons">
+    <div id="buttons" :class="{ blocked }">
       <NavBarButton
         :text="localization.get('#UI_HOME')"
         icon="home"
@@ -88,13 +88,13 @@
       />
     </div>
     <div class="bottomButtons">
-      <NavBarButton
+      <!-- <NavBarButton
         v-if="updateAvailable"
         notActivable="true"
         animated="true"
         :text="updateState"
         icon="sync-alt"
-      />
+      /> -->
       <!-- <NavBarButton notActivable="true" text="#UI_DOWNLOADS_MARKET" icon="arrow-alt-circle-down"/>   -->
     </div>
   </div>
@@ -124,21 +124,8 @@ export default {
     };
   },
   computed: {
-    updateAvailable() {
-      return this.$parent.updateAvailable > 0;
-    },
-    updateState() {
-      switch (this.$parent.updateAvailable) {
-        case 0:
-          return "";
-          break;
-        case 1:
-          return this.localization.get("#UI_UPDATE_DOWNLOADING");
-          break;
-        case 2:
-          return this.localization.get("#UI_UPDATE_READY");
-          break;
-      }
+    blocked() {
+      return this.$store.state.sidebarBlocked;
     },
   },
   methods: {
@@ -180,7 +167,12 @@ export default {
 
       if (route.query.id != query.id || query.refresh) {
         router.push({
-          query: { id: query.id, time: Date.now(), section: query.section },
+          query: {
+            id: query.id,
+            time: Date.now(),
+            section: query.section,
+            install: query.install,
+          },
         });
         this.changeButtonsState(query.id);
       }
@@ -189,7 +181,7 @@ export default {
   mounted() {
     let root = document.documentElement;
     root.style.setProperty("--sidebar-width", "397px");
-  }
+  },
 };
 </script>
 
@@ -202,10 +194,16 @@ export default {
   overflow: auto;
 }
 
+.blocked {
+  pointer-events: none;
+  opacity: 0.2;
+}
+
 #buttons {
   display: flex;
   flex-flow: column;
   flex: 1;
+  transition: 0.2s opacity ease;
 }
 
 .tab {

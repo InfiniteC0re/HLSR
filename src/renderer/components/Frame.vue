@@ -1,6 +1,13 @@
 <template>
   <div id="frame" @dblclick="bardbl">
     <div style="display: flex">
+      <div
+        class="framebutton animated"
+        @click="() => {}"
+        v-if="updateAvailable"
+      >
+        <i class="fas fa-sync-alt"></i>
+      </div>
       <div class="framebutton" @click="showDebugMenu" v-if="isDev">
         <i class="fas fa-database"></i>
       </div>
@@ -29,6 +36,24 @@ export default {
   data: () => ({
     isDev,
   }),
+  computed: {
+    updateAvailable() {
+      return this.$parent.updateAvailable > 0;
+    },
+    updateState() {
+      switch (this.$parent.updateAvailable) {
+        case 0:
+          return "";
+          break;
+        case 1:
+          return this.localization.get("#UI_UPDATE_DOWNLOADING");
+          break;
+        case 2:
+          return this.localization.get("#UI_UPDATE_READY");
+          break;
+      }
+    },
+  },
   methods: {
     bardbl(e) {
       e.preventDefault();
@@ -37,9 +62,9 @@ export default {
       this.$store.commit("checkHLSRC");
     },
     showDevTools() {
-      require("electron")
-        .remote.getCurrentWindow()
-        .webContents.toggleDevTools();
+      require("electron").remote.getCurrentWindow().webContents.openDevTools({
+        mode: "undocked",
+      });
     },
   },
 };
@@ -66,6 +91,24 @@ export default {
   font-size: 20px;
   z-index: 1;
   -webkit-app-region: no-drag;
+}
+
+.animated {
+  font-size: 1.1rem;
+}
+
+.animated i {
+  animation: rotate 2s linear infinite;
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotateZ(0);
+  }
+
+  100% {
+    transform: rotateZ(360deg);
+  }
 }
 
 .framebutton:hover {

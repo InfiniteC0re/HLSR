@@ -1,5 +1,6 @@
 import { ipcRenderer } from "electron";
 import GameList from "../GameList";
+import electron from "electron";
 
 export default {
   checkInstalled(store, appid) {
@@ -8,13 +9,11 @@ export default {
   },
   startGame(hlsrconsole, store, gameID, globalstore, navbar) {
     let config = store.get("config");
+
     hlsrconsole.execute(
       [
-        "game",
-        require("path").join(
-          require("electron").remote.app.getPath("userData"),
-          "library"
-        ),
+        "game", // Launch Mode
+        this.getLibraryPath(store), // Library Path
         gameID,
         config[gameID].edited_dll ? "-dll" : "",
         config[gameID].bxt ? "-bxt" : "",
@@ -71,11 +70,17 @@ export default {
   getTitle(id) {
     return GameList.find((t) => t.id == id).name || "Unknown game";
   },
+  getIcon(id) {
+    return GameList.find((t) => t.id == id).iconFile;
+  },
+  getBackground(id) {
+    return GameList.find((t) => t.id == id).background;
+  },
+  getGame(id) {
+    return GameList.find((t) => t.id == id);
+  },
   uninstallGame(store, id) {
-    const libraryPath = require("path").join(
-      require("electron").remote.app.getPath("userData"),
-      "library"
-    );
+    const libraryPath = this.getLibraryPath(store);
 
     const fs = require("fs");
     const path = require("path");
@@ -100,43 +105,10 @@ export default {
     delete installed[game.id];
 
     store.set("installed", installed);
-
-    // if (game.id == "70") {
-    //   fs.rmdirSync(gamePath, { recursive: true });
-    //   delete installed["70"];
-    //   delete installed["50"];
-    //   delete installed["130"];
-
-    //   store.set("installed", installed);
-    // } else if (id == "50") {
-    //   let gamePath = path.join(libraryPath, "Half-Life", "gearbox");
-    //   fs.rmdirSync(gamePath, { recursive: true });
-
-    //   gamePath = path.join(libraryPath, "Half-Life", "gearbox_WON");
-    //   fs.rmdirSync(gamePath, { recursive: true });
-
-    //   delete installed["50"];
-    //   store.set("installed", installed);
-    // } else if (id == "130") {
-    //   let gamePath = path.join(libraryPath, "Half-Life", "bshift");
-    //   fs.rmdirSync(gamePath, { recursive: true });
-
-    //   delete installed["130"];
-    //   store.set("installed", installed);
-    // } else if (id == "220") {
-    //   let gamePath = path.join(libraryPath, "Half-Life 2");
-    //   fs.rmdirSync(gamePath, { recursive: true });
-
-    //   delete installed["220"];
-    //   store.set("installed", installed);
-    // }
   },
   openGameFolder(id, store) {
     const path = require("path");
-    const libraryPath = path.join(
-      require("electron").remote.app.getPath("userData"),
-      "library"
-    );
+    const libraryPath = this.getLibraryPath(store);
 
     let game = GameList.find((t) => t.id == id);
     if (!game) return;
@@ -151,10 +123,42 @@ export default {
     }
 
     try {
-      require("electron").remote.shell.openPath(open_path);
+      electron.remote.shell.openPath(open_path);
     } catch (e) {
       console.error(e);
     }
+  },
+  getLibraryPath(store) {
+    const path = require("path");
+
+    let configPath = store.get("libraryPath");
+
+    if (configPath) return configPath;
+    else {
+      let lib_path = path.join(
+        require("electron").remote.app.getPath("userData"),
+        "library"
+      );
+
+      if (!require("fs").existsSync(lib_path))
+        require("fs").mkdirSync(lib_path);
+
+      return lib_path;
+    }
+  },
+  getTempPath(store) {
+    const path = require("path");
+
+    let configPath = store.get("libraryPath");
+
+    if (configPath) return path.join(configPath, "downloads");
+    else
+      return path.join(
+        electron.remote
+          ? electron.remote.app.getPath("userData")
+          : electron.app.getPath("userData"),
+        "temp"
+      );
   },
   getSourceRunsLink(id) {
     let game = GameList.find((t) => t.id == id);

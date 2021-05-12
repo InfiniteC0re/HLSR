@@ -151,24 +151,18 @@ export default {
         let info = {
           url: game.info.url,
           properties: {
-            directory: path.join(
-              require("electron").remote.app.getPath("userData"),
-              "temp"
-            ),
+            directory: GameControl.getTempPath(store),
           },
         };
 
         // Начать загрузку
         ipcRenderer.send("game-download", info);
 
-        ipcRenderer.on("game-download-complete", (e, l_path) => {
+        ipcRenderer.once("game-download-complete", (e, l_path) => {
           let game = GameList.find((t) => t.id == this.appid);
           if (!game) return;
 
-          let install_path = path.join(
-            require("electron").remote.app.getPath("userData"),
-            "library"
-          );
+          let install_path = GameControl.getLibraryPath(store);
 
           this.status = this.localization.get("#UI_EXTRACTING");
           this.progress = 0;
@@ -211,13 +205,16 @@ export default {
 
             let window = require("electron").remote.getCurrentWindow();
             if (!window.isDestroyed()) window.setProgressBar(0);
+
+            ipcRenderer.removeAllListeners("game-download-progress");
           });
         });
 
-        ipcRenderer.on("game-download-progress", (e, data) => {
-          this.progress = Math.round(data.percent * 100);
-        });
+        ipcRenderer.on("game-download-progress", this.progressUpdate);
       }
+    },
+    progressUpdate(e, data) {
+      this.progress = Math.round(data.percent * 100);
     },
     open(appid) {
       let game = GameList.find((t) => t.id == appid);
@@ -285,7 +282,7 @@ export default {
               "LiveSplit with splits",
               "RInput",
             ];
-           case "218":
+          case "218":
             this.memory = 4933;
             this.items = [
               "Ghosting Mod",
@@ -295,8 +292,81 @@ export default {
               "RInput",
             ];
         }
-        
+
         this.appid = appid;
+
+        // Check if any games are already installed and offer to set an installation path if not
+        let installed = store.get("installed");
+
+        if (Object.keys(installed) == 0) {
+          let eWindow = require("electron").remote.getCurrentWindow();
+          require("electron")
+            .remote.dialog.showOpenDialog(eWindow, {
+              properties: ["openDirectory"],
+              title: this.localization.get("#SELECT_LIBRARY_FOLDER"),
+            })
+            .then((result) => {
+              if (result.canceled == true) {
+                this.$store.commit("createNotification", {
+                  text: this.localization.get(
+                    this.localization.get("#INSTALLATION_CANCELED")
+                  ),
+                  type: 1,
+                });
+
+                return (this.show = false);
+              }
+
+              let newLibDir = result.filePaths[0];
+
+              if (!require("fs").existsSync(newLibDir)) {
+                this.$store.commit("createNotification", {
+                  text: this.localization.get(
+                    this.localization.get("#PATH_NOT_EXISTS")
+                  ),
+                  type: 1,
+                });
+
+                return (this.show = false);
+              }
+
+              if (require("fs").readdirSync(newLibDir).length == 0) {
+                // Folder is empty
+
+                const cyrillicPattern = /[а-яА-ЯЁё]/;
+
+                if (cyrillicPattern.test(newLibDir)) {
+                  // Cyrillic symbols were found
+
+                  this.$store.commit("createNotification", {
+                    text: this.localization.get("#INSTALLATION_CYRILLIC"),
+                    type: 1,
+                  });
+
+                  return (this.show = false);
+                } else {
+                  // Everything is okay
+
+                  this.$store.commit("createNotification", {
+                    text: "Okay",
+                  });
+
+                  store.set("libraryPath", newLibDir);
+                }
+              } else {
+                // Folder isn't empty
+
+                this.$store.commit("createNotification", {
+                  text: this.localization.get(
+                    this.localization.get("#FOLDER_NOT_EMPTY")
+                  ),
+                  type: 1,
+                });
+
+                return (this.show = false);
+              }
+            });
+        }
       }
     },
   },

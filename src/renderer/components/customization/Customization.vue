@@ -73,18 +73,32 @@
             {{ localization.get("#UI_CUSTOMIZATION_SKYBOXES") }}
           </div>
           <div class="block-checkbox-checkbox">
-            <CheckBox
-              :text="localization.get('#UI_CUSTOMIZATION_LQ')"
-              value="LQ"
-              name="skyboxes"
-              v-model="skyboxes"
-            />
-            <CheckBox
-              :text="localization.get('#UI_CUSTOMIZATION_HD')"
-              value="HD"
-              name="skyboxes"
-              v-model="skyboxes"
-            />
+            <div class="checkboxes">
+              <CheckBox
+                :text="localization.get('#UI_CUSTOMIZATION_LQ')"
+                value="LQ"
+                name="skyboxes"
+                v-model="skyboxes"
+              />
+              <CheckBox
+                :text="localization.get('#UI_CUSTOMIZATION_HD')"
+                value="HD"
+                name="skyboxes"
+                v-model="skyboxes"
+              />
+            </div>
+            <div
+              class="img"
+              :style="{
+                backgroundImage: `url(${require('@/assets/customization/hud/1.jpg')})`,
+              }"
+            ></div>
+            <div
+              class="img"
+              :style="{
+                backgroundImage: `url(${require('@/assets/customization/hud/2.jpg')})`,
+              }"
+            ></div>
           </div>
         </div>
       </div>
@@ -229,12 +243,8 @@ export default {
     saveConfigHandle() {
       const rPath = require("path");
       const settings = this.buildSettings();
-      const libraryPath = require("path").join(
-        require("electron").remote.app.getPath("userData"),
-        "library"
-      );
 
-      let path = rPath.join(libraryPath, "Half-Life");
+      let path = rPath.join(GameControl.getLibraryPath(store), "Half-Life");
 
       if (settings.selectedGame == 0) {
         this.gameId = "70";

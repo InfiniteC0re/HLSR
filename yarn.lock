@@ -2809,6 +2809,11 @@ chardet@^0.4.0:
   resolved "https://registry.yarnpkg.com/chardet/-/chardet-0.4.2.tgz#b5473b33dc97c424e5d98dc87d55d4d8a29c8bf2"
   integrity sha1-tUc7M9yXxCTl2Y3IfVXU2KKci/I=
 
+check-disk-space@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/check-disk-space/-/check-disk-space-2.1.0.tgz#2e77fe62f30d9676dc37a524ea2008f40c780295"
+  integrity sha512-f0nx9oJF/AVF8nhSYlF1EBvMNnO+CXyLwKhPvN1943iOMI9TWhQigLZm80jAf0wzQhwKkzA8XXjyvuVUeGGcVQ==
+
 check-error@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/check-error/-/check-error-1.0.2.tgz#574d312edd88bb5dd8912e9286dd6c0aed4aac82"
@@ -3420,6 +3425,11 @@ crc@^3.8.0:
   integrity sha512-iX3mfgcTMIq3ZKLIsVFAbv7+Mc10kxabAGQb8HvjA1o3T1PIYprbakQ65d3I+2HGHt6nSKkM9PYjgoJO2KcFBQ==
   dependencies:
     buffer "^5.1.0"
+
+create-desktop-shortcuts@^1.4.0:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/create-desktop-shortcuts/-/create-desktop-shortcuts-1.4.0.tgz#e65b2dd2e9e6354b4dd15463ebbb6c65ff2fba0e"
+  integrity sha512-UYl5efC4mpxcrPl8FK2k6vBuTP2+a2tdIe3OaNGmRImHTDfV4tRVQFkJ8HUk5tIykHwN1nepDo53oCXyGcnXMQ==
 
 create-ecdh@^4.0.0:
   version "4.0.4"
@@ -4211,10 +4221,9 @@ electron-devtools-installer@^3.0.0:
     tslib "^2.1.0"
     unzip-crx-3 "^0.2.0"
 
-electron-dl@^3.0.1:
+"electron-dl@https://github.com/InfiniteC0re/electron-dl":
   version "3.2.1"
-  resolved "https://registry.yarnpkg.com/electron-dl/-/electron-dl-3.2.1.tgz#244a1316c663691f70e8aa4515cd1a401b4b5690"
-  integrity sha512-k5DFjocJlXbrjshO1zeWe/Gz7HkGwCgnehHPemiyzN2B/LfLlnbIX7sCj5F+huTwZ2l+nQehTI4IR37xvCn6FQ==
+  resolved "https://github.com/InfiniteC0re/electron-dl#5296ec58cf21dd07ab14ba7d50c3fe3a31199889"
   dependencies:
     ext-name "^5.0.0"
     pupa "^2.0.1"

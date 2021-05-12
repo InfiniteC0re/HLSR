@@ -1,6 +1,6 @@
 <template>
   <div id="wrap">
-    <div id="form">
+    <div id="form" :class="{ overlay: isInstallationOpened }">
       <div
         id="mainview"
         :style="{
@@ -32,7 +32,17 @@
               <md-menu-content style="margin-top: 3px; width: 280px">
                 <md-menu-item @click="gameFolder">
                   <span>{{ localization.get("#UI_GAME_FOLDER") }}</span>
-                  <md-icon class="fas fa-folder"></md-icon>
+                  <md-icon
+                    class="fas fa-folder"
+                    style="margin-right: 2px"
+                  ></md-icon>
+                </md-menu-item>
+                <md-menu-item @click="makeShortcut">
+                  <span>{{ localization.get("#UI_MAKE_SHORTCUT") }}</span>
+                  <md-icon
+                    class="fas fa-star"
+                    style="margin-right: 3.3px"
+                  ></md-icon>
                 </md-menu-item>
                 <md-menu-item
                   @click="uninstallGameHandle"
@@ -74,6 +84,14 @@
             >
               <div class="text">{{ localization.get("#UI_WIKI") }}</div>
             </div>
+            <div
+              class="warning"
+              :title="localization.get('#UI_FOUND_CYRILLIC_HINT')"
+              v-if="cyrillic"
+            >
+              <i class="fad fa-exclamation-triangle"></i>
+              <p>{{ localization.get("#UI_FOUND_CYRILLIC") }}</p>
+            </div>
           </div>
           <div class="mainpanel">
             <Overview v-if="section == 0" :id="$route.query.id" />
@@ -82,6 +100,10 @@
         </div>
       </div>
     </div>
+    <NewGameInstall
+      v-if="isInstallationOpened"
+      @cancel="isInstallationOpened = false"
+    />
   </div>
 </template>
 
@@ -91,6 +113,8 @@ import Configurator from "./GameMenu/Configurator";
 import Store from "../utils/Store.js";
 import StoreDefaults from "../utils/StoreDefaults.js";
 import GameControl from "../utils/GameControl";
+import AltButton from "./Elements/Button";
+import NewGameInstall from "./NewGameInstall.vue";
 
 const store = new Store({
   configName: "library",
@@ -99,7 +123,7 @@ const store = new Store({
 
 export default {
   name: "GameMenu",
-  components: { Overview, Configurator },
+  components: { Overview, Configurator, AltButton, NewGameInstall },
   methods: {},
   data() {
     return {
@@ -110,14 +134,17 @@ export default {
       localization: this.$parent.localization,
       hlsrconsole: this.$parent.hlsrconsole,
       installed: false,
+      isInstallationOpened: false,
+      cyrillic: false,
     };
   },
   computed: {
     isButtonDisabled() {
       return (
         (navigator.onLine == false &&
-          GameControl.checkInstalled(this.hlsrconsole, this.gameID) == false) ||
+          GameControl.checkInstalled(store, this.gameID) == false) ||
         this.isGameStarted ||
+        this.$store.state.extraNotification ||
         (this.gameID != "220" && this.gameID != "218" && !this.steamActive)
       );
       // return (
@@ -150,6 +177,31 @@ export default {
         text: this.localization.get("#UI_NOTIFICATION_REMOVED"),
       });
     },
+    makeShortcut() {
+      if (require("process").env.WEBPACK_DEV_SERVER !== "true") {
+        let remote = require("electron").remote;
+        let path = require("path");
+
+        remote.shell.writeShortcutLink(
+          path.join(
+            remote.app.getPath("desktop"),
+            `${this.localization.get(
+              "#SHORTCUT_LAUNCH"
+            )} ${this.gameTitle.replace(":", "")}.lnk`
+          ),
+          "create",
+          {
+            target: require("process").execPath,
+            args: `-quick ${this.gameID}`,
+            icon:
+              process.resourcesPath +
+              "\\app\\icons\\" +
+              GameControl.getIcon(this.gameID),
+            iconIndex: 0,
+          }
+        );
+      }
+    },
     buttonIcon() {
       if (GameControl.checkInstalled(store, this.gameID)) return ``;
       else return ``;
@@ -174,7 +226,21 @@ export default {
           this.$parent.$refs.navbar
         );
       } else {
-        this.$parent.$refs.gameinstall.open(this.gameID);
+        let game = require("@/GameList").default.find(
+          (t) => t.id == this.gameID
+        );
+
+        if (
+          game.info.isStandalone ||
+          GameControl.checkInstalled(store, game.info.requiredGame)
+        ) {
+          this.isInstallationOpened = true;
+        } else {
+          this.$parent.$refs.navbar.goTo("game", {
+            id: game.info.requiredGame,
+            install: true,
+          });
+        }
       }
     },
     sourceRunsWiki() {
@@ -185,10 +251,14 @@ export default {
     gameFolder() {
       GameControl.openGameFolder(this.gameID, store);
     },
-  },
-  refresh() {
-    this.$forceUpdate();
-    this.installed = this.checkInstalled(this.gameID);
+    refresh() {
+      this.installed = GameControl.checkInstalled(store, this.gameID);
+      if (/[а-яА-ЯЁё]/.test(GameControl.getLibraryPath(store))) {
+        this.cyrillic = true;
+      }
+
+      this.$forceUpdate();
+    },
   },
   mounted() {
     let section = this.$route.query.section;
@@ -197,28 +267,41 @@ export default {
     this.gameID = this.$route.query.id;
     this.gameTitle = GameControl.getTitle(this.gameID);
 
-    switch (this.gameID) {
-      case "70":
-        this.updateBackground("half-life-background.jpg");
-        break;
-      case "50":
-        this.updateBackground("opposing-force-background.jpg");
-        break;
-      case "130":
-        this.updateBackground("blue-shift-background.jpg");
-        break;
-      case "220":
-        this.updateBackground("half-life-2-background.jpg");
-        break;
-      case "218":
-        this.updateBackground("half-life-2-ghosting-background.jpg");
-        break;
-    }
+    if (this.$route.query.install) this.isInstallationOpened = true;
 
+    this.updateBackground(GameControl.getBackground(this.gameID));
     this.installed = GameControl.checkInstalled(store, this.gameID);
+
+    if (
+      /[а-яА-ЯЁё]/.test(GameControl.getLibraryPath(store)) &&
+      this.installed
+    ) {
+      this.cyrillic = true;
+    }
   },
 };
 </script>
+
+<style lang="scss" scoped>
+#form::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  background: transparent;
+  backdrop-filter: blur(0);
+  transition: 0.2s ease background-color;
+  pointer-events: none;
+}
+
+#form.overlay::after {
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(16px);
+  pointer-events: all;
+}
+</style>
 
 <style type="text/css" scoped>
 #form {
@@ -304,6 +387,7 @@ export default {
   margin-right: 16px;
   backdrop-filter: blur(16px);
   border-radius: 2px;
+  position: relative;
 }
 
 .navpanel .navbutton.disabled {
@@ -315,6 +399,33 @@ export default {
   border-left: 4px solid;
   padding-left: 0px;
   color: #00abff !important;
+}
+
+.navpanel .warning {
+  position: absolute;
+  padding: 24px 16px;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  color: rgba(255, 208, 0, 0.2);
+  text-align: center;
+  transition: 0.2s ease;
+}
+
+.navpanel .warning:hover {
+  color: rgba(255, 208, 0, 0.6);
+}
+
+.navpanel .warning p {
+  font-size: 0.76rem;
+  line-height: 16px;
+}
+
+.navpanel .warning i {
+  font-size: 1.6rem;
+  margin-bottom: 8px;
 }
 
 .md-button.md-theme-default.md-raised.installedGame[disabled] {

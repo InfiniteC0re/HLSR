@@ -24,11 +24,11 @@
             <div class="quick-play-game" @click.self="lastLaunchedGameStart">
               <span
                 class="quick-play-game-name"
-                :class="{ gray: isLastLaunchedGame }"
+                :class="{ gray: isQuickGameButtonActive }"
                 >{{ lastLaunchedGame }}</span
               >
               <md-button
-                :disabled="lastLaunchedGameButton"
+                :disabled="!lastLaunchedGame"
                 @click.stop="openPrefs"
                 class="md-icon-button"
                 style="margin-left: auto"
@@ -145,12 +145,23 @@ export default {
     steamFriends() {
       return this.$store.state.steamworks.friends;
     },
-    isLastLaunchedGame() {
-      let id = store.get("lastLaunched");
-      return !GameControl.checkInstalled(store, id) || this.isGameStarted;
+    steamActive() {
+      return this.$store.state.steamworks.started;
     },
     isGameStarted() {
-      return this.$store.state.game.started;
+      return (
+        this.$store.state.game.started || this.$store.state.extraNotification
+      );
+    },
+    isQuickGameButtonActive() {
+      let id = store.get("lastLaunched");
+
+      return (
+        (navigator.onLine == false &&
+          GameControl.checkInstalled(store, id) == false) ||
+        this.isGameStarted ||
+        (id != "220" && id != "218" && !this.steamActive)
+      );
     },
     lastLaunchedGame() {
       let id = store.get("lastLaunched");
@@ -161,6 +172,7 @@ export default {
       return GameControl.getTitle(id);
     },
     lastLaunchedGameButton() {
+      if (!this.isQuickGameButtonActive) return;
       let id = store.get("lastLaunched");
 
       if (!GameControl.checkInstalled(store, id)) return true;

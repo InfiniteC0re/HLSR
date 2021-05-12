@@ -113,16 +113,9 @@
 
 <script>
 import ButtonAlt from "./Elements/Button";
-import electron from "electron";
 import Store from "../utils/Store.js";
 import StoreDefaults from "../utils/StoreDefaults.js";
 import GameControl from "../utils/GameControl";
-
-const gamesPath = require("path").join(
-  (electron.app || electron.remote.app).getPath("userData"),
-  "library",
-  "Half-Life"
-);
 
 const store = new Store({
   configName: "scripts",
@@ -133,6 +126,11 @@ const library = new Store({
   configName: "library",
   defaults: StoreDefaults.library,
 });
+
+const gamesPath = require("path").join(
+  GameControl.getLibraryPath(library),
+  "Half-Life"
+);
 
 export default {
   name: "config-constructor",
@@ -149,7 +147,7 @@ export default {
       game: "hl",
       library,
       GameControl,
-      installed: false
+      installed: false,
     };
   },
   computed: {
@@ -265,7 +263,7 @@ export default {
 
         // Send a notification
         this.$store.commit("createNotification", {
-          text: this.localization.get("#UI_NOTIFICATION_SAVED")
+          text: this.localization.get("#UI_NOTIFICATION_SAVED"),
         });
       }
     },

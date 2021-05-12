@@ -23,6 +23,7 @@ export default {
   },
   methods: {
     mouseDown(e) {
+      if (this.disabled) return;
       let waveElem = document.createElement("div");
       waveElem.classList.add("wave");
       waveElem.style.left = `${e.offsetX}px`;
