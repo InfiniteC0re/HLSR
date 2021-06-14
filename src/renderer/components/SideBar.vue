@@ -184,8 +184,8 @@
 </template>
 
 <script>
-import Store from "../utils/Store.js";
-import StoreDefaults from "../utils/StoreDefaults.js";
+import Store from "@/scripts/Store.js";
+import StoreDefaults from "@/scripts/StoreDefaults.js";
 
 const store = new Store({
   configName: "library",
@@ -205,6 +205,7 @@ export default {
       configList: false,
       color: "white",
       version: null,
+      c: 0
     };
   },
   methods: {
@@ -320,7 +321,7 @@ export default {
     top: -32px;
     width: 100%;
     height: 100vh;
-    background: rgba(23, 46, 86, 0.3);
+    backdrop-filter: blur(48px);
   }
 
   .bottom {

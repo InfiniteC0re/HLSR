@@ -20,7 +20,6 @@
 </template>
 
 <script type="text/javascript">
-import axios from "axios";
 
 export default {
   name: "steam-friend",

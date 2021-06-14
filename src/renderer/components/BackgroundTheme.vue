@@ -1,16 +1,17 @@
 <template>
-  <div id="backgroundtheme">
+  <div id="backgroundtheme" :class="{ blur }">
+    <canvas class="blobsTheme" v-show="hideBackground"></canvas>
     <div
+      v-if="!hideBackground"
       class="background"
-      :class="{ blur }"
       :style="{ backgroundImage: `url(${background})` }"
     ></div>
   </div>
 </template>
 
 <script>
-import Store from "../utils/Store.js";
-import StoreDefaults from "../utils/StoreDefaults.js";
+import Store from "../scripts/Store.js";
+import StoreDefaults from "../scripts/StoreDefaults.js";
 
 const store = new Store({
   configName: "settings",
@@ -24,13 +25,19 @@ export default {
     return {
       background: require("@/assets/gradient.jpg"),
       blur: false,
+      hideBackground: false,
     };
   },
   methods: {
     updateTheme() {
       if (store.get("config").mlpMode && store.get("config").theme == 3) {
         this.blur = true;
+      } else {
+        this.blur = false;
       }
+
+      this.hideBackground = false;
+      if (this.$store.state.blobs) this.$store.state.blobs.stop();
 
       switch (store.get("config").theme) {
         case 0:
@@ -50,10 +57,25 @@ export default {
           } else this.background = require("@/assets/lancer.jpg");
           break;
         case 4:
-          this.background = require("@/assets/lancer.jpg");
+          this.blur = true;
+          this.hideBackground = true;
+          if (this.$store.state.blobs) this.$store.state.blobs.start(this.$store);
           break;
       }
     },
+  },
+  computed: {
+    blobs() {
+      return this.$store.state.blobs;
+    }
+  },
+  watch: {
+    /* eslint-disable */
+    blobs(newVal, oldVal) {
+      if (oldVal == null && store.get("config").theme == 4)
+        this.updateTheme();
+    }
+    /* eslint-enable */
   },
   mounted() {
     this.updateTheme();
@@ -84,7 +106,7 @@ export default {
   position: relative;
 }
 
-.background::before {
+#backgroundtheme::after {
   content: "";
   position: absolute;
   top: 0;
@@ -92,10 +114,15 @@ export default {
   width: 100%;
   height: 100%;
   background: rgba(23, 46, 86, 0.7);
+  z-index: 1;
 }
 
-.background.blur::before {
-  backdrop-filter: blur(24px);
+#backgroundtheme.blur::after {
+  backdrop-filter: blur(48px);
+}
+
+.blobsTheme {
+  position: absolute;
 }
 </style>
 

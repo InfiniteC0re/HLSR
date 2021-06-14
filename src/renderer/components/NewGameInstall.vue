@@ -76,11 +76,9 @@
 <script>
 import { ipcRenderer } from "electron";
 import AltButton from "@/components/Elements/Button";
-import Store from "../utils/Store.js";
-import StoreDefaults from "../utils/StoreDefaults.js";
-import GameControl from "@/utils/GameControl";
-import GameList from "@/GameList";
-import checkDiskSpace from "check-disk-space";
+import Store from "@/scripts/Store.js";
+import StoreDefaults from "@/scripts/StoreDefaults.js";
+import GameControl from "@/scripts/GameControl";
 
 const path = require("path");
 
@@ -100,7 +98,6 @@ export default {
       installing: false,
       canChangeFolder: false,
       localization: this.$parent.localization,
-      id: null,
       game: null,
       freeSpace: 0,
       noSpace: false,
@@ -121,46 +118,91 @@ export default {
     },
   },
   mounted() {
-    this.id = this.$parent.gameID;
-    this.game = GameList.find((t) => t.id == this.id);
+    this.game = this.$parent.game;
 
     let installed = store.get("installed");
 
     this.selectedPath = GameControl.getLibraryPath(store);
-
-    if (/[а-яА-ЯЁё]/.test(this.selectedPath)) {
-      // Cyrillic detected
-      this.installDisabled = true;
-
-      this.$store.commit("createNotification", {
-        text: this.localization.get("#INSTALLATION_CYRILLIC"),
-        type: 1,
-      });
-
-      this.checkFreeSpace();
-    } else {
-      // Cyrillic not detected
-      this.testPermissions(this.selectedPath)
-        .then(() => {
-          this.checkFreeSpace()
-            .then(() => {
-              this.installDisabled = false;
-            })
-            .catch(() => {
-              this.noSpace = true;
-              this.installDisabled = true;
-            });
-        })
-        .catch(() => {
-          this.installDisabled = true;
-        });
-    }
+    this.checkInstallAvailability().catch(this.handleAvailabilityErrors);
 
     if (Object.keys(installed).length == 0) this.canChangeFolder = true;
   },
   methods: {
     cancel() {
       this.$emit("cancel");
+    },
+    checkFreeSpace() {
+      return new Promise((resolve, reject) => {
+        let diskSpaceInfo = ipcRenderer.sendSync(
+          "GetDiskFreeSpaceMbytes",
+          this.selectedPath
+        );
+
+        this.freeSpace = diskSpaceInfo.TotalNumberOfFreeBytes;
+
+        if (
+          diskSpaceInfo.Result == 1 &&
+          this.freeSpace - (this.game.info.size + this.game.info.archive) >= 100
+        ) {
+          resolve();
+        } else {
+          reject(diskSpaceInfo.Result);
+        }
+      });
+    },
+    handleAvailabilityErrors(e) {
+      switch (e.status) {
+        case 1: // No Permissions
+          break;
+        case 2: // No Free Space
+          break;
+        case 3: // WinApi Error
+          break;
+        case 4: // Not Empty Folder
+          this.$store.commit("createNotification", {
+            text: this.localization.get(
+              this.localization.get("#FOLDER_NOT_EMPTY")
+            ),
+            type: 1,
+          });
+          break;
+        case 5: // Cyrillic Symbols
+          this.$store.commit("createNotification", {
+            text: this.localization.get("#INSTALLATION_CYRILLIC"),
+            type: 1,
+          });
+          break;
+      }
+    },
+    checkInstallAvailability() {
+      return new Promise((res, rej) => {
+        this.installDisabled = true;
+
+        if (/[а-яА-ЯЁё]/.test(this.selectedPath)) {
+          return rej({ status: 5 }); // Cyrillic Symbols
+        }
+
+        this.testPermissions(this.selectedPath)
+          .then(() => {
+            this.checkFreeSpace()
+              .then(() => {
+                if (require("fs").readdirSync(this.selectedPath).length != 0 && GameControl.getInstalledCount(store) == 0) {
+                  return rej({ status: 4 }); // Folder is not Empty
+                }
+
+                this.installDisabled = false;
+                return res();
+              })
+              .catch((getSpaceStatus) => {
+                this.noSpace = true;
+                console.log(getSpaceStatus);
+                return rej({ status: getSpaceStatus == 1 ? 2 : 3 }); // 2 - No Free Space; 3 - WinApi Error
+              });
+          })
+          .catch(() => {
+            rej({ status: 1 }); // No Permissions
+          });
+      });
     },
     startInstall() {
       if (this.installed) {
@@ -169,113 +211,90 @@ export default {
         return;
       }
 
-      this.testPermissions(this.selectedPath)
+      this.checkInstallAvailability()
         .then(() => {
-          this.checkFreeSpace()
-            .then(() => {
-              this.$store.state.sidebarBlocked = true;
-              this.installing = true;
+          this.$store.state.sidebarBlocked = true;
+          this.installing = true;
 
-              this.status = this.localization.get("#UI_DOWNLOADING");
+          this.status = this.localization.get("#UI_DOWNLOADING");
 
-              let info = {
-                url: this.game.info.url,
-                properties: {
-                  directory: GameControl.getTempPath(store),
-                },
-              };
+          let info = {
+            url: this.game.info.url,
+            properties: {
+              directory: GameControl.getTempPath(store),
+            },
+          };
 
-              // Начать загрузку
-              ipcRenderer.send("game-download", info);
+          // Начать загрузку
+          ipcRenderer.send("game-download", info);
 
-              ipcRenderer.once("game-canceled", () => {
-                ipcRenderer.removeAllListeners("game-download-complete");
-                ipcRenderer.removeAllListeners("set-progress");
+          ipcRenderer.once("game-canceled", () => {
+            ipcRenderer.removeAllListeners("game-download-complete");
+            ipcRenderer.removeAllListeners("set-progress");
 
-                this.canceled = true;
-                this.installed = true;
-                this.installing = false;
-                this.$store.state.sidebarBlocked = false;
+            this.canceled = true;
+            this.installed = true;
+            this.installing = false;
+            this.$store.state.sidebarBlocked = false;
 
-                this.$store.commit("createNotification", {
-                  text: this.localization.get(
-                    this.localization.get("#UNABLE_TO_DOWNLOAD", this.game.name)
-                  ),
-                  type: 1,
-                  lifetime: 0,
-                });
-              });
-
-              ipcRenderer.once("game-download-complete", (e, l_path) => {
-                let game = this.game;
-                let install_path = GameControl.getLibraryPath(store);
-
-                this.status = this.localization.get("#UI_EXTRACTING");
-                this.progress = 0;
-
-                let extract_path = install_path;
-
-                if (!game.info.isStandalone)
-                  extract_path = path.join(extract_path, game.info.installPath);
-
-                // Ask main to unpack downloaded game
-                ipcRenderer.send("game-unpack", {
-                  archive: l_path,
-                  extractTo: extract_path,
-                });
-
-                ipcRenderer.once("game-unpack-complete", (e) => {
-                  // Game was unpacked
-                  let installed = store.get("installed");
-
-                  if (!installed[this.id]) installed[this.id] = {};
-                  installed[this.id].installed = true;
-                  installed[this.id].directory = install_path;
-
-                  store.set("installed", installed);
-
-                  new Notification("HLSR", {
-                    body: this.localization.get(
-                      "#UI_NOTIFICATION_INSTALLED",
-                      this.game
-                    ),
-                  });
-
-                  this.installed = true;
-                  this.installing = false;
-                  this.$store.state.sidebarBlocked = false;
-
-                  ipcRenderer.removeAllListeners("set-progress");
-                });
-              });
-
-              ipcRenderer.on("set-progress", this.progressUpdate);
-            })
-            .catch(() => {
-              this.noSpace = true;
-              this.installDisabled = true;
+            this.$store.commit("createNotification", {
+              text: this.localization.get(
+                this.localization.get("#UNABLE_TO_DOWNLOAD", this.game.name)
+              ),
+              type: 1,
+              lifetime: 0,
             });
+          });
+
+          ipcRenderer.once("game-download-complete", (e, l_path) => {
+            let game = this.game;
+            let install_path = GameControl.getLibraryPath(store);
+
+            this.status = this.localization.get("#UI_EXTRACTING");
+            this.progress = 0;
+
+            let extract_path = install_path;
+
+            if (!game.info.isStandalone)
+              extract_path = path.join(extract_path, game.info.installPath);
+
+            // Ask main to unpack downloaded game
+            ipcRenderer.send("game-unpack", {
+              archive: l_path,
+              extractTo: extract_path,
+            });
+
+            ipcRenderer.once("game-unpack-complete", (e) => {
+              // Game was unpacked
+              let installed = store.get("installed");
+
+              if (!installed[this.game.id]) installed[this.game.id] = {};
+              installed[this.game.id].installed = true;
+              installed[this.game.id].directory = install_path;
+
+              store.set("installed", installed);
+
+              new Notification("HLSR", {
+                body: this.localization.get(
+                  "#UI_NOTIFICATION_INSTALLED",
+                  this.game
+                ),
+              });
+
+              this.installed = true;
+              this.installing = false;
+              this.$store.state.sidebarBlocked = false;
+
+              ipcRenderer.removeAllListeners("set-progress");
+            });
+          });
+
+          ipcRenderer.on("set-progress", this.progressUpdate);
         })
-        .catch(() => {
-          this.installDisabled = true;
-        });
+        .catch(this.handleAvailabilityErrors);
     },
     progressUpdate(e, args) {
       this.progress = Math.round(args.percent);
-    },
-    checkFreeSpace() {
-      return new Promise((resolve, reject) => {
-        checkDiskSpace(this.selectedPath).then((diskSpace) => {
-          this.freeSpace = Math.floor(diskSpace.free / 1048576);
-
-          if (
-            this.freeSpace - (this.game.info.size + this.game.info.archive) >
-            100
-          )
-            resolve();
-          else reject();
-        });
-      });
     },
     testPermissions(dir) {
       return new Promise((resolve, reject) => {
@@ -337,47 +356,12 @@ export default {
             }
 
             this.selectedPath = newLibDir;
-            this.checkFreeSpace()
+
+            this.checkInstallAvailability()
               .then(() => {
-                if (require("fs").readdirSync(newLibDir).length == 0) {
-                  // Folder is empty
-                  const cyrillicPattern = /[а-яА-ЯЁё]/;
-
-                  if (cyrillicPattern.test(newLibDir)) {
-                    // Cyrillic symbols were found
-                    this.$store.commit("createNotification", {
-                      text: this.localization.get("#INSTALLATION_CYRILLIC"),
-                      type: 1,
-                    });
-
-                    return (this.installDisabled = true);
-                  } else {
-                    // Everything is okay
-                    this.testPermissions(newLibDir)
-                      .then(() => {
-                        this.installDisabled = false;
-                        store.set("libraryPath", newLibDir);
-                      })
-                      .catch(() => {
-                        this.installDisabled = true;
-                      });
-                  }
-                } else {
-                  // Folder isn't empty
-                  this.$store.commit("createNotification", {
-                    text: this.localization.get(
-                      this.localization.get("#FOLDER_NOT_EMPTY")
-                    ),
-                    type: 1,
-                  });
-
-                  return (this.installDisabled = true);
-                }
+                store.set("libraryPath", newLibDir);
               })
-              .catch(() => {
-                this.installDisabled = true;
-                this.noSpace = true;
-              });
+              .catch(this.handleAvailabilityErrors);
           });
       }
     },

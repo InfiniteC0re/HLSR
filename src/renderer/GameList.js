@@ -71,7 +71,7 @@ export default [
     name: "Half-Life 2",
     iconFile: "hl2.ico",
     background: "half-life-2-background.jpg",
-    needSteam: false,
+    needSteam: true,
     info: {
       isStandalone: true,
       requiredGame: null,

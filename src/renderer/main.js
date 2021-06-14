@@ -49,9 +49,6 @@ import App from "./App";
 import router from "./router";
 import store from "./store";
 
-// const ewc = require('node-loader!@/native/ewc.node');
-// ewc.setComposition(require('electron').remote.getCurrentWindow().getNativeWindowHandle(), 4, 0x90000000);
-
 if (!process.env.IS_WEB) Vue.use(require("vue-electron"));
 Vue.http = Vue.prototype.$http = axios;
 Vue.config.productionTip = false;

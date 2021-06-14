@@ -90,6 +90,7 @@ var Snow = {
         p.y = -10;
       }
     });
+    
     if (this.quit) {
       return;
     }

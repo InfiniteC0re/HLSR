@@ -7,6 +7,10 @@ export default {
     let installed = store.get("installed");
     return Object.keys(installed).indexOf(appid) >= 0;
   },
+  getInstalledCount(store) {
+    let installed = store.get("installed");
+    return Object.keys(installed).length;
+  },
   startGame(hlsrconsole, store, gameID, globalstore, navbar) {
     let config = store.get("config");
 

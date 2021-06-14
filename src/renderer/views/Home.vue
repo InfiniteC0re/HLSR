@@ -25,10 +25,10 @@
               <span
                 class="quick-play-game-name"
                 :class="{ gray: isQuickGameButtonActive }"
-                >{{ lastLaunchedGame }}</span
+                >{{ lastLaunchedGameName }}</span
               >
               <md-button
-                :disabled="!lastLaunchedGame"
+                :disabled="!checkLastLaunchedGameInstalled"
                 @click.stop="openPrefs"
                 class="md-icon-button"
                 style="margin-left: auto"
@@ -111,19 +111,18 @@
 </template>
 
 <script>
-import Store from "../utils/Store.js";
-import StoreDefaults from "../utils/StoreDefaults.js";
-import SteamFriend from "./Home/SteamFriend";
-import SoundCloudWidget from "./Home/SoundCloud";
-import GameControl from "../utils/GameControl";
-import { ipcRenderer } from "electron";
+import Store from "@/scripts/Store";
+import StoreDefaults from "@/scripts/StoreDefaults";
+import SteamFriend from "@/components/Home/SteamFriend";
+import SoundCloudWidget from "@/components/Home/SoundCloud";
+import GameControl from "@/scripts/GameControl";
 
 const store = new Store({
   configName: "library",
   defaults: StoreDefaults.library,
 });
 
-const settings_store = new Store({
+const settingsStore = new Store({
   configName: "settings",
   defaults: StoreDefaults.settings,
 });
@@ -155,30 +154,30 @@ export default {
     },
     isQuickGameButtonActive() {
       let id = store.get("lastLaunched");
+      
+      let game = GameControl.getGame(id);
+      if (!game) return false;
+      
+      let licenses = this.$store.state.steamworks.licenses;
 
       return (
-        (navigator.onLine == false &&
-          GameControl.checkInstalled(store, id) == false) ||
+        (navigator.onLine == false && this.checkLastLaunchedGameInstalled) ||
         this.isGameStarted ||
-        (id != "220" && id != "218" && !this.steamActive)
+        (!licenses[id] && game.needSteam)
       );
     },
-    lastLaunchedGame() {
+    checkLastLaunchedGameInstalled() {
       let id = store.get("lastLaunched");
 
-      if (!GameControl.checkInstalled(store, id))
+      return GameControl.checkInstalled(store, id);
+    },
+    lastLaunchedGameName() {
+      let id = store.get("lastLaunched");
+
+      if (!this.checkLastLaunchedGameInstalled)
         return this.localization.get("#UI_RECENTGAME_NOGAME");
 
       return GameControl.getTitle(id);
-    },
-    lastLaunchedGameButton() {
-      if (!this.isQuickGameButtonActive) return;
-      let id = store.get("lastLaunched");
-
-      if (!GameControl.checkInstalled(store, id)) return true;
-
-      if (id.length > 0) return false;
-      else return true;
     },
   },
   methods: {
@@ -198,9 +197,9 @@ export default {
         },
       });
 
-      let config = settings_store.get("config");
+      let config = settingsStore.get("config");
       config.soundcloudPlaylist = this.playlistInput;
-      settings_store.set("config", config);
+      settingsStore.set("config", config);
 
       this.soundCloudSettings = false;
 
@@ -226,7 +225,7 @@ export default {
     },
   },
   mounted() {
-    let config = settings_store.get("config");
+    let config = settingsStore.get("config");
     this.playlistInput = config.soundcloudPlaylist || "";
 
     if (this.$store.state.shouldOpenChangelog == true) {

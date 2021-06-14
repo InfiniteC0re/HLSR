@@ -3,19 +3,19 @@
     <div class="text basictext">{{ text }}</div>
     <div class="right">
       <div class="selected" @click="toggleMenu">
-        <span>{{ getSelected }}</span>
+        <span>{{ selected.name }}</span>
         <div class="icon">
           <i class="fas fa-sort-down"></i>
         </div>
       </div>
       <div class="list" ref="list" hidden>
         <div
-          v-for="(item, index) in items"
+          v-for="(item, index) in orderedItems"
           :num="index"
-          @click="setItem($event)"
+          @click="setItem(item)"
           :key="item.id"
         >
-          <div class="item basictext">{{ item }}</div>
+          <div class="item basictext">{{ item.name }}</div>
         </div>
       </div>
     </div>
@@ -42,18 +42,28 @@ export default {
     },
     items: {
       type: Array,
-      default: [null],
+      default: [],
     },
   },
   computed: {
-    getSelected() {
-      return this.items[this.value];
+    selected() {
+      let res = this.items.find((item) => item.id == this.value);
+      if (res) return res;
+      else return {};
     },
+    orderedItems: function() {
+      return this.items.sort((a, b) => a.id - b.id);
+    }
   },
   data() {
     return {
       locked: false,
     };
+  },
+  watch: {
+    /* eslint-disable */
+    items(newVal, oldVal) {},
+    /* eslint-enable */
   },
   methods: {
     toggleMenu() {
@@ -67,9 +77,8 @@ export default {
     setLocked(state) {
       if (state === true || state === false) this.locked = state;
     },
-    setItem(e) {
-      let id = parseInt(e.currentTarget.getAttribute("num"));
-      this.selected = e.currentTarget.innerText;
+    setItem(item) {
+      let id = item.id;
       this.$emit("change", id);
     },
   },

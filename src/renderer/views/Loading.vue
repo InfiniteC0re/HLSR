@@ -59,13 +59,12 @@
 </template>
 
 <script>
-import LoadingIndicator from "./LoadingIndicator";
-import BackgroundTheme from "./BackgroundTheme";
-import Header from "./NavBar/Header";
+import LoadingIndicator from "@/components/LoadingIndicator";
+import Header from "@/components/NavBar/Header";
 
 export default {
   name: "LoadingScreen",
-  components: { BackgroundTheme, Header, LoadingIndicator },
+  components: { Header, LoadingIndicator },
   data() {
     return {
       localization: this.$parent.localization,

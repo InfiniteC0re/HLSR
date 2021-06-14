@@ -13,8 +13,8 @@
 </template>
 
 <script>
-import Store from "../../utils/Store.js";
-import StoreDefaults from "../../utils/StoreDefaults.js";
+import Store from "@/scripts/Store";
+import StoreDefaults from "@/scripts/StoreDefaults";
 
 const store = new Store({
   configName: "settings",

@@ -129,15 +129,15 @@
 </template>
 
 <script>
-import Store from "../../utils/Store.js";
-import StoreDefaults from "../../utils/StoreDefaults.js";
-import GameSelector from "../Elements/GameSelector";
-import BackgroundItem from "./backgroundItem/BackgroundItem";
-import AimItem from "./aimItem/AimItem";
-import CheckBox from "./checkbox/CheckBox";
-import Block from "./Block";
-import ButtonAlt from "../Elements/Button";
-import GameControl from "../../utils/GameControl";
+import Store from "@/scripts/Store";
+import StoreDefaults from "@/scripts/StoreDefaults";
+import GameSelector from "@/components/Elements/GameSelector";
+import BackgroundItem from "@/components/Customization/backgroundItem/BackgroundItem";
+import AimItem from "@/components/Customization/aimItem/AimItem";
+import CheckBox from "@/components/Customization/checkbox/CheckBox";
+import Block from "@/components/Customization/Block";
+import ButtonAlt from "@/components/Elements/Button";
+import GameControl from "@/scripts/GameControl";
 
 const store = new Store({
   configName: "library",

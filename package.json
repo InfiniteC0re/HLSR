@@ -1,6 +1,6 @@
 {
   "name": "hlsr",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "author": "",
   "description": "Change the way you feel speedruns",
   "main": "./dist/electron/main.js",
@@ -20,6 +20,9 @@
     "unit": "karma start test/unit/karma.conf.js",
     "postinstall": "npm run lint:fix"
   },
+  "steamworks": {
+    "appid": "250820"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/InfiniteC0re/HLSR.git"
@@ -37,59 +40,30 @@
         "repo": "hlsr"
       }
     ],
-    "fileAssociations": [
-      {
-        "ext": "hlsrc",
-        "name": "HLSR Config Module",
-        "role": "None",
-        "icon": "./build/icons/hlsrc.ico"
-      }
-    ],
     "asar": false,
     "files": [
       "dist/electron/**/*",
       "icons"
     ],
-    "dmg": {
-      "contents": [
-        {
-          "x": 410,
-          "y": 150,
-          "type": "link",
-          "path": "/Applications"
-        },
-        {
-          "x": 130,
-          "y": 150,
-          "type": "file"
-        }
-      ]
-    },
-    "mac": {
-      "icon": "build/icons/icon.icns"
-    },
     "win": {
       "icon": "build/icons/icon.ico",
       "requestedExecutionLevel": "highestAvailable"
-    },
-    "linux": {
-      "icon": "build/icons"
     }
   },
   "dependencies": {
     "axios": "^0.19.2",
-    "check-disk-space": "^2.1.0",
     "discord-rpc": "3.2.0",
     "electron-dl": "https://github.com/InfiniteC0re/electron-dl",
     "electron-unhandled": "^3.0.2",
     "electron-updater": "^4.3.4",
     "hlsr-console": "^1.0.8",
+    "hlsr-hlsd": "^1.0.1",
+    "hlsr-native": "^1.0.5",
     "jquery": "^3.5.1",
     "md5-file": "^5.0.0",
     "node-machine-id": "^1.1.12",
-    "onezip": "^4.2.1",
+    "onezip": "4.2.1",
     "sass-loader": "^10",
-    "steamworks": "./node_modules/steamworks",
     "vue": "^2.5.16",
     "vue-codemirror": "^4.0.6",
     "vue-electron": "^1.0.6",

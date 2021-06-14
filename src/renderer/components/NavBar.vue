@@ -104,8 +104,8 @@
 import Header from "./NavBar/Header";
 import NavBarButton from "./NavBar/Button";
 import $ from "jquery";
-import Store from "../utils/Store.js";
-import StoreDefaults from "../utils/StoreDefaults.js";
+import Store from "@/scripts/Store.js";
+import StoreDefaults from "@/scripts/StoreDefaults.js";
 
 const store = new Store({
   configName: "library",

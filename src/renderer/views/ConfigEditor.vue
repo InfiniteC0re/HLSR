@@ -29,10 +29,10 @@
 
 <script>
 import { codemirror } from "vue-codemirror";
-import "@/utils/hlscripts/hlscripts.js";
-import Store from "../utils/Store.js";
-import StoreDefaults from "../utils/StoreDefaults.js";
-import GameControl from "@/Utils/GameControl";
+import "@/scripts/hlscripts.js";
+import Store from "@/scripts/Store.js";
+import StoreDefaults from "@/scripts/StoreDefaults.js";
+import GameControl from "@/scripts/GameControl";
 
 import fs from "fs";
 import { remote } from "electron";
@@ -69,17 +69,27 @@ export default {
         });
     },
     saveFile() {
-      if (this.filePath) {
-        fs.writeFileSync(this.filePath, this.code);
-
-        // Send a notification
-        this.$store.commit("createNotification", {
-          text: this.localization.get("#UI_NOTIFICATION_SAVED"),
+      if (!this.filePath) {
+        let filePath = require("electron").remote.dialog.showSaveDialogSync({
+          filters: [
+            { name: "Config", extensions: ["cfg"] },
+            { name: "All Files", extensions: ["*"] },
+          ],
         });
+
+        if (filePath) this.filePath = filePath;
+        else return;
       }
+
+      this.fileName = this.filePath.split("\\").reverse()[0];
+      fs.writeFileSync(this.filePath, this.code);
+
+      // Send a notification
+      this.$store.commit("createNotification", {
+        text: this.localization.get("#UI_NOTIFICATION_SAVED"),
+      });
     },
     hints() {
-      console.log(this.cm);
       this.cm.showHint({ completeSingle: false });
     },
   },
@@ -114,6 +124,16 @@ export default {
         },
       },
     };
+  },
+  mounted() {
+    this.filePath = this.$store.state.scriptEditor.filePath;
+    this.fileName = this.$store.state.scriptEditor.fileName;
+    this.code = this.$store.state.scriptEditor.content;
+  },
+  beforeDestroy() {
+    this.$store.state.scriptEditor.filePath = this.filePath;
+    this.$store.state.scriptEditor.fileName = this.fileName;
+    this.$store.state.scriptEditor.content = this.code;
   },
 };
 </script>

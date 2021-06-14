@@ -102,10 +102,10 @@
 
 <script type="text/javascript">
 import { ipcRenderer } from "electron";
-import Store from "../utils/Store.js";
-import StoreDefaults from "../utils/StoreDefaults.js";
-import GameList from "../GameList";
-import GameControl from "../utils/GameControl";
+import Store from "@/scripts/Store.js";
+import StoreDefaults from "@/scripts/StoreDefaults.js";
+import GameList from "@/GameList";
+import GameControl from "@/scripts/GameControl";
 
 const path = require("path");
 const onezip = require("onezip");

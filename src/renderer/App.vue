@@ -49,7 +49,6 @@
         localization.get("#UI_RETRY")
       }}</md-button>
     </md-snackbar>
-    <GameInstall ref="gameinstall" />
     <Notification />
   </div>
 </template>
@@ -60,18 +59,18 @@ import Frame from "./components/Frame";
 import BackgroundTheme from "./components/BackgroundTheme";
 import NavBar from "./components/NavBar";
 import Notification from "./components/Elements/Notification";
-import GameInstall from "./components/GameInstall.vue";
-import localization from "@/utils/Language.js";
-import Store from "./utils/Store.js";
-import StoreDefaults from "./utils/StoreDefaults.js";
-import Snow from "./utils/Snow";
+import localization from "@/scripts/Language.js";
+import Store from "./scripts/Store.js";
+import StoreDefaults from "./scripts/StoreDefaults.js";
+import Snow from "./scripts/Snow";
+import BlobsTheme from "./scripts/BlobsTheme";
 import HLSRConsole from "hlsr-console";
-import "./utils/Soundcloud";
+import "@/scripts/soundcloud";
 
 // CSS
 import "codemirror/lib/codemirror.css";
 import "codemirror/addon/hint/show-hint.css";
-import "@/utils/infinite.css";
+import "@/css/infinite.css";
 
 // CodeMirror Addons
 import "codemirror/addon/selection/active-line.js";
@@ -82,7 +81,7 @@ import "codemirror/addon/scroll/annotatescrollbar.js";
 import "codemirror/addon/search/matchesonscrollbar.js";
 import "codemirror/addon/search/searchcursor.js";
 import "codemirror/addon/search/match-highlighter.js";
-import GameControl from "./utils/GameControl";
+import GameControl from "./scripts/GameControl";
 import GameList from "./GameList";
 
 const Console = new HLSRConsole();
@@ -100,7 +99,6 @@ export default {
   components: {
     BackgroundTheme,
     NavBar,
-    GameInstall,
     Frame,
     Notification,
     SideBar,
@@ -128,6 +126,7 @@ export default {
       appid: null,
       started: false,
     },
+    window: null,
   }),
   computed: {
     isPaused() {
@@ -206,7 +205,7 @@ export default {
       let rpc = Object.assign({}, this.standardRPC);
       rpc.buttons[0].label = this.localization.get("#RPC_WEBSITE");
 
-      if (settings.get("config").mlpMode && settings.get("config").theme == 4) {
+      if (settings.get("config").mlpMode && settings.get("config").theme == 3) {
         rpc.largeImageKey = "mlp";
         rpc.smallImageKey = "pony-steam";
         rpc.details = this.localization.get("#RPC_MLP");
@@ -228,15 +227,23 @@ export default {
 
       if (!this.widget) return this.setRPC(rpc);
 
-      this.widget.getPosition((position) => {
-        if (!this.isPaused) {
+      if (!this.isPaused) {
+        this.widget.getPosition((position) => {
           rpc.details = this.localization.get("#RPC_MUSIC");
           rpc.state = this.song.title;
           rpc.endTimestamp = this.$store.state.soundCloud.endTimestamp;
-        }
 
+          this.setRPC(rpc);
+        });
+      } else {
         this.setRPC(rpc);
-      });
+      }
+    },
+    windowFocus() {
+      this.$store.state.window.focused = true;
+    },
+    windowBlur() {
+      this.$store.state.window.focused = false;
     },
   },
   mounted() {
@@ -248,28 +255,27 @@ export default {
     });
 
     let ewindow = require("electron").remote.getCurrentWindow();
+    this.$store.state.window.focused = ewindow.isFocused();
+    this.window = ewindow;
 
-    ewindow.on("focus", () => {
-      this.focused = true;
-    });
+    ewindow.on("focus", this.windowFocus);
+    ewindow.on("blur", this.windowBlur);
 
-    ewindow.on("blur", () => {
-      this.focused = false;
-    });
-
+    // Background extras
     let config = settings.get("config");
     this.$store.commit("setParticlesState", config.noParticles);
 
     let month = new Date().getMonth() + 1;
     if (month == 0 || month == 1 || month == 12) Snow.start(this.$store);
+    this.$store.state.blobs = BlobsTheme;
 
     // SteamWorks
     ipcRenderer.on("steamStatus", (e, status) => {
-      let prevState = this.$store.state.steamworks.started ? true : false;
+      ipcRenderer.send("getLicenses");
       this.$store.commit("steamworks_setStatus", status);
 
       if (status) {
-        if (!prevState) ipcRenderer.send("setRichPresence", "HLSR");
+        ipcRenderer.send("setRichPresence", "HLSR");
         ipcRenderer.send("getSteamFriends");
         ipcRenderer.send("getSteamName");
 
@@ -285,10 +291,14 @@ export default {
       this.$store.commit("steamworks_setName", name);
     });
 
+    ipcRenderer.on("steamLicenses", (e, licenses) => {
+      this.$store.state.steamworks.licenses = licenses;
+    });
+
     setTimeout(() => {
       setInterval(() => {
         let window = require("electron").remote.getCurrentWindow();
-        if (this.$store.state.steamworks.started && window.isFocused())
+        if (this.$store.state.steamworks.started && this.$store.state.window.focused)
           ipcRenderer.send("getSteamFriends");
       }, 5000);
 
@@ -371,13 +381,6 @@ export default {
 
     rpc.login({ clientId }).catch(console.error);
 
-    // HLSRC
-    ipcRenderer.on("hlsrc", (event, data) => {
-      this.$store.commit("createNotification", {
-        text: "Данные HLSRC файла прочитаны!",
-      });
-    });
-
     // Quick Game Launch (shortcuts)
     ipcRenderer.on("start-game-quick", (e, appid) => {
       if (this.launchInfo.appid != null && !this.launchInfo.started) return;
@@ -421,6 +424,10 @@ export default {
     }
 
     ipcRenderer.send("ready");
+  },
+  beforeDestroy() {
+    this.window.removeAllListeners("focus");
+    this.window.removeAllListeners("blur");
   },
 };
 </script>

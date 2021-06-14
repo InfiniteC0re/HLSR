@@ -17,7 +17,7 @@
 </template>
 
 <script type="text/javascript">
-import localization from "@/utils/Language.js";
+import localization from "@/scripts/Language.js";
 
 const local = new localization();
 

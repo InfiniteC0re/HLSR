@@ -8,9 +8,11 @@
       >
         <i class="fas fa-sync-alt"></i>
       </div>
-      <div class="framebutton" @click="showDebugMenu" v-if="isDev">
-        <i class="fas fa-database"></i>
-      </div>
+      <router-link to="/debug/hlsd">
+        <div class="framebutton" @click="showDebugMenu" v-if="isDev">
+          <i class="fas fa-database"></i>
+        </div>
+      </router-link>
       <div class="framebutton" @click="showDevTools" v-if="isDev">
         <i class="fab fa-dev"></i>
       </div>
@@ -32,6 +34,7 @@
 
 <script>
 var isDev = require("process").env.WEBPACK_DEV_SERVER === "true";
+
 export default {
   data: () => ({
     isDev,
@@ -44,13 +47,10 @@ export default {
       switch (this.$parent.updateAvailable) {
         case 0:
           return "";
-          break;
         case 1:
           return this.localization.get("#UI_UPDATE_DOWNLOADING");
-          break;
         case 2:
           return this.localization.get("#UI_UPDATE_READY");
-          break;
       }
     },
   },

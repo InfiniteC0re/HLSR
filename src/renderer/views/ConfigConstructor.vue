@@ -112,10 +112,10 @@
 </template>
 
 <script>
-import ButtonAlt from "./Elements/Button";
-import Store from "../utils/Store.js";
-import StoreDefaults from "../utils/StoreDefaults.js";
-import GameControl from "../utils/GameControl";
+import ButtonAlt from "@/components/Elements/Button";
+import Store from "@/scripts/Store.js";
+import StoreDefaults from "@/scripts/StoreDefaults.js";
+import GameControl from "@/scripts/GameControl";
 
 const store = new Store({
   configName: "scripts",

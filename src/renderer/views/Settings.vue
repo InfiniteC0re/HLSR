@@ -78,10 +78,10 @@
 </template>
 
 <script>
-import checkbox from "./Elements/Checkbox";
-import dropdown from "./Elements/Dropdown";
-import Store from "../utils/Store.js";
-import StoreDefaults from "../utils/StoreDefaults.js";
+import checkbox from "@/components/Elements/Checkbox";
+import dropdown from "@/components/Elements/Dropdown";
+import Store from "@/scripts/Store.js";
+import StoreDefaults from "@/scripts/StoreDefaults.js";
 
 const store = new Store({
   configName: "settings",
@@ -134,17 +134,35 @@ export default {
     },
     updateLocale() {
       this.languages = [
-        this.$parent.localization.get("#UI_ENGLISH"),
-        this.$parent.localization.get("#UI_RUSSIAN"),
+        { name: this.$parent.localization.get("#UI_ENGLISH"), id: 0 },
+        { name: this.$parent.localization.get("#UI_RUSSIAN"), id: 1 },
       ];
 
       this.themes = [
-        this.$parent.localization.get("#UI_GRADIENT_THEME"),
-        this.$parent.localization.get("#UI_BLUE_THEME"),
-        this.$parent.localization.get("#UI_RED_THEME"),
+        { name: this.$parent.localization.get("#UI_GRADIENT_THEME"), id: 0 },
+        { name: this.$parent.localization.get("#UI_BLUE_THEME"), id: 1 },
+        { name: this.$parent.localization.get("#UI_RED_THEME"), id: 2 },
+        // Extra theme  
+        { name: this.$parent.localization.get("#UI_BLOBS_THEME"), id: 4 },
       ];
 
-      if (store.get("config").mlpMode) this.themes.push("My Little Pony");
+      if (store.get("config").mlpMode)
+        this.themes.push({ name: "My Little Pony", id: 3 });
+      else if (store.get("config").theme == 3)
+        this.themes.push({ name: "Freelancer", id: 3 });
+
+      // let release = require("os").release().split(".");
+
+      // if (release[0] == "10") {
+      //   // 17134 - Windows 10 1803
+      //   let acryllicSupported = parseInt(release[2]) >= 17134;
+      //   if (acryllicSupported) {
+      //     this.themes.push({
+      //       name: this.$parent.localization.get("#UI_ACRYLLIC_THEME"),
+      //       id: 4,
+      //     });
+      //   }
+      // }
     },
     themeChange() {
       if (this.$parent.lancerMode) return;
@@ -180,7 +198,7 @@ export default {
       } else if (restart) {
         // Send a notification
         this.$store.commit("createNotification", {
-          text: this.localization.get("#RESTART_APP")
+          text: this.localization.get("#RESTART_APP"),
         });
       }
     },

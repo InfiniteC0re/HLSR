@@ -8,7 +8,7 @@
         }"
       >
         <div class="main">
-          <div class="game-title">{{ gameTitle }}</div>
+          <div class="game-title">{{ game.name }}</div>
           <div class="game-top">
             <md-button
               :class="{ 'md-raised': true, installedGame: installed }"
@@ -84,13 +84,11 @@
             >
               <div class="text">{{ localization.get("#UI_WIKI") }}</div>
             </div>
-            <div
-              class="warning"
-              :title="localization.get('#UI_FOUND_CYRILLIC_HINT')"
-              v-if="cyrillic"
-            >
+            <div class="warning" v-if="shouldShowWarning">
               <i class="fad fa-exclamation-triangle"></i>
-              <p>{{ localization.get("#UI_FOUND_CYRILLIC") }}</p>
+              <p>
+                {{ warningMessage }}
+              </p>
             </div>
           </div>
           <div class="mainpanel">
@@ -108,13 +106,13 @@
 </template>
 
 <script type="text/javascript">
-import Overview from "./GameMenu/Overview";
-import Configurator from "./GameMenu/Configurator";
-import Store from "../utils/Store.js";
-import StoreDefaults from "../utils/StoreDefaults.js";
-import GameControl from "../utils/GameControl";
-import AltButton from "./Elements/Button";
-import NewGameInstall from "./NewGameInstall.vue";
+import Overview from "@/components/GameMenu/Overview";
+import Configurator from "@/components/GameMenu/Configurator";
+import Store from "@/scripts/Store";
+import StoreDefaults from "@/scripts/StoreDefaults";
+import GameControl from "@/scripts/GameControl";
+import AltButton from "@/components/Elements/Button";
+import NewGameInstall from "@/components/NewGameInstall.vue";
 
 const store = new Store({
   configName: "library",
@@ -128,8 +126,7 @@ export default {
   data() {
     return {
       section: 0,
-      gameID: null,
-      gameTitle: null,
+      game: {},
       background: "linear-gradient(rgb(140, 140, 140), rgb(140, 140, 140))",
       localization: this.$parent.localization,
       hlsrconsole: this.$parent.hlsrconsole,
@@ -142,34 +139,45 @@ export default {
     isButtonDisabled() {
       return (
         (navigator.onLine == false &&
-          GameControl.checkInstalled(store, this.gameID) == false) ||
+          GameControl.checkInstalled(store, this.game.id) == false) ||
         this.isGameStarted ||
         this.$store.state.extraNotification ||
-        (this.gameID != "220" && this.gameID != "218" && !this.steamActive)
+        (!this.hasLicense && this.game.needSteam)
       );
-      // return (
-      //   (!navigator.onLine &&
-      //     !GameControl.checkInstalled(this.hlsrconsole, this.gameID)) ||
-      //   (this.gameID != "220" || this.gameID != "218") ||
-      //   this.isGameStarted
-      // );
     },
     isGameStarted() {
       return this.$store.state.game.started;
     },
+    isSteamStarted() {
+      return this.$store.state.steamworks.started;
+    },
     startedGameName() {
       return this.$store.state.game.name;
     },
-    steamActive() {
-      return this.$store.state.steamworks.started;
+    hasLicense() {
+      return this.$store.state.steamworks.licenses[this.game.id];
+    },
+    shouldShowWarning() {
+      return (this.game.needSteam && !this.hasLicense) || this.cyrillic;
+    },
+    warningMessage() {
+      if (!this.isSteamStarted && this.game.needSteam)
+        return this.localization.get("#UI_NO_STEAM");
+
+      if (this.game.needSteam && !this.hasLicense)
+        return this.localization.get("#UI_NO_LICENSE");
+
+      if (this.cyrillic) return this.localization.get("#UI_FOUND_CYRILLIC");
+
+      return "";
     },
   },
   methods: {
     uninstallGameHandle() {
-      GameControl.uninstallGame(store, this.gameID);
+      GameControl.uninstallGame(store, this.game.id);
 
       this.$parent.$refs.navbar.goTo("game", {
-        id: this.gameID,
+        id: this.game.id,
         refresh: true,
       });
 
@@ -187,29 +195,29 @@ export default {
             remote.app.getPath("desktop"),
             `${this.localization.get(
               "#SHORTCUT_LAUNCH"
-            )} ${this.gameTitle.replace(":", "")}.lnk`
+            )} ${this.game.name.replace(":", "")}.lnk`
           ),
           "create",
           {
             target: require("process").execPath,
-            args: `-quick ${this.gameID}`,
+            args: `-quick ${this.game.id}`,
             icon:
               process.resourcesPath +
               "\\app\\icons\\" +
-              GameControl.getIcon(this.gameID),
+              GameControl.getIcon(this.game.id),
             iconIndex: 0,
           }
         );
       }
     },
     buttonIcon() {
-      if (GameControl.checkInstalled(store, this.gameID)) return ``;
+      if (GameControl.checkInstalled(store, this.game.id)) return ``;
       else return ``;
     },
     buttonText() {
-      if (this.isGameStarted && this.startedGameName == this.gameTitle)
+      if (this.isGameStarted && this.startedGameName == this.game.name)
         return this.localization.get("#UI_STARTED");
-      else if (GameControl.checkInstalled(store, this.gameID))
+      else if (GameControl.checkInstalled(store, this.game.id))
         return this.localization.get("#UI_PLAY");
       else return this.localization.get("#UI_INSTALL");
     },
@@ -217,27 +225,26 @@ export default {
       this.background = `url(${require("@/assets/screenshots/" + fn)})`;
     },
     gameButton() {
-      if (GameControl.checkInstalled(store, this.gameID)) {
+      if (GameControl.checkInstalled(store, this.game.id)) {
         GameControl.startGame(
           this.hlsrconsole,
           store,
-          this.gameID,
+          this.game.id,
           this.$store,
           this.$parent.$refs.navbar
         );
       } else {
-        let game = require("@/GameList").default.find(
-          (t) => t.id == this.gameID
+        let isGameStandalode = this.game.info.isStandalone;
+        let isParentGameInstalled = GameControl.checkInstalled(
+          store,
+          this.game.info.requiredGame
         );
 
-        if (
-          game.info.isStandalone ||
-          GameControl.checkInstalled(store, game.info.requiredGame)
-        ) {
+        if (isGameStandalode || isParentGameInstalled) {
           this.isInstallationOpened = true;
         } else {
           this.$parent.$refs.navbar.goTo("game", {
-            id: game.info.requiredGame,
+            id: this.game.info.requiredGame,
             install: true,
           });
         }
@@ -246,13 +253,13 @@ export default {
     sourceRunsWiki() {
       let shell = require("electron").remote.shell;
 
-      shell.openExternal(GameControl.getSourceRunsLink(this.gameID));
+      shell.openExternal(GameControl.getSourceRunsLink(this.game.id));
     },
     gameFolder() {
-      GameControl.openGameFolder(this.gameID, store);
+      GameControl.openGameFolder(this.game.id, store);
     },
     refresh() {
-      this.installed = GameControl.checkInstalled(store, this.gameID);
+      this.installed = GameControl.checkInstalled(store, this.game.id);
       if (/[а-яА-ЯЁё]/.test(GameControl.getLibraryPath(store))) {
         this.cyrillic = true;
       }
@@ -264,13 +271,12 @@ export default {
     let section = this.$route.query.section;
     if (section) this.section = section;
 
-    this.gameID = this.$route.query.id;
-    this.gameTitle = GameControl.getTitle(this.gameID);
+    this.game = GameControl.getGame(this.$route.query.id);
 
     if (this.$route.query.install) this.isInstallationOpened = true;
 
-    this.updateBackground(GameControl.getBackground(this.gameID));
-    this.installed = GameControl.checkInstalled(store, this.gameID);
+    this.updateBackground(GameControl.getBackground(this.game.id));
+    this.installed = GameControl.checkInstalled(store, this.game.id);
 
     if (
       /[а-яА-ЯЁё]/.test(GameControl.getLibraryPath(store)) &&
