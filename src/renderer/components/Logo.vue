@@ -1,5 +1,5 @@
 <template>
-  <div id="header" :style="isAbsolute">
+  <div id="header" :style="positionStyle">
     <div class="logo" :style="{ color }" @dblclick="changeColor">
       <div class="inner" :style="{ backgroundColor: color }"></div>
     </div>
@@ -13,8 +13,8 @@
 </template>
 
 <script>
-import Store from "../../utils/Store.js";
-import StoreDefaults from "../../utils/StoreDefaults.js";
+import Store from "@/scripts/Store";
+import StoreDefaults from "@/scripts/StoreDefaults";
 
 const store = new Store({
   configName: "settings",
@@ -25,8 +25,8 @@ export default {
   name: "NavBarHeader",
   props: ["absolute"],
   computed: {
-    isAbsolute() {
-      return "position: " + (this.absolute == "true" ? "absolute" : "inherit");
+    positionStyle() {
+      return "position: " + (this.absolute ? "absolute" : "inherit");
     }
   },
   methods: {

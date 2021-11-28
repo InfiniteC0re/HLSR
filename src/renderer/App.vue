@@ -17,14 +17,7 @@
     </div>
     <BackgroundTheme class="background" ref="theme" />
     <div id="app__container">
-      <NavBar
-        v-if="$router.currentRoute.name != 'hltp-loading' && !compactMode"
-        ref="navbar"
-      />
-      <Side-Bar
-        v-else-if="$router.currentRoute.name != 'hltp-loading'"
-        ref="navbar"
-      />
+      <SideBar v-if="$router.currentRoute.name != 'loading'" ref="navbar" />
       <transition name="slide" mode="out-in" class="full">
         <router-view
           id="router"
@@ -33,23 +26,6 @@
         ></router-view>
       </transition>
     </div>
-    <md-snackbar
-      md-position="center"
-      :md-duration="Infinity"
-      :md-active="
-        !steamActive &&
-        $router.currentRoute.name != 'hltp-loading' &&
-        $router.currentRoute.name == 'hltp-home' &&
-        !compactMode
-      "
-      md-persistent
-    >
-      <span>{{ localization.get("#UI_STEAM_ERROR") }}</span>
-      <md-button class="md-primary" @click="steamRetry">{{
-        localization.get("#UI_RETRY")
-      }}</md-button>
-    </md-snackbar>
-    <GameInstall ref="gameinstall" />
     <Notification />
   </div>
 </template>
@@ -58,20 +34,17 @@
 import SideBar from "./components/SideBar";
 import Frame from "./components/Frame";
 import BackgroundTheme from "./components/BackgroundTheme";
-import NavBar from "./components/NavBar";
 import Notification from "./components/Elements/Notification";
-import GameInstall from "./components/GameInstall.vue";
-import localization from "@/utils/Language.js";
-import Store from "./utils/Store.js";
-import StoreDefaults from "./utils/StoreDefaults.js";
-import Snow from "./utils/Snow";
-import HLSRConsole from "hlsr-console";
-import "./utils/Soundcloud";
+import Store from "./scripts/Store.js";
+import StoreDefaults from "./scripts/StoreDefaults.js";
+import Snow from "./scripts/Snow";
+import BlobsTheme from "./scripts/BlobsTheme";
+import "@/scripts/soundcloud";
 
 // CSS
 import "codemirror/lib/codemirror.css";
 import "codemirror/addon/hint/show-hint.css";
-import "@/utils/infinite.css";
+import "@/css/infinite.css";
 
 // CodeMirror Addons
 import "codemirror/addon/selection/active-line.js";
@@ -82,53 +55,49 @@ import "codemirror/addon/scroll/annotatescrollbar.js";
 import "codemirror/addon/search/matchesonscrollbar.js";
 import "codemirror/addon/search/searchcursor.js";
 import "codemirror/addon/search/match-highlighter.js";
-import GameControl from "./utils/GameControl";
+import GameControl from "./scripts/GameControl";
 import GameList from "./GameList";
 
-const Console = new HLSRConsole();
 const { ipcRenderer } = require("electron");
+const remote = require("@electron/remote");
 
 const settings = new Store({
   configName: "settings",
   defaults: StoreDefaults.settings,
 });
 
-const local = new localization();
-
 export default {
-  name: "hltp",
+  name: "hlsr",
   components: {
     BackgroundTheme,
-    NavBar,
-    GameInstall,
     Frame,
     Notification,
     SideBar,
   },
-  data: () => ({
-    localization: local,
-    rpc: null,
-    compactMode: false,
-    standardRPC: {
-      details: local.get("#RPC_DETAILS"),
-      startTimestamp: Date.now(),
-      largeImageKey: "hlsr",
-      largeImageText: "v" + require("../../package.json").version,
-      smallImageKey: "steam2",
-      smallImageText: local.get("#RPC_NOSTEAM"),
-      instance: false,
-      buttons: [{ label: local.get("#RPC_WEBSITE"), url: "https://hlsr.pro/" }],
-    },
-    lastRPC: {},
-    updateAvailable: 0,
-    hlsrconsole: Console,
-    focused: true,
-    overflow: false,
-    launchInfo: {
-      appid: null,
-      started: false,
-    },
-  }),
+  data: function () {
+    return {
+      rpc: null,
+      standardRPC: {
+        details: this.$localisation.get("#RPC_DETAILS"),
+        startTimestamp: Date.now(),
+        largeImageKey: "hlsr",
+        largeImageText: "v" + require("../../package.json").version,
+        smallImageKey: "steam2",
+        smallImageText: this.$localisation.get("#RPC_NOSTEAM"),
+        instance: false,
+        buttons: [{ label: this.$localisation.get("#RPC_WEBSITE"), url: "https://hlsr.pro/" }],
+      },
+      lastRPC: {},
+      updateAvailable: 0,
+      focused: true,
+      overflow: false,
+      launchInfo: {
+        appid: null,
+        started: false,
+      },
+      window: null,
+    }
+  },
   computed: {
     isPaused() {
       return this.$store.state.soundCloud.isPaused;
@@ -161,8 +130,7 @@ export default {
       }, 300);
     },
     steamRetry() {
-      ipcRenderer.send("getSteamStatus");
-      ipcRenderer.send("getSteamFriends");
+      this.updateSteamStatus();
     },
     setRPC(rpc) {
       if (JSON.stringify(rpc) != JSON.stringify(this.lastRPC)) {
@@ -170,7 +138,7 @@ export default {
         this.lastRPC = Object.assign({}, rpc);
       }
     },
-    quickLaunchShortcut() {
+    checkQuickLaunch() {
       if (this.launchInfo.appid != null && this.launchInfo.started == false) {
         const library = new Store({
           configName: "library",
@@ -185,7 +153,7 @@ export default {
           (this.steamActive || !game.needSteam)
         ) {
           GameControl.startGame(
-            this.hlsrconsole,
+            this.$hlsrConsole,
             library,
             this.launchInfo.appid,
             this.$store,
@@ -201,19 +169,40 @@ export default {
       this.launchInfo.appid = null;
       this.launchInfo.started = true;
     },
+    updateSteamStatus() {
+      let status = ipcRenderer.sendSync("getSteamStatus");
+      this.$store.state.steamworks.licenses =
+        ipcRenderer.sendSync("getLicenses");
+      this.$store.commit("steamworks_setStatus", status);
+
+      if (status) {
+        ipcRenderer.sendSync("setRichPresence", "HLSR");
+        this.updateSteamFriends();
+        this.updateSteamName();
+        this.checkQuickLaunch();
+      }
+    },
+    updateSteamFriends() {
+      let friends = ipcRenderer.sendSync("getSteamFriends");
+      this.$store.commit("steamworks_setFriends", friends);
+    },
+    updateSteamName() {
+      let username = ipcRenderer.sendSync("getSteamName");
+      this.$store.commit("steamworks_setName", username);
+    },
     updateRPC() {
       if (!settings.get("config").rpc) return;
       let rpc = Object.assign({}, this.standardRPC);
-      rpc.buttons[0].label = this.localization.get("#RPC_WEBSITE");
+      rpc.buttons[0].label = this.$localisation.get("#RPC_WEBSITE");
 
-      if (settings.get("config").mlpMode && settings.get("config").theme == 4) {
+      if (settings.get("config").mlpMode && settings.get("config").theme == 3) {
         rpc.largeImageKey = "mlp";
         rpc.smallImageKey = "pony-steam";
-        rpc.details = this.localization.get("#RPC_MLP");
-        rpc.buttons[0].label = this.localization.get("#RPC_GET_FRIENDS");
-        rpc.buttons[0].url = this.localization.get("#MLP_URL");
+        rpc.details = this.$localisation.get("#RPC_MLP");
+        rpc.buttons[0].label = this.$localisation.get("#RPC_GET_FRIENDS");
+        rpc.buttons[0].url = this.$localisation.get("#MLP_URL");
       } else {
-        rpc.details = this.localization.get("#RPC_DETAILS");
+        rpc.details = this.$localisation.get("#RPC_DETAILS");
       }
 
       let steamName = this.$store.state.steamworks.personaName;
@@ -221,78 +210,64 @@ export default {
 
       let gameState = this.$store.state.game;
       if (gameState.started) {
-        rpc.details = this.localization.get("#RPC_PLAYING", gameState.name);
+        rpc.details = this.$localisation.get("#RPC_PLAYING", gameState.name);
         rpc.startTimestamp = gameState.date;
         return this.setRPC(rpc); // Пропуск установки RPC для SoundCloud виджета (игра в приоритете)
       }
 
       if (!this.widget) return this.setRPC(rpc);
 
-      this.widget.getPosition((position) => {
-        if (!this.isPaused) {
-          rpc.details = this.localization.get("#RPC_MUSIC");
+      if (!this.isPaused) {
+        this.widget.getPosition((position) => {
+          rpc.details = this.$localisation.get("#RPC_MUSIC");
           rpc.state = this.song.title;
           rpc.endTimestamp = this.$store.state.soundCloud.endTimestamp;
-        }
 
+          this.setRPC(rpc);
+        });
+      } else {
         this.setRPC(rpc);
-      });
+      }
+    },
+    windowFocus() {
+      this.$store.state.window.focused = true;
+    },
+    windowBlur() {
+      this.$store.state.window.focused = false;
     },
   },
   mounted() {
-    // Autoupdater
-    ipcRenderer.on("message", (event, text) => {
-      if (text == "update-available") this.updateAvailable = 1;
-      else if (text == "update-downloaded") this.updateAvailable = 2;
-      else this.updateAvailable = 0;
+    // Updates
+    ipcRenderer.on("updatemanager-status", (e, status) => {
+      this.updateAvailable = status;
     });
 
-    let ewindow = require("electron").remote.getCurrentWindow();
+    let browserWindow = remote.getCurrentWindow();
+    this.$store.state.window.focused = browserWindow.isFocused();
+    this.window = browserWindow;
 
-    ewindow.on("focus", () => {
-      this.focused = true;
-    });
+    browserWindow.on("focus", this.windowFocus);
+    browserWindow.on("blur", this.windowBlur);
 
-    ewindow.on("blur", () => {
-      this.focused = false;
-    });
-
+    // Background extras
     let config = settings.get("config");
     this.$store.commit("setParticlesState", config.noParticles);
 
     let month = new Date().getMonth() + 1;
     if (month == 0 || month == 1 || month == 12) Snow.start(this.$store);
+    this.$store.state.blobs = BlobsTheme;
 
     // SteamWorks
-    ipcRenderer.on("steamStatus", (e, status) => {
-      let prevState = this.$store.state.steamworks.started ? true : false;
-      this.$store.commit("steamworks_setStatus", status);
-
-      if (status) {
-        if (!prevState) ipcRenderer.send("setRichPresence", "HLSR");
-        ipcRenderer.send("getSteamFriends");
-        ipcRenderer.send("getSteamName");
-
-        this.quickLaunchShortcut();
-      }
-    });
-
-    ipcRenderer.on("steamFriends", (e, friends) => {
-      this.$store.commit("steamworks_setFriends", friends);
-    });
-
-    ipcRenderer.on("steamName", (e, name) => {
-      this.$store.commit("steamworks_setName", name);
-    });
-
     setTimeout(() => {
       setInterval(() => {
-        let window = require("electron").remote.getCurrentWindow();
-        if (this.$store.state.steamworks.started && window.isFocused())
-          ipcRenderer.send("getSteamFriends");
+        if (
+          this.$store.state.steamworks.started &&
+          this.$store.state.window.focused
+        )
+          this.updateSteamFriends();
       }, 5000);
 
-      ipcRenderer.send("getSteamStatus");
+      this.updateSteamStatus();
     }, 500);
 
     // SoundCloud
@@ -305,9 +280,7 @@ export default {
 
       if (config.soundcloudPlaylist) {
         widget.load(config.soundcloudPlaylist, {
-          callback: () => {
-            this.waitForAllTracks();
-          },
+          callback: this.waitForAllTracks,
         });
       } else this.waitForAllTracks();
 
@@ -356,13 +329,10 @@ export default {
 
     // Discord RPC
     const DiscordRPC = require("discord-rpc");
-
     const clientId = "731919817346383913";
 
     DiscordRPC.register(clientId);
-
-    const rpc = new DiscordRPC.Client({ transport: "ipc" });
-    this.rpc = rpc;
+    const rpc = (this.rpc = new DiscordRPC.Client({ transport: "ipc" }));
 
     rpc.on("ready", () => {
       this.updateRPC();
@@ -371,14 +341,7 @@ export default {
 
     rpc.login({ clientId }).catch(console.error);
 
-    // HLSRC
-    ipcRenderer.on("hlsrc", (event, data) => {
-      this.$store.commit("createNotification", {
-        text: "Данные HLSRC файла прочитаны!",
-      });
-    });
-
-    // Quick Game Launch (shortcuts)
+    // quick game launch (shortcuts)
     ipcRenderer.on("start-game-quick", (e, appid) => {
       if (this.launchInfo.appid != null && !this.launchInfo.started) return;
 
@@ -386,16 +349,16 @@ export default {
       this.launchInfo.started = false;
 
       this.$store.commit("setExtraNotification", {
-        text: this.localization.get(
-          this.localization.get("#WAITING_FOR_STEAM")
+        text: this.$localisation.get(
+          this.$localisation.get("#WAITING_FOR_STEAM")
         ),
       });
 
       setTimeout(() => {
         if (this.launchInfo.appid != null && !this.launchInfo.started) {
           this.$store.commit("createNotification", {
-            text: this.localization.get(
-              this.localization.get("#CANT_START_GAME_NOSTEAM")
+            text: this.$localisation.get(
+              this.$localisation.get("#CANT_START_GAME_NOSTEAM")
             ),
             type: 1,
             lifetime: 0,
@@ -405,13 +368,11 @@ export default {
         }
       }, 15000);
 
-      // Try to launch game
-      this.quickLaunchShortcut();
+      // try to launch the game
+      this.checkQuickLaunch();
     });
 
     // UI
-    this.compactMode = settings.get("config").compactMode;
-
     let currentVersion = require("../../package.json").version;
     let lastVersion = localStorage.getItem("lastVersion");
 
@@ -421,6 +382,10 @@ export default {
     }
 
     ipcRenderer.send("ready");
+  },
+  beforeDestroy() {
+    this.window.removeAllListeners("focus");
+    this.window.removeAllListeners("blur");
   },
 };
 </script>

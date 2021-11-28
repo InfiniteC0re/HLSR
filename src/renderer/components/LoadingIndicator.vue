@@ -40,7 +40,7 @@ export default {};
 </script>
 
 <style lang="scss" scoped>
-// New Loader
+@use 'sass:math';
 
 $color: #00abff;
 $size: 18px;
@@ -59,7 +59,7 @@ $time: 2;
 .arrow {
   width: 0;
   height: 0;
-  margin: 0 (-$size / 2);
+  margin: 0 math.div(-$size, 2);
   border-left: $size solid transparent;
   border-right: $size solid transparent;
   border-bottom: ($size * 1.8) solid $color;
@@ -72,13 +72,13 @@ $time: 2;
 
   @for $i from 1 through 18 {
     &.outer-#{$i} {
-      animation-delay: -($time / 18) * $i + s;
+      animation-delay: math.div(-$time, 18) * $i + s;
     }
   }
 
   @for $i from 1 through 6 {
     &.inner-#{$i} {
-      animation-delay: -($time / 6) * $i + s;
+      animation-delay: math.div($time, 6) * $i + s;
     }
   }
 }

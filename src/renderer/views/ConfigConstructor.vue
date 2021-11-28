@@ -2,7 +2,7 @@
   <div id="wrap">
     <div id="form">
       <div class="title">
-        {{ localization.get("#UI_CONFIGS_CONSTRUCTOR") }}
+        {{ $localisation.get("#UI_CONFIGS_CONSTRUCTOR") }}
         <div style="flex: 1; margin: 0px 32px; margin-right: 100px">
           <md-field>
             <label for="games">Game</label>
@@ -24,14 +24,14 @@
             class="md-icon-button md-accent"
           >
             <md-icon class="fal fa-glass-citrus"></md-icon>
-            <md-tooltip>{{ localization.get("#UI_SCRIPT_UPDATE") }}</md-tooltip>
+            <md-tooltip>{{ $localisation.get("#UI_SCRIPT_UPDATE") }}</md-tooltip>
           </md-button>
         </md-badge>
       </div>
       <div class="constructor__configs">
         <md-list style="background: transparent" v-if="scripts.scriptless">
           <md-subheader>{{
-            localization.get("#UI_SCRIPT_SCRIPTLESS")
+            $localisation.get("#UI_SCRIPT_SCRIPTLESS")
           }}</md-subheader>
           <md-list-item
             class="md-inset"
@@ -49,7 +49,7 @@
             <span class="md-list-item-text">{{ script.name }}</span>
           </md-list-item>
           <md-subheader>{{
-            localization.get("#UI_SCRIPT_SCRIPTED")
+            $localisation.get("#UI_SCRIPT_SCRIPTED")
           }}</md-subheader>
           <md-list-item
             class="md-inset"
@@ -70,11 +70,11 @@
       </div>
       <div class="constructor__buttons">
         <ButtonAlt @click="save" :disabled="!installed">
-          <p>{{ localization.get("#UI_SCRIPT_GENERATE") }}</p>
+          <p>{{ $localisation.get("#UI_SCRIPT_GENERATE") }}</p>
           <i class="fas fa-save"></i>
         </ButtonAlt>
         <ButtonAlt @click="saveToFile" :red="true">
-          <p>{{ localization.get("#UI_SCRIPT_SAVE") }}</p>
+          <p>{{ $localisation.get("#UI_SCRIPT_SAVE") }}</p>
           <i class="fas fa-file-alt"></i>
         </ButtonAlt>
       </div>
@@ -83,20 +83,20 @@
 
       <md-dialog :md-active.sync="detailsOpen" :mdClickOutsideToClose="true">
         <md-dialog-title
-          v-html="localization.get('#UI_SCRIPT_SETTINGS', selected.name)"
+          v-html="$localisation.get('#UI_SCRIPT_SETTINGS', selected.name)"
         ></md-dialog-title>
         <md-dialog-content v-if="selected">
           <span style="opacity: 0.2; margin-bottom: 12px; display: flex">{{
-            localization.get("#UI_SCRIPT_BINDS")
+            $localisation.get("#UI_SCRIPT_BINDS")
           }}</span>
           <div class="binds">
             <div class="inline" v-for="bind in selected.binds" :key="bind._id">
               <md-field style="margin-right: 4px">
-                <label>{{ localization.get("#UI_SCRIPT_KEY") }}</label>
+                <label>{{ $localisation.get("#UI_SCRIPT_KEY") }}</label>
                 <md-input v-model="bind.key"></md-input>
               </md-field>
               <md-field style="margin-left: 4px">
-                <label>{{ localization.get("#UI_SCRIPT_COMMAND") }}</label>
+                <label>{{ $localisation.get("#UI_SCRIPT_COMMAND") }}</label>
                 <md-input v-model="bind.command" readonly></md-input>
               </md-field>
             </div>
@@ -112,10 +112,11 @@
 </template>
 
 <script>
-import ButtonAlt from "./Elements/Button";
-import Store from "../utils/Store.js";
-import StoreDefaults from "../utils/StoreDefaults.js";
-import GameControl from "../utils/GameControl";
+const remote = require("@electron/remote");
+import ButtonAlt from "@/components/Elements/Button";
+import Store from "@/scripts/Store.js";
+import StoreDefaults from "@/scripts/StoreDefaults.js";
+import GameControl from "@/scripts/GameControl";
 
 const store = new Store({
   configName: "scripts",
@@ -139,7 +140,6 @@ export default {
   },
   data() {
     return {
-      localization: this.$parent.localization,
       selected: {},
       detailsOpen: false,
       scripts: {},
@@ -263,17 +263,16 @@ export default {
 
         // Send a notification
         this.$store.commit("createNotification", {
-          text: this.localization.get("#UI_NOTIFICATION_SAVED"),
+          text: this.$localisation.get("#UI_NOTIFICATION_SAVED"),
         });
       }
     },
     saveToFile() {
       var ctx = this;
       var fs = require("fs");
-      var dialog = require("electron").remote.dialog;
       var data = this.compile();
 
-      dialog
+      remote.dialog
         .showSaveDialog({
           filters: [{ name: "Config File", extensions: ["cfg"] }],
         })

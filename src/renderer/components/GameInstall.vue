@@ -1,114 +1,87 @@
 <template>
-  <md-dialog
-    :md-active.sync="show"
-    :mdClickOutsideToClose="first == false || third == true"
-    :mdCloseOnEsc="false"
-  >
-    <md-dialog-title>{{
-      localization.get("#UI_GAME_INSTALL")
-    }}</md-dialog-title>
-    <md-steppers :md-active-step.sync="active" md-alternative md-linear>
-      <md-step
-        id="first"
-        :md-label="localization.get('#UI_INSTALL_SETTINGS')"
-        :md-editable="false"
-        :md-done.sync="first"
-      >
-        <p>{{ localization.get("#UI_INSTALLATION", game) }}</p>
-        <ul>
-          <li v-for="item in items" :key="item._id">{{ item }}</li>
-        </ul>
-        <div style="display: flex; align-items: center; margin-bottom: 8px">
-          <span style="margin-top: auto; margin-left: 8px; opacity: 0.2"
-            >{{ localization.get("#UI_SPACE_REQUIRED") }} {{ memory }} MB</span
+  <div class="install-menu">
+    <h1 v-if="game">
+      {{ $localisation.get("#UI_INSTALLING_GAME") }}{{ game.name }}
+    </h1>
+    <div class="content">
+      <div class="path">
+        <p>{{ $localisation.get("#UI_HLSR_LIB_WILL_BE_PLACED") }}</p>
+        <div class="path-button">
+          <p>{{ selectedPath }}</p>
+          <div
+            class="button"
+            @click="selectFolder"
+            :class="{
+              disabled: disallowedToChangePath,
+            }"
           >
-          <md-button
-            class="md-primary md-raised"
-            style="margin-left: auto"
-            @click="setDone('first', 'second')"
-            >{{ localization.get("#UI_NEXT") }}</md-button
-          >
+            <i class="far fa-folder"></i>
+            <md-tooltip md-direction="left" v-if="disallowedToChangePath">{{
+              $localisation.get("#REMOVE_GAMES_TO_CHANGE")
+            }}</md-tooltip>
+          </div>
         </div>
-        <md-progress-bar
-          class="md-primary"
-          md-mode="indeterminate"
-        ></md-progress-bar>
-      </md-step>
+      </div>
+      <p>{{ $localisation.get("#UI_DOWNLOADABLE_CONTENT") }}</p>
+      <ul v-if="game">
+        <li v-for="(feature, i) in game.info.features" v-bind:key="i">
+          {{ $localisation.get(feature) }}
+        </li>
+      </ul>
+      <div class="space-info" v-if="game">
+        <p :class="{ red: noSpace }">
+          {{ $localisation.get("#UI_FREE_SPACE") }} {{ freeSpace }} MB
+        </p>
+        <p>
+          {{ $localisation.get("#UI_SPACE_REQUIRED_AFTER") }}
+          {{ game.info.size }} MB
+        </p>
+        <p>
+          {{ $localisation.get("#UI_SPACE_REQUIRED_TO") }}
+          {{ game.info.size + game.info.archive }} MB
+        </p>
+      </div>
 
-      <md-step
-        id="second"
-        :md-label="localization.get('#UI_INSTALL_STATUS')"
-        :md-editable="false"
-        :md-done.sync="second"
-      >
-        <div style="display: flex; align-items: center; margin-bottom: 8px">
-          <span style="margin-top: auto; margin-left: 8px; opacity: 0.2"
-            >{{ localization.get("#UI_PROGRESS") }} {{ progress }}%</span
-          >
-          <span
-            style="
-              margin-top: auto;
-              margin-left: auto;
-              margin-right: 8px;
-              opacity: 0.2;
-            "
-            v-if="progress != 100"
-            >{{ status }}</span
-          >
-          <span
-            style="margin-top: auto; margin-left: auto; margin-right: 8px"
-            v-if="unpacked == true"
-          >
-            <md-button
-              class="md-primary md-raised"
-              style="margin-left: auto"
-              @click="setDone('second', 'third')"
-              >{{ localization.get("#UI_NEXT") }}</md-button
-            >
-          </span>
+      <div class="progress-wrap" v-if="installing">
+        <div class="status">
+          <div class="left">
+            {{ $localisation.get("#UI_PROGRESS") }} {{ progress }}%
+          </div>
+          <div class="right">
+            {{ status }}
+          </div>
         </div>
-        <md-progress-bar
-          md-mode="determinate"
-          :md-value="progress"
-        ></md-progress-bar>
-      </md-step>
-
-      <md-step
-        id="third"
-        :md-label="localization.get('#UI_INSTALL_FINISH')"
-        :md-editable="false"
-        :md-done.sync="third"
-      >
-        <div style="display: flex; align-items: center">
-          <p style="opacity: 0.2">
-            {{ localization.get("#UI_NOTIFICATION_INSTALLED", this.game) }}
-          </p>
-          <span
-            style="margin-top: auto; margin-left: auto; margin-right: 8px"
-            v-if="unpacked == true"
-          >
-            <md-button
-              class="md-primary md-raised"
-              style="margin-left: auto"
-              @click="show = false"
-              >{{ localization.get("#UI_DONE") }}</md-button
-            >
-          </span>
+        <div class="progress">
+          <div class="bar" :style="{ flex: progress / 100 }"></div>
         </div>
-      </md-step>
-    </md-steppers>
-  </md-dialog>
+      </div>
+      <div class="buttons" v-if="!installing">
+        <AltButton :red="true" @click="cancel" :disabled="installed">
+          <span>{{ $localisation.get("#UI_CANCEL") }}</span>
+          <i class="far fa-ban"></i>
+        </AltButton>
+        <AltButton @click="startInstall" :disabled="installDisabled">
+          <span>{{
+            !installed
+              ? $localisation.get("#UI_INSTALL")
+              : $localisation.get("#UI_DONE")
+          }}</span>
+          <i class="fal fa-arrow-right"></i>
+        </AltButton>
+      </div>
+    </div>
+  </div>
 </template>
 
-<script type="text/javascript">
+<script>
+const remote = require("@electron/remote");
 import { ipcRenderer } from "electron";
-import Store from "../utils/Store.js";
-import StoreDefaults from "../utils/StoreDefaults.js";
-import GameList from "../GameList";
-import GameControl from "../utils/GameControl";
+import AltButton from "@/components/Elements/Button";
+import Store from "@/scripts/Store.js";
+import StoreDefaults from "@/scripts/StoreDefaults.js";
+import GameControl from "@/scripts/GameControl";
 
 const path = require("path");
-const onezip = require("onezip");
 
 const store = new Store({
   configName: "library",
@@ -116,259 +89,419 @@ const store = new Store({
 });
 
 export default {
-  name: "game-install",
-  components: {},
+  components: {
+    AltButton,
+  },
   data() {
     return {
-      active: "first",
-      show: false,
-      first: false,
-      second: false,
-      third: false,
-      items: [],
-      game: "",
-      memory: 0,
+      canceled: false,
+      installed: false,
+      installing: false,
+      canChangeFolder: false,
+      game: null,
+      freeSpace: 0,
+      noSpace: false,
+      selectedPath: "",
+      status: "",
       progress: 0,
-      unpacked: false,
-      status: null,
-      appid: null,
-      localization: this.$parent.localization,
+      installDisabled: true,
     };
   },
+  computed: {
+    disallowedToChangePath() {
+      return (
+        this.installing ||
+        !this.canChangeFolder ||
+        this.canceled ||
+        this.installed
+      );
+    },
+  },
+  mounted() {
+    this.game = this.$parent.game;
+
+    let installed = store.get("installed");
+
+    this.selectedPath = GameControl.getLibraryPath(store);
+    this.checkInstallAvailability().catch(this.handleAvailabilityErrors);
+
+    if (Object.keys(installed).length == 0) this.canChangeFolder = true;
+  },
   methods: {
-    setDone(id, index) {
-      this[id] = true;
+    cancel() {
+      this.$emit("cancel");
+    },
+    checkFreeSpace() {
+      return new Promise((resolve, reject) => {
+        let diskSpaceInfo = ipcRenderer.sendSync(
+          "GetDiskFreeSpaceMbytes",
+          this.selectedPath
+        );
 
-      if (index) this.active = index;
+        this.freeSpace = diskSpaceInfo.TotalNumberOfFreeBytes;
 
-      if (id == "first") {
-        // Скачивание игры
-        let game = GameList.find((t) => t.id == this.appid);
-        if (!game) return;
-
-        this.status = this.localization.get("#UI_DOWNLOADING");
-
-        let info = {
-          url: game.info.url,
-          properties: {
-            directory: GameControl.getTempPath(store),
-          },
-        };
-
-        // Начать загрузку
-        ipcRenderer.send("game-download", info);
-
-        ipcRenderer.once("game-download-complete", (e, l_path) => {
-          let game = GameList.find((t) => t.id == this.appid);
-          if (!game) return;
-
-          let install_path = GameControl.getLibraryPath(store);
-
-          this.status = this.localization.get("#UI_EXTRACTING");
-          this.progress = 0;
-
-          let extract_path = install_path;
-
-          if (!game.info.isStandalone)
-            extract_path = path.join(extract_path, game.info.installPath);
-
-          const extract = onezip.extract(l_path, extract_path);
-
-          extract.on("progress", (percent) => {
-            this.progress = percent;
-            require("electron")
-              .remote.getCurrentWindow()
-              .setProgressBar(percent / 100);
+        if (
+          diskSpaceInfo.Result == 1 &&
+          this.freeSpace - (this.game.info.size + this.game.info.archive) >= 100
+        ) {
+          resolve();
+        } else {
+          reject(diskSpaceInfo.Result);
+        }
+      });
+    },
+    handleAvailabilityErrors(e) {
+      switch (e.status) {
+        case 1: // No Permissions
+          break;
+        case 2: // No Free Space
+          break;
+        case 3: // WinApi Error
+          break;
+        case 4: // Not Empty Folder
+          this.$store.commit("createNotification", {
+            text: this.$localisation.get(
+              this.$localisation.get("#FOLDER_NOT_EMPTY")
+            ),
+            type: 1,
           });
-
-          extract.on("end", () => {
-            let installed = store.get("installed");
-
-            if (!installed[this.appid]) installed[this.appid] = {};
-            installed[this.appid].installed = true;
-            installed[this.appid].directory = install_path;
-
-            store.set("installed", installed);
-
-            new Notification("HLSR", {
-              body: this.localization.get(
-                "#UI_NOTIFICATION_INSTALLED",
-                this.game
-              ),
-            });
-
-            this.unpacked = true;
-            this.$parent.$refs.navbar.goTo("game", {
-              id: this.appid,
-              refresh: true,
-            });
-
-            let window = require("electron").remote.getCurrentWindow();
-            if (!window.isDestroyed()) window.setProgressBar(0);
-
-            ipcRenderer.removeAllListeners("game-download-progress");
+          break;
+        case 5: // Cyrillic Symbols
+          this.$store.commit("createNotification", {
+            text: this.$localisation.get("#INSTALLATION_CYRILLIC"),
+            type: 1,
           });
-        });
-
-        ipcRenderer.on("game-download-progress", this.progressUpdate);
+          break;
       }
     },
-    progressUpdate(e, data) {
-      this.progress = Math.round(data.percent * 100);
-    },
-    open(appid) {
-      let game = GameList.find((t) => t.id == appid);
-      if (!game) return;
+    checkInstallAvailability() {
+      return new Promise((res, rej) => {
+        this.installDisabled = true;
 
-      this.active = "first";
-      this.show = false;
-      this.first = false;
-      this.second = false;
-      this.third = false;
-      this.unpacked = false;
-      this.progress = 0;
+        if (/[а-яА-ЯЁё]/.test(this.selectedPath)) {
+          return rej({ status: 5 }); // Cyrillic Symbols
+        }
 
-      if (!GameControl.checkInstalled(store, appid)) {
-        if (
-          game.info.isStandalone ||
-          GameControl.checkInstalled(store, game.info.requiredGame)
-        ) {
-          this.show = true;
-        } else {
-          this.$parent.$refs.navbar.goTo("game", {
-            id: game.info.requiredGame,
+        this.testPermissions(this.selectedPath)
+          .then(() => {
+            this.checkFreeSpace()
+              .then(() => {
+                // if (
+                //   require("fs").readdirSync(this.selectedPath).length != 0 &&
+                //   GameControl.getInstalledCount(store) == 0
+                // ) {
+                //   return rej({ status: 4 }); // Folder is not Empty
+                // }
+
+                this.installDisabled = false;
+                return res();
+              })
+              .catch((getSpaceStatus) => {
+                this.noSpace = true;
+                return rej({ status: getSpaceStatus == 1 ? 2 : 3 }); // 2 - No Free Space; 3 - WinApi Error
+              });
+          })
+          .catch(() => {
+            rej({ status: 1 }); // No Permissions
           });
-          return this.open(game.info.requiredGame);
-        }
+      });
+    },
+    startInstall() {
+      if (this.installed) {
+        this.$parent.refresh();
+        this.$parent.installationWindow = false;
+        return;
+      }
 
-        this.game = game.name;
+      this.checkInstallAvailability()
+        .then(() => {
+          this.$store.state.sidebarBlocked = true;
+          this.installing = true;
 
-        switch (appid) {
-          case "70":
-            this.memory = 429;
-            this.items = [
-              this.localization.get("#UI_WON"),
-              this.localization.get("#UI_STEAM"),
-              "Edited DLL with HUD settings",
-              "Bunnymod XT",
-              "LiveSplit with splits",
-              "RInput",
-            ];
-            break;
-          case "50":
-            this.memory = 513;
-            this.items = [
-              this.localization.get("#UI_WON"),
-              this.localization.get("#UI_STEAM"),
-              "Bunnymod XT",
-              "LiveSplit with splits",
-              "RInput",
-            ];
-            break;
-          case "130":
-            this.memory = 285;
-            this.items = [
-              this.localization.get("#UI_STEAM"),
-              "Bunnymod XT",
-              "LiveSplit with splits",
-              "RInput",
-            ];
-            break;
-          case "220":
-            this.memory = 3464;
-            this.items = [
-              "Source Unpack (New Engine)",
-              "Source Pause Tool",
-              "LiveSplit with splits",
-              "RInput",
-            ];
-          case "218":
-            this.memory = 4933;
-            this.items = [
-              "Ghosting Mod",
-              "Cutsceneless Mod",
-              "Half-Life 1 Movement Mod",
-              "LiveSplit with splits",
-              "RInput",
-            ];
-        }
+          this.status = this.$localisation.get("#UI_DOWNLOADING");
 
-        this.appid = appid;
+          let info = {
+            url: this.game.info.url,
+            properties: {
+              directory: GameControl.getTempPath(store),
+            },
+          };
 
-        // Check if any games are already installed and offer to set an installation path if not
-        let installed = store.get("installed");
+          // Начать загрузку
+          ipcRenderer.send("game-download", info);
 
-        if (Object.keys(installed) == 0) {
-          let eWindow = require("electron").remote.getCurrentWindow();
-          require("electron")
-            .remote.dialog.showOpenDialog(eWindow, {
-              properties: ["openDirectory"],
-              title: this.localization.get("#SELECT_LIBRARY_FOLDER"),
-            })
-            .then((result) => {
-              if (result.canceled == true) {
-                this.$store.commit("createNotification", {
-                  text: this.localization.get(
-                    this.localization.get("#INSTALLATION_CANCELED")
-                  ),
-                  type: 1,
-                });
+          ipcRenderer.once("game-canceled", () => {
+            ipcRenderer.removeAllListeners("game-download-complete");
+            ipcRenderer.removeAllListeners("set-progress");
 
-                return (this.show = false);
-              }
+            this.canceled = true;
+            this.installed = true;
+            this.installing = false;
+            this.$store.state.sidebarBlocked = false;
 
-              let newLibDir = result.filePaths[0];
-
-              if (!require("fs").existsSync(newLibDir)) {
-                this.$store.commit("createNotification", {
-                  text: this.localization.get(
-                    this.localization.get("#PATH_NOT_EXISTS")
-                  ),
-                  type: 1,
-                });
-
-                return (this.show = false);
-              }
-
-              if (require("fs").readdirSync(newLibDir).length == 0) {
-                // Folder is empty
-
-                const cyrillicPattern = /[а-яА-ЯЁё]/;
-
-                if (cyrillicPattern.test(newLibDir)) {
-                  // Cyrillic symbols were found
-
-                  this.$store.commit("createNotification", {
-                    text: this.localization.get("#INSTALLATION_CYRILLIC"),
-                    type: 1,
-                  });
-
-                  return (this.show = false);
-                } else {
-                  // Everything is okay
-
-                  this.$store.commit("createNotification", {
-                    text: "Okay",
-                  });
-
-                  store.set("libraryPath", newLibDir);
-                }
-              } else {
-                // Folder isn't empty
-
-                this.$store.commit("createNotification", {
-                  text: this.localization.get(
-                    this.localization.get("#FOLDER_NOT_EMPTY")
-                  ),
-                  type: 1,
-                });
-
-                return (this.show = false);
-              }
+            this.$store.commit("createNotification", {
+              text: this.$localisation.get(
+                this.$localisation.get("#UNABLE_TO_DOWNLOAD", this.game.name)
+              ),
+              type: 1,
+              lifetime: 0,
             });
+          });
+
+          ipcRenderer.once("game-download-complete", (e, l_path) => {
+            let game = this.game;
+            let install_path = GameControl.getLibraryPath(store);
+
+            this.status = this.$localisation.get("#UI_EXTRACTING");
+            this.progress = 0;
+
+            let extract_path = install_path;
+
+            if (!game.info.isStandalone)
+              extract_path = path.join(extract_path, game.info.installPath);
+
+            // Ask main to unpack downloaded game
+            ipcRenderer.send("game-unpack", {
+              archive: l_path,
+              extractTo: extract_path,
+            });
+
+            ipcRenderer.once("game-unpack-complete", (e) => {
+              // Game was unpacked
+              let installed = store.get("installed");
+
+              if (!installed[this.game.id]) installed[this.game.id] = {};
+              installed[this.game.id].installed = true;
+              installed[this.game.id].directory = install_path;
+
+              store.set("installed", installed);
+
+              new Notification("HLSR", {
+                body: this.$localisation.get(
+                  "#UI_NOTIFICATION_INSTALLED",
+                  this.game
+                ),
+              });
+
+              this.installed = true;
+              this.installing = false;
+              this.$store.state.sidebarBlocked = false;
+
+              ipcRenderer.removeAllListeners("set-progress");
+            });
+          });
+
+          ipcRenderer.on("set-progress", this.progressUpdate);
+        })
+        .catch(this.handleAvailabilityErrors);
+    },
+    progressUpdate(e, args) {
+      this.progress = Math.round(args.percent);
+    },
+    testPermissions(dir) {
+      return new Promise((resolve, reject) => {
+        if (require("fs").existsSync(dir)) {
+          try {
+            require("fs").writeFileSync(
+              dir + "/permissions_test.txt",
+              "you can delete this file"
+            );
+          } catch (e) {
+            this.$store.commit("createNotification", {
+              text: this.$localisation.get(
+                this.$localisation.get("#ERROR_NO_WRITE_PERMISSIONS")
+              ),
+              type: 1,
+            });
+
+            reject();
+            return;
+          }
+        } else {
+          this.$store.commit("createNotification", {
+            text: this.$localisation.get(
+              this.$localisation.get("#PATH_NOT_EXISTS")
+            ),
+            type: 1,
+          });
+
+          reject();
+          return;
         }
+
+        require("fs").unlinkSync(dir + "/permissions_test.txt");
+        resolve();
+      });
+    },
+    selectFolder() {
+      if (!this.disallowedToChangePath) {
+        let eWindow = remote.getCurrentWindow();
+        remote.dialog
+          .showOpenDialog(eWindow, {
+            properties: ["openDirectory"],
+            title: this.$localisation.get("#SELECT_LIBRARY_FOLDER"),
+          })
+          .then((result) => {
+            if (result.canceled == true) return;
+
+            let newLibDir = result.filePaths[0];
+
+            if (!require("fs").existsSync(newLibDir)) {
+              this.$store.commit("createNotification", {
+                text: this.$localisation.get(
+                  this.$localisation.get("#PATH_NOT_EXISTS")
+                ),
+                type: 1,
+              });
+
+              return (this.installDisabled = true);
+            }
+
+            this.selectedPath = newLibDir;
+
+            this.checkInstallAvailability()
+              .then(() => {
+                store.set("libraryPath", newLibDir);
+              })
+              .catch(this.handleAvailabilityErrors);
+          });
       }
     },
   },
 };
 </script>
+
+<style lang="scss" scoped>
+.install-menu {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 0;
+  border-radius: 32px 32px 0 0;
+  background: rgb(34, 34, 34);
+  color: rgba(255, 255, 255, 0.6);
+  padding: 40px;
+  padding-bottom: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 0 16px rgba(0, 0, 0, 0.4);
+  animation: appear 0.3s forwards;
+
+  @keyframes appear {
+    0% {
+      opacity: 0;
+      transform: translateY(100%);
+    }
+
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  h1 {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1.6rem;
+    text-align: center;
+  }
+
+  .content {
+    margin: 8px;
+    margin-top: 24px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+
+    .path {
+      margin: 8px 0;
+      margin-bottom: 16px;
+
+      .path-button {
+        height: 42px;
+        margin-top: 4px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        overflow: hidden;
+
+        p {
+          margin-left: 14px;
+          margin-top: 1px;
+        }
+
+        .button {
+          margin-left: auto;
+          height: 100%;
+          padding: 0 18px;
+          display: flex;
+          align-items: center;
+          cursor: pointer;
+          transition: 0.2s ease;
+
+          &.disabled {
+            cursor: default;
+          }
+
+          &:hover {
+            background: rgba(255, 255, 255, 0.05);
+          }
+
+          &.disabled:hover {
+            background: none;
+          }
+        }
+      }
+    }
+
+    .space-info {
+      margin: 16px 0;
+      color: rgba(255, 255, 255, 0.3);
+      margin-bottom: 8px;
+
+      .red {
+        color: #ff4949;
+      }
+    }
+
+    .progress-wrap {
+      margin-top: 4px;
+
+      .status {
+        margin: 6px 0;
+        opacity: 0.4;
+        display: flex;
+
+        .right {
+          margin-left: auto;
+        }
+      }
+
+      .progress {
+        display: flex;
+        width: 100%;
+        height: 6px;
+        border-radius: 4px;
+        opacity: 1;
+        background: rgba(255, 255, 255, 0.1);
+
+        .bar {
+          flex: 0;
+          background: #00abff;
+          position: relative;
+          border-radius: 4px;
+          transition: 0.1s ease;
+        }
+      }
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-gap: 12px;
+      margin-top: 4px;
+    }
+  }
+}
+</style>

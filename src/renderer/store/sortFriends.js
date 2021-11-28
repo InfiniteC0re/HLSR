@@ -1,11 +1,20 @@
 export default (friends, map = true, sort = false) => {
   if (map) {
     friends.map((friend) => {
-      if (!friend.gamePlayed && friend.personaState > 0) friend.priority = 2;
+      let gamePlayed = friend.friendGameInfo;
+      let appId = 0;
+
+      if (gamePlayed)
+        appId = gamePlayed.m_gameID
+
+      if (!gamePlayed && friend.personaState > 0) {
+        friend.priority = 2;
+      }
       else if (friend.personaState == 0) friend.priority = 3;
-      if (friend.appID == "70" && friend.friendRPC.includes("HLSR"))
+      
+      if (friend.friendRPC.includes("HLSR") && friend.personaState > 0)
         friend.priority = -1;
-      else if (friend.appID == "70") friend.priority = 0;
+      else if (appId == "70") friend.priority = 0;
       else if (friend.priority == undefined) friend.priority = 1;
     });
   }

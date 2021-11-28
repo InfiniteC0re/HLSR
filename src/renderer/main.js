@@ -1,5 +1,4 @@
 import Vue from "vue";
-import axios from "axios";
 
 import {
   MdButton,
@@ -26,6 +25,8 @@ import "@/assets/css/theme.css";
 
 import "@/assets/font-awesome/css/all.css";
 import "@/assets/fonts/fonts.css";
+import HLSRConsole from "hlsr-console";
+import Localisation from "@/scripts/Language.js";
 
 Vue.use(MdButton);
 Vue.use(MdCheckbox);
@@ -49,38 +50,10 @@ import App from "./App";
 import router from "./router";
 import store from "./store";
 
-// const ewc = require('node-loader!@/native/ewc.node');
-// ewc.setComposition(require('electron').remote.getCurrentWindow().getNativeWindowHandle(), 4, 0x90000000);
-
-if (!process.env.IS_WEB) Vue.use(require("vue-electron"));
-Vue.http = Vue.prototype.$http = axios;
+Vue.localisation = Vue.prototype.$localisation = new Localisation();
+Vue.console = Vue.prototype.$hlsrConsole = new HLSRConsole();
 Vue.config.productionTip = false;
-Vue.prototype.$navbarbuttons = [];
 
-let programmatic = false;
-["push", "replace", "go", "back", "forward"].forEach((methodName) => {
-  const method = router[methodName];
-  router[methodName] = (...args) => {
-    programmatic = true;
-    method.apply(router, args);
-  };
-});
-
-router.beforeEach((to, from, next) => {
-  // name is null for initial load or page reload
-  if (from.name === null || programmatic) {
-    // triggered bu router.push/go/... call
-    // route as usual
-    next();
-  } else {
-    // triggered by user back/forward
-    // do not route
-    next(false);
-  }
-  programmatic = false; // clear flag
-});
-
-/* eslint-disable no-new */
 new Vue({
   store,
   components: {

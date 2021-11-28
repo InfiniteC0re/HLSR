@@ -1,6 +1,6 @@
 <template>
   <div id="wrap">
-    <div class="title">{{ localization.get("#UI_OVERVIEW") }}</div>
+    <div class="title">{{ $localisation.get("#UI_OVERVIEW") }}</div>
     <div
       class="post"
       v-for="post in posts"
@@ -17,9 +17,7 @@
 </template>
 
 <script type="text/javascript">
-import localization from "@/utils/Language.js";
-
-const local = new localization();
+const remote = require("@electron/remote")
 
 export default {
   name: "gamemenu-overview",
@@ -32,14 +30,12 @@ export default {
   },
   data() {
     return {
-      localization: this.$parent.localization,
       posts: [],
     };
   },
   methods: {
     openLink(url) {
-      let shell = require("electron").remote.shell;
-      shell.openExternal(url);
+      remote.shell.openExternal(url);
     },
   },
   mounted() {
@@ -68,21 +64,26 @@ export default {
   font-weight: bold !important;
   margin-left: 16px !important;
 }
+
 .post {
   margin: 16px;
   color: rgb(155, 155, 155);
   transition: 0.06s color;
   cursor: pointer;
 }
+
 .post:hover {
   color: rgb(185, 185, 185);
 }
+
 .post:nth-last-child(1) {
   margin-bottom: 0;
 }
+
 .post-author {
   opacity: 0.4;
 }
+
 .post-title {
   margin: 0 4px;
   overflow: hidden;

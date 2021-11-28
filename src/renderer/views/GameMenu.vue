@@ -1,6 +1,6 @@
 <template>
   <div id="wrap">
-    <div id="form" :class="{ overlay: isInstallationOpened }">
+    <div id="form" :class="{ overlay: installationWindow }">
       <div
         id="mainview"
         :style="{
@@ -8,7 +8,7 @@
         }"
       >
         <div class="main">
-          <div class="game-title">{{ gameTitle }}</div>
+          <div class="game-title">{{ game.name }}</div>
           <div class="game-top">
             <md-button
               :class="{ 'md-raised': true, installedGame: installed }"
@@ -31,14 +31,14 @@
 
               <md-menu-content style="margin-top: 3px; width: 280px">
                 <md-menu-item @click="gameFolder">
-                  <span>{{ localization.get("#UI_GAME_FOLDER") }}</span>
+                  <span>{{ $localisation.get("#UI_GAME_FOLDER") }}</span>
                   <md-icon
                     class="fas fa-folder"
                     style="margin-right: 2px"
                   ></md-icon>
                 </md-menu-item>
                 <md-menu-item @click="makeShortcut">
-                  <span>{{ localization.get("#UI_MAKE_SHORTCUT") }}</span>
+                  <span>{{ $localisation.get("#UI_MAKE_SHORTCUT") }}</span>
                   <md-icon
                     class="fas fa-star"
                     style="margin-right: 3.3px"
@@ -49,7 +49,7 @@
                   class="gamemenu_uninstallButton"
                   :disabled="isGameStarted"
                 >
-                  <span>{{ localization.get("#UI_UNINSTALL") }}</span>
+                  <span>{{ $localisation.get("#UI_UNINSTALL") }}</span>
                   <md-icon class="fas fa-trash"></md-icon>
                 </md-menu-item>
               </md-menu-content>
@@ -62,7 +62,7 @@
               :class="['navbutton', section == 0 ? 'active' : '']"
               @click="section = 0"
             >
-              <div class="text">{{ localization.get("#UI_OVERVIEW") }}</div>
+              <div class="text">{{ $localisation.get("#UI_OVERVIEW") }}</div>
             </div>
             <div
               :class="[
@@ -76,21 +76,19 @@
                 }
               "
             >
-              <div class="text">{{ localization.get("#UI_CONFIGURATOR") }}</div>
+              <div class="text">{{ $localisation.get("#UI_CONFIGURATOR") }}</div>
             </div>
             <div
               :class="['navbutton', section == 2 ? 'active' : '']"
               @click="sourceRunsWiki"
             >
-              <div class="text">{{ localization.get("#UI_WIKI") }}</div>
+              <div class="text">{{ $localisation.get("#UI_WIKI") }}</div>
             </div>
-            <div
-              class="warning"
-              :title="localization.get('#UI_FOUND_CYRILLIC_HINT')"
-              v-if="cyrillic"
-            >
+            <div class="warning" v-if="shouldShowWarning">
               <i class="fad fa-exclamation-triangle"></i>
-              <p>{{ localization.get("#UI_FOUND_CYRILLIC") }}</p>
+              <p>
+                {{ warningMessage }}
+              </p>
             </div>
           </div>
           <div class="mainpanel">
@@ -100,21 +98,23 @@
         </div>
       </div>
     </div>
-    <NewGameInstall
-      v-if="isInstallationOpened"
-      @cancel="isInstallationOpened = false"
+
+    <GameInstall
+      v-if="installationWindow"
+      @cancel="installationWindow = false"
     />
   </div>
 </template>
 
 <script type="text/javascript">
-import Overview from "./GameMenu/Overview";
-import Configurator from "./GameMenu/Configurator";
-import Store from "../utils/Store.js";
-import StoreDefaults from "../utils/StoreDefaults.js";
-import GameControl from "../utils/GameControl";
-import AltButton from "./Elements/Button";
-import NewGameInstall from "./NewGameInstall.vue";
+const remote = require("@electron/remote");
+import Overview from "@/components/GameMenu/Overview";
+import Configurator from "@/components/GameMenu/Configurator";
+import Store from "@/scripts/Store";
+import StoreDefaults from "@/scripts/StoreDefaults";
+import GameControl from "@/scripts/GameControl";
+import AltButton from "@/components/Elements/Button";
+import GameInstall from "@/components/GameInstall.vue";
 
 const store = new Store({
   configName: "library",
@@ -123,18 +123,15 @@ const store = new Store({
 
 export default {
   name: "GameMenu",
-  components: { Overview, Configurator, AltButton, NewGameInstall },
+  components: { Overview, Configurator, AltButton, GameInstall },
   methods: {},
   data() {
     return {
       section: 0,
-      gameID: null,
-      gameTitle: null,
+      game: {},
       background: "linear-gradient(rgb(140, 140, 140), rgb(140, 140, 140))",
-      localization: this.$parent.localization,
-      hlsrconsole: this.$parent.hlsrconsole,
       installed: false,
-      isInstallationOpened: false,
+      installationWindow: false,
       cyrillic: false,
     };
   },
@@ -142,117 +139,124 @@ export default {
     isButtonDisabled() {
       return (
         (navigator.onLine == false &&
-          GameControl.checkInstalled(store, this.gameID) == false) ||
+          GameControl.checkInstalled(store, this.game.id) == false) ||
         this.isGameStarted ||
         this.$store.state.extraNotification ||
-        (this.gameID != "220" && this.gameID != "218" && !this.steamActive)
+        (!this.hasLicense && this.game.needSteam)
       );
-      // return (
-      //   (!navigator.onLine &&
-      //     !GameControl.checkInstalled(this.hlsrconsole, this.gameID)) ||
-      //   (this.gameID != "220" || this.gameID != "218") ||
-      //   this.isGameStarted
-      // );
     },
     isGameStarted() {
       return this.$store.state.game.started;
     },
+    isSteamStarted() {
+      return this.$store.state.steamworks.started;
+    },
     startedGameName() {
       return this.$store.state.game.name;
     },
-    steamActive() {
-      return this.$store.state.steamworks.started;
+    hasLicense() {
+      return this.$store.state.steamworks.licenses[this.game.id];
+    },
+    shouldShowWarning() {
+      return (this.game.needSteam && !this.hasLicense) || this.cyrillic;
+    },
+    warningMessage() {
+      if (!this.isSteamStarted && this.game.needSteam)
+        return this.$localisation.get("#UI_NO_STEAM");
+
+      if (this.game.needSteam && !this.hasLicense)
+        return this.$localisation.get("#UI_NO_LICENSE");
+
+      if (this.cyrillic) return this.$localisation.get("#UI_FOUND_CYRILLIC");
+
+      return "";
     },
   },
   methods: {
     uninstallGameHandle() {
-      GameControl.uninstallGame(store, this.gameID);
+      GameControl.uninstallGame(store, this.game.id);
 
       this.$parent.$refs.navbar.goTo("game", {
-        id: this.gameID,
+        id: this.game.id,
         refresh: true,
       });
 
       this.$store.commit("createNotification", {
-        text: this.localization.get("#UI_NOTIFICATION_REMOVED"),
+        text: this.$localisation.get("#UI_NOTIFICATION_REMOVED"),
       });
     },
     makeShortcut() {
       if (require("process").env.WEBPACK_DEV_SERVER !== "true") {
-        let remote = require("electron").remote;
         let path = require("path");
 
         remote.shell.writeShortcutLink(
           path.join(
             remote.app.getPath("desktop"),
-            `${this.localization.get(
+            `${this.$localisation.get(
               "#SHORTCUT_LAUNCH"
-            )} ${this.gameTitle.replace(":", "")}.lnk`
+            )} ${this.game.name.replace(":", "")}.lnk`
           ),
           "create",
           {
             target: require("process").execPath,
-            args: `-quick ${this.gameID}`,
+            args: `-quick ${this.game.id}`,
             icon:
               process.resourcesPath +
               "\\app\\icons\\" +
-              GameControl.getIcon(this.gameID),
+              GameControl.getIcon(this.game.id),
             iconIndex: 0,
           }
         );
       }
     },
     buttonIcon() {
-      if (GameControl.checkInstalled(store, this.gameID)) return ``;
+      if (GameControl.checkInstalled(store, this.game.id)) return ``;
       else return ``;
     },
     buttonText() {
-      if (this.isGameStarted && this.startedGameName == this.gameTitle)
-        return this.localization.get("#UI_STARTED");
-      else if (GameControl.checkInstalled(store, this.gameID))
-        return this.localization.get("#UI_PLAY");
-      else return this.localization.get("#UI_INSTALL");
+      if (this.isGameStarted && this.startedGameName == this.game.name)
+        return this.$localisation.get("#UI_STARTED");
+      else if (GameControl.checkInstalled(store, this.game.id))
+        return this.$localisation.get("#UI_PLAY");
+      else return this.$localisation.get("#UI_INSTALL");
     },
     updateBackground(fn) {
       this.background = `url(${require("@/assets/screenshots/" + fn)})`;
     },
     gameButton() {
-      if (GameControl.checkInstalled(store, this.gameID)) {
+      if (GameControl.checkInstalled(store, this.game.id)) {
         GameControl.startGame(
-          this.hlsrconsole,
+          this.$hlsrConsole,
           store,
-          this.gameID,
+          this.game.id,
           this.$store,
           this.$parent.$refs.navbar
         );
       } else {
-        let game = require("@/GameList").default.find(
-          (t) => t.id == this.gameID
+        let isStandalone = this.game.info.isStandalone;
+        let isParentInstalled = GameControl.checkInstalled(
+          store,
+          this.game.info.requiredGame
         );
 
-        if (
-          game.info.isStandalone ||
-          GameControl.checkInstalled(store, game.info.requiredGame)
-        ) {
-          this.isInstallationOpened = true;
+        if (isStandalone || isParentInstalled) {
+          this.installationWindow = true;
         } else {
           this.$parent.$refs.navbar.goTo("game", {
-            id: game.info.requiredGame,
+            id: this.game.info.requiredGame,
             install: true,
           });
         }
       }
     },
     sourceRunsWiki() {
-      let shell = require("electron").remote.shell;
-
-      shell.openExternal(GameControl.getSourceRunsLink(this.gameID));
+      remote.shell.openExternal(GameControl.getSourceRunsLink(this.game.id));
     },
     gameFolder() {
-      GameControl.openGameFolder(this.gameID, store);
+      GameControl.openGameFolder(this.game.id, store);
     },
     refresh() {
-      this.installed = GameControl.checkInstalled(store, this.gameID);
+      this.installed = GameControl.checkInstalled(store, this.game.id);
       if (/[а-яА-ЯЁё]/.test(GameControl.getLibraryPath(store))) {
         this.cyrillic = true;
       }
@@ -264,13 +268,12 @@ export default {
     let section = this.$route.query.section;
     if (section) this.section = section;
 
-    this.gameID = this.$route.query.id;
-    this.gameTitle = GameControl.getTitle(this.gameID);
+    this.game = GameControl.getGame(this.$route.query.id);
 
-    if (this.$route.query.install) this.isInstallationOpened = true;
+    if (this.$route.query.install) this.installationWindow = true;
 
-    this.updateBackground(GameControl.getBackground(this.gameID));
-    this.installed = GameControl.checkInstalled(store, this.gameID);
+    this.updateBackground(GameControl.getBackground(this.game.id));
+    this.installed = GameControl.checkInstalled(store, this.game.id);
 
     if (
       /[а-яА-ЯЁё]/.test(GameControl.getLibraryPath(store)) &&
@@ -382,10 +385,10 @@ export default {
 .navpanel {
   height: 100%;
   background: rgba(33, 33, 33, 0.5);
+  backdrop-filter: blur(16px);
   min-width: 260px;
   padding: 16px 0;
   margin-right: 16px;
-  backdrop-filter: blur(16px);
   border-radius: 2px;
   position: relative;
 }

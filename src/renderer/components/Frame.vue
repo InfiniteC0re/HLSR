@@ -8,22 +8,20 @@
       >
         <i class="fas fa-sync-alt"></i>
       </div>
-      <div class="framebutton" @click="showDebugMenu" v-if="isDev">
-        <i class="fas fa-database"></i>
-      </div>
-      <div class="framebutton" @click="showDevTools" v-if="isDev">
-        <i class="fab fa-dev"></i>
-      </div>
-      <div
-        class="framebutton"
-        @click="require('electron').remote.getCurrentWindow().minimize()"
-      >
+      <ul class="debugbuttons" v-if="isDev">
+        <router-link to="/debug/hlsd">
+          <div class="framebutton" @click="showDebugMenu">
+            <i class="fas fa-database"></i>
+          </div>
+        </router-link>
+        <div class="framebutton" @click="showDevTools">
+          <i class="fab fa-dev"></i>
+        </div>
+      </ul>
+      <div class="framebutton" @click="remote.getCurrentWindow().minimize()">
         <i class="fal fa-minus"></i>
       </div>
-      <div
-        class="framebutton close"
-        @click="require('electron').remote.getCurrentWindow().close()"
-      >
+      <div class="framebutton close" @click="remote.getCurrentWindow().close()">
         <i class="fal fa-times"></i>
       </div>
     </div>
@@ -31,10 +29,12 @@
 </template>
 
 <script>
-var isDev = require("process").env.WEBPACK_DEV_SERVER === "true";
+const remote = require("@electron/remote");
+
 export default {
   data: () => ({
-    isDev,
+    isDev: process.env.WEBPACK_DEV_SERVER === "true",
+    remote,
   }),
   computed: {
     updateAvailable() {
@@ -44,13 +44,10 @@ export default {
       switch (this.$parent.updateAvailable) {
         case 0:
           return "";
-          break;
         case 1:
-          return this.localization.get("#UI_UPDATE_DOWNLOADING");
-          break;
+          return this.$localisation.get("#UI_UPDATE_DOWNLOADING");
         case 2:
-          return this.localization.get("#UI_UPDATE_READY");
-          break;
+          return this.$localisation.get("#UI_UPDATE_READY");
       }
     },
   },
@@ -62,7 +59,7 @@ export default {
       this.$store.commit("checkHLSRC");
     },
     showDevTools() {
-      require("electron").remote.getCurrentWindow().webContents.openDevTools({
+      remote.getCurrentWindow().webContents.openDevTools({
         mode: "undocked",
       });
     },
@@ -119,5 +116,9 @@ export default {
 .framebutton.close:hover {
   background: rgb(255, 0, 76);
   color: white;
+}
+
+.debugbuttons {
+  display: contents;
 }
 </style>

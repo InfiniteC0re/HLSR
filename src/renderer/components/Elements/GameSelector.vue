@@ -21,11 +21,11 @@
 </template>
 
 <script>
-import Store from "../../utils/Store.js";
-import StoreDefaults from "../../utils/StoreDefaults.js";
+import Store from "@/scripts/Store";
+import StoreDefaults from "@/scripts/StoreDefaults";
 import HLIcon from "../Icons/HL";
 import HL2Icon from "../Icons/HL2";
-import GameControl from "../../utils/GameControl";
+import GameControl from "@/scripts/GameControl";
 
 const store = new Store({
   configName: "library",

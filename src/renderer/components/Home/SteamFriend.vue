@@ -14,31 +14,29 @@
       "
     >
       <i class="fas fa-envelope"></i>
-      <md-tooltip>{{ localization.get("#UI_SEND_MESSAGE") }}</md-tooltip>
+      <md-tooltip>{{ $localisation.get("#UI_SEND_MESSAGE") }}</md-tooltip>
     </div>
   </div>
 </template>
 
 <script type="text/javascript">
-import axios from "axios";
 
 export default {
   name: "steam-friend",
   props: ["friend"],
   data() {
     return {
-      localization: this.$parent.localization,
       url: "",
     };
   },
   computed: {
     statusText() {
       var state = this.friend.priority;
-      if (state == -1) return this.localization.get("#UI_IN_LAUNCHER", this.friend.friendRPC);
-      if (state == 0) return this.localization.get("#UI_IN_HL");
-      if (state == 1) return this.localization.get("#UI_IN_OTHER_GAME");
-      if (state == 2) return this.localization.get("#UI_ONLINE");
-      if (state == 3) return this.localization.get("#UI_OFFLINE");
+      if (state == -1) return this.$localisation.get("#UI_IN_LAUNCHER", this.friend.friendRPC);
+      if (state == 0) return this.$localisation.get("#UI_IN_HL");
+      if (state == 1) return this.$localisation.get("#UI_IN_OTHER_GAME");
+      if (state == 2) return this.$localisation.get("#UI_ONLINE");
+      if (state == 3) return this.$localisation.get("#UI_OFFLINE");
     },
     statusColor() {
       var state = this.friend.priority;

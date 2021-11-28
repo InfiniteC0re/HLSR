@@ -4,8 +4,6 @@ import axios from "axios";
 import crypto from "crypto";
 
 import sortFriends from "./sortFriends";
-import { existsSync, readFileSync } from "fs";
-
 vue.use(vuex);
 
 let parser = new DOMParser();
@@ -59,10 +57,12 @@ export default new vuex.Store({
     sidebarBlocked: false,
     notifications: [],
     extraNotification: null,
+    blobs: null,
     steamworks: {
       started: false,
       friends: [],
       personaName: null,
+      licenses: {},
     },
     soundCloud: {
       widget: null,
@@ -76,6 +76,14 @@ export default new vuex.Store({
       name: "",
       date: null,
       started: false,
+    },
+    scriptEditor: {
+      filePath: "",
+      fileName: "",
+      content: "",
+    },
+    window: {
+      focused: true,
     },
   },
   mutations: {
@@ -147,7 +155,6 @@ export default new vuex.Store({
     },
 
     // SoundCloud
-
     setSCWidget(state, widget) {
       state.soundCloud.widget = widget;
     },
@@ -225,21 +232,6 @@ export default new vuex.Store({
       else state.game.started = true;
       state.game.name = name;
       state.game.date = Date.now();
-    },
-    checkHLSRC() {
-      let text = "Некорректный HLSRC";
-      let type = 1;
-
-      if (existsSync("./hlsrc.json")) {
-        let data = readFileSync("./hlsrc.json").toJSON();
-        if (data.title) text = `HLSRC успешно загружен`;
-        type = 0;
-      }
-
-      this.commit("createNotification", {
-        text,
-        type,
-      });
     },
   },
 });

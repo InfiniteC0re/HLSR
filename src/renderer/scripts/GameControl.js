@@ -1,16 +1,23 @@
-import { ipcRenderer } from "electron";
+import {
+  ipcRenderer
+} from "electron";
 import GameList from "../GameList";
-import electron from "electron";
+const electron = require('electron');
+const remote = process.type == "renderer" ? require("@electron/remote") : electron;
 
 export default {
   checkInstalled(store, appid) {
     let installed = store.get("installed");
     return Object.keys(installed).indexOf(appid) >= 0;
   },
-  startGame(hlsrconsole, store, gameID, globalstore, navbar) {
+  getInstalledCount(store) {
+    let installed = store.get("installed");
+    return Object.keys(installed).length;
+  },
+  startGame(hlsrConsole, store, gameID, globalstore, navbar) {
     let config = store.get("config");
 
-    hlsrconsole.execute(
+    hlsrConsole.execute(
       [
         "game", // Launch Mode
         this.getLibraryPath(store), // Library Path
@@ -21,24 +28,24 @@ export default {
         config[gameID].livesplit ? "-livesplit" : "",
         config[gameID].steam ? "-steam" : "",
         config[gameID].allcores ? "-allcores" : "",
-        config[gameID].allcores == false && config[gameID].corescount == "1"
-          ? "-onecore"
-          : "",
-        config[gameID].allcores == false && config[gameID].corescount == "2"
-          ? "-twocores"
-          : "",
-        config[gameID].allcores == false && config[gameID].corescount == "3"
-          ? "-threecores"
-          : "",
-        config[gameID].allcores == false && config[gameID].corescount == "4"
-          ? "-fourcores"
-          : "",
+        config[gameID].allcores == false && config[gameID].corescount == "1" ?
+        "-onecore" :
+        "",
+        config[gameID].allcores == false && config[gameID].corescount == "2" ?
+        "-twocores" :
+        "",
+        config[gameID].allcores == false && config[gameID].corescount == "3" ?
+        "-threecores" :
+        "",
+        config[gameID].allcores == false && config[gameID].corescount == "4" ?
+        "-fourcores" :
+        "",
         "-" + config[gameID].priority,
-        config[gameID].hl1movement && gameID == "218"
-          ? "-game ghosting " + config[gameID].args
-          : gameID == "218"
-          ? "-game ghostingmod " + config[gameID].args
-          : config[gameID].args,
+        config[gameID].hl1movement && gameID == "218" ?
+        "-game ghosting " + config[gameID].args :
+        gameID == "218" ?
+        "-game ghostingmod " + config[gameID].args :
+        config[gameID].args,
       ],
       () => {
         // Завершение работы hlsr-console
@@ -57,12 +64,12 @@ export default {
 
         if (globalstore) globalstore.commit("setLastGame", null);
         if (navbar) navbar.$forceUpdate();
-        ipcRenderer.send("setRichPresence", "HLSR");
+        ipcRenderer.sendSync("setRichPresence", "HLSR");
       }
     );
 
     let gameTitle = this.getTitle(gameID);
-    ipcRenderer.send("setRichPresence", `HLSR [${gameTitle}]`);
+    ipcRenderer.sendSync("setRichPresence", `HLSR [${gameTitle}]`);
 
     store.set("lastLaunched", gameID);
     if (globalstore) globalstore.commit("setLastGame", gameTitle);
@@ -93,7 +100,9 @@ export default {
       if (typeof fn === "string") {
         let gamePath = path.join(libraryPath, fn);
 
-        fs.rmdirSync(gamePath, { recursive: true });
+        fs.rmdirSync(gamePath, {
+          recursive: true
+        });
       }
     });
 
@@ -116,14 +125,14 @@ export default {
     let open_path = path.join(libraryPath, game.info.removePaths[0]);
 
     if (id == "218") {
-      let cfg = store.get("config")["218"];
+      let cfg = store.get("config")[id];
 
       if (cfg.hl1movement) open_path = path.join(open_path, "ghosting");
       else open_path = path.join(open_path, "ghostingmod");
     }
 
     try {
-      electron.remote.shell.openPath(open_path);
+      remote.shell.openPath(open_path);
     } catch (e) {
       console.error(e);
     }
@@ -136,7 +145,7 @@ export default {
     if (configPath) return configPath;
     else {
       let lib_path = path.join(
-        require("electron").remote.app.getPath("userData"),
+        remote.app.getPath("userData"),
         "library"
       );
 
@@ -154,9 +163,9 @@ export default {
     if (configPath) return path.join(configPath, "downloads");
     else
       return path.join(
-        electron.remote
-          ? electron.remote.app.getPath("userData")
-          : electron.app.getPath("userData"),
+        remote ?
+        remote.app.getPath("userData") :
+        electron.app.getPath("userData"),
         "temp"
       );
   },

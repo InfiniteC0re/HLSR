@@ -6,38 +6,43 @@ Vue.use(Router)
 export default new Router({
     routes: [{
             path: '/',
-            name: 'hltp-loading',
-            component: require('@/components/Loading').default
+            name: 'loading',
+            component: require('@/views/Loading').default
         },
         {
             path: '/home',
-            name: 'hltp-home',
-            component: require('@/components/Home').default
+            name: 'home',
+            component: require('@/views/Home').default
         },
         {
             path: '/settings',
-            name: 'hltp-settings',
-            component: require('@/components/Settings').default
+            name: 'settings',
+            component: require('@/views/Settings').default
         },
         {
             path: '/game',
-            name: "hltp-game-menu",
-            component: require('@/components/GameMenu').default
+            name: "game-menu",
+            component: require('@/views/GameMenu').default
         },
         {
             path: '/config-editor',
-            name: "hltp-config-editor",
-            component: require('@/components/ConfigEditor').default
+            name: "config-editor",
+            component: require('@/views/ConfigEditor').default
         },
         {
             path: '/config-constructor',
-            name: "hltp-config-constructor",
-            component: require('@/components/ConfigConstructor').default
+            name: "config-constructor",
+            component: require('@/views/ConfigConstructor').default
         },
         {
             path: '/customization',
-            name: 'hltp-customization',
-            component: require('@/components/customization/Customization').default
+            name: 'customization',
+            component: require('@/views/Customization').default
+        },
+        {
+            path: '/debug/hlsd',
+            name: 'hlsd',
+            component: require('@/views/Alternative/HLSDTEST.vue').default
         }
     ]
 })

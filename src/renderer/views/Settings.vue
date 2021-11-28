@@ -1,68 +1,61 @@
 <template>
   <div id="wrap" ref="settings">
     <div id="form">
-      <div class="title">{{ localization.get("#UI_SETTINGS") }}</div>
+      <div class="title">{{ $localisation.get("#UI_SETTINGS") }}</div>
       <div id="settings-scroll">
         <div class="section basictext">
-          {{ localization.get("#UI_INTERFACE_SETTINGS") }}
+          {{ $localisation.get("#UI_INTERFACE_SETTINGS") }}
         </div>
-        <dropdown
+        <Dropdown
           v-model="language"
-          :text="localization.get('#UI_INTERFACE_LANGUAGE')"
+          :text="$localisation.get('#UI_INTERFACE_LANGUAGE')"
           @change="saveChoice()"
           :items="languages"
         />
-        <dropdown
+        <Dropdown
           v-model="theme"
-          :text="localization.get('#UI_INTERFACE_THEME')"
+          :text="$localisation.get('#UI_INTERFACE_THEME')"
           @change="themeChange()"
           :items="themes"
         />
-        <checkbox
-          v-if="!lowRes"
-          v-model="compactMode"
-          @change="saveChoice(true)"
-          :text="localization.get('#UI_COMPACT_MODE')"
-        />
         <div class="section basictext">
-          {{ localization.get("#UI_MISC_SETTINGS") }}
+          {{ $localisation.get("#UI_MISC_SETTINGS") }}
         </div>
-        <checkbox
+        <Checkbox
           v-model="rpc"
           @change="saveChoice()"
-          :text="localization.get('#UI_DISCORD_RPC_SETTINGS')"
+          :text="$localisation.get('#UI_DISCORD_RPC_SETTINGS')"
         />
-        <checkbox
+        <Checkbox
           v-model="noParticles"
           @change="saveChoice()"
-          :text="localization.get('#UI_NO_PARTICLES')"
+          :text="$localisation.get('#UI_NO_PARTICLES')"
         />
       </div>
       <div id="bottom">
         <div class="social">
           <div class="social-button" @click="openDiscord">
             <i class="fab fa-discord"></i>
-            <md-tooltip>{{ localization.get("#UI_DISCORD") }}</md-tooltip>
+            <md-tooltip>{{ $localisation.get("#UI_DISCORD") }}</md-tooltip>
           </div>
-          <div class="social-button" @click="openDialog">
+          <div class="social-button" @click="dialogOpen = true">
             <i class="fal fa-info-circle"></i>
-            <md-tooltip>{{ localization.get("#UI_ABOUT_PROGRAM") }}</md-tooltip>
+            <md-tooltip>{{ $localisation.get("#UI_ABOUT_PROGRAM") }}</md-tooltip>
           </div>
         </div>
       </div>
 
-      <!-- <checkbox v-model="experimental" @change="saveChoice" :text="localization.get('#UI_EXPERIMENTAL_MODE_SETTINGS')"/> -->
+      <!-- <checkbox v-model="experimental" @change="saveChoice" :text="$localisation.get('#UI_EXPERIMENTAL_MODE_SETTINGS')"/> -->
 
       <!-- Диалоговое окно  -->
-
       <md-dialog :md-active.sync="dialogOpen" :mdClickOutsideToClose="true">
         <md-dialog-title
-          v-html="localization.get('#UI_ABOUT_TITLE')"
+          v-html="$localisation.get('#UI_ABOUT_TITLE')"
         ></md-dialog-title>
         <md-dialog-content style="display: flex; user-select: text">
           <div
             class="left-block"
-            v-html="localization.get('#UI_ABOUT_CONTENT')"
+            v-html="$localisation.get('#UI_ABOUT_CONTENT')"
           ></div>
           <div class="right-block">
             <img
@@ -78,10 +71,11 @@
 </template>
 
 <script>
-import checkbox from "./Elements/Checkbox";
-import dropdown from "./Elements/Dropdown";
-import Store from "../utils/Store.js";
-import StoreDefaults from "../utils/StoreDefaults.js";
+const remote = require("@electron/remote");
+import Checkbox from "@/components/Elements/Checkbox";
+import Dropdown from "@/components/Elements/Dropdown";
+import Store from "@/scripts/Store.js";
+import StoreDefaults from "@/scripts/StoreDefaults.js";
 
 const store = new Store({
   configName: "settings",
@@ -90,7 +84,7 @@ const store = new Store({
 
 export default {
   name: "settings-page",
-  components: { checkbox, dropdown },
+  components: { Checkbox, Dropdown },
   data() {
     return {
       languages: [],
@@ -100,10 +94,7 @@ export default {
       rpc: true,
       noParticles: false,
       experimental: false,
-      localization: this.$parent.localization,
       dialogOpen: false,
-      compactMode: false,
-      lowRes: false,
     };
   },
   mounted() {
@@ -113,38 +104,43 @@ export default {
     this.rpc = config.rpc;
     this.noParticles = config.noParticles;
     this.experimental = config.experimental;
-    this.compactMode = config.compactMode;
     this.updateLocale();
-
-    let screen = require("electron").remote.screen;
-
-    let display = screen.getPrimaryDisplay().size;
-
-    if (display.width <= 1366 || display.height <= 768) {
-      this.lowRes = true;
-    }
   },
   methods: {
     openDiscord() {
-      let shell = require("electron").remote.shell;
-      shell.openExternal("https://discord.gg/3TN2yyJKE2");
-    },
-    openDialog() {
-      this.dialogOpen = true;
+      remote.shell.openExternal("https://discord.gg/3TN2yyJKE2");
     },
     updateLocale() {
       this.languages = [
-        this.$parent.localization.get("#UI_ENGLISH"),
-        this.$parent.localization.get("#UI_RUSSIAN"),
+        { name: this.$parent.$localisation.get("#UI_ENGLISH"), id: 0 },
+        { name: this.$parent.$localisation.get("#UI_RUSSIAN"), id: 1 },
       ];
 
       this.themes = [
-        this.$parent.localization.get("#UI_GRADIENT_THEME"),
-        this.$parent.localization.get("#UI_BLUE_THEME"),
-        this.$parent.localization.get("#UI_RED_THEME"),
+        { name: this.$parent.$localisation.get("#UI_GRADIENT_THEME"), id: 0 },
+        { name: this.$parent.$localisation.get("#UI_BLUE_THEME"), id: 1 },
+        { name: this.$parent.$localisation.get("#UI_RED_THEME"), id: 2 },
+        // a freelancer theme was here (id 3)
+        { name: this.$parent.$localisation.get("#UI_BLOBS_THEME"), id: 4 },
       ];
 
-      if (store.get("config").mlpMode) this.themes.push("My Little Pony");
+      if (store.get("config").mlpMode)
+        this.themes.push({ name: "My Little Pony", id: 3 });
+      else if (store.get("config").theme == 3)
+        this.themes.push({ name: "Freelancer", id: 3 });
+
+      // let release = require("os").release().split(".");
+
+      // if (release[0] == "10") {
+      //   // 17134 - Windows 10 1803
+      //   let acryllicSupported = parseInt(release[2]) >= 17134;
+      //   if (acryllicSupported) {
+      //     this.themes.push({
+      //       name: this.$parent.$localisation.get("#UI_ACRYLLIC_THEME"),
+      //       id: 4,
+      //     });
+      //   }
+      // }
     },
     themeChange() {
       if (this.$parent.lancerMode) return;
@@ -160,11 +156,10 @@ export default {
       config.rpc = this.rpc;
       config.experimental = this.experimental;
       config.noParticles = this.noParticles;
-      config.compactMode = this.compactMode;
       store.set("config", config);
 
       if (langChanged) {
-        this.localization.update();
+        this.$localisation.update();
         this.$parent.$refs.navbar.$forceUpdate();
 
         this.updateLocale();
@@ -173,14 +168,14 @@ export default {
       this.$store.commit("setParticlesState", config.noParticles);
 
       if (restart && require("process").env.WEBPACK_DEV_SERVER !== "true") {
-        let app = require("electron").remote.app;
+        let app = remote.app;
 
         app.relaunch();
         app.quit();
       } else if (restart) {
         // Send a notification
         this.$store.commit("createNotification", {
-          text: this.localization.get("#RESTART_APP")
+          text: this.$localisation.get("#RESTART_APP"),
         });
       }
     },

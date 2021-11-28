@@ -1,10 +1,11 @@
 const electron = require('electron');
+const remote = process.type == "renderer" ? require("@electron/remote") : electron;
 const path = require('path');
 const fs = require('fs');
 
 class Store {
   constructor(opts) {
-    const userDataPath = (electron.app || electron.remote.app).getPath('userData');
+    const userDataPath = (electron.app || remote.app).getPath('userData');
     
     this.path = path.join(userDataPath, opts.configName + '.json');
     this.opts = opts;

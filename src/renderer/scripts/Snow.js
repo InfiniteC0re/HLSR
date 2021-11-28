@@ -1,3 +1,5 @@
+const remote = require("@electron/remote");
+
 var Snow = {
   el: "#events_background",
   density: 60000,
@@ -14,7 +16,7 @@ var Snow = {
   currentWindow: null,
   date: null,
   init(store) {
-    this.currentWindow = require("electron").remote.getCurrentWindow();
+    this.currentWindow = remote.getCurrentWindow();
     this.canvas = document.querySelector(this.el);
     this.ctx = this.canvas.getContext("2d");
     this.store = store;
@@ -90,6 +92,7 @@ var Snow = {
         p.y = -10;
       }
     });
+    
     if (this.quit) {
       return;
     }

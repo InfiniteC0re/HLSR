@@ -1,10 +1,10 @@
 <template>
   <div id="wrap">
     <div class="title">
-      {{ localization.get("#UI_CONFIGURATOR") }}
+      {{ $localisation.get("#UI_CONFIGURATOR") }}
     </div>
     <div class="section" style="margin-top: 16px">
-      {{ localization.get("#UI_GAME_VERSION") }}
+      {{ $localisation.get("#UI_GAME_VERSION") }}
     </div>
     <div class="container">
       <md-radio v-model="version" @change="saveChoice" value="Steam"
@@ -25,17 +25,17 @@
         class="md-primary"
         :disabled="id != '70' || version == 'Steam'"
         v-if="id != '218'"
-        >{{ localization.get("#UI_EDITED_DLL") }}
+        >{{ $localisation.get("#UI_EDITED_DLL") }}
       </md-switch>
       <md-switch
         v-model="hl1movement"
         @change="saveChoice"
         class="md-primary"
         v-else
-        >{{ localization.get("#UI_HL1MOVEMENT") }}
+        >{{ $localisation.get("#UI_HL1MOVEMENT") }}
       </md-switch>
     </div>
-    <div class="section">{{ localization.get("#UI_EXTERNAL_TOOLS") }}</div>
+    <div class="section">{{ $localisation.get("#UI_EXTERNAL_TOOLS") }}</div>
     <div class="flex">
       <div>
         <div class="container">
@@ -64,22 +64,22 @@
       <div style="margin-left: auto; margin-right: 32px; width: 280px">
         <div class="container">
           <md-checkbox v-model="allcores" @change="saveChoice">{{
-            localization.get("#UI_GAME_ALLCORES")
+            $localisation.get("#UI_GAME_ALLCORES")
           }}</md-checkbox>
         </div>
         <div class="container" v-if="!allcores">
           <div style="display: grid; grid-template-columns: 1fr 1fr">
             <md-radio v-model="corescount" value="1">{{
-              localization.get("#UI_GAME_PRIORITY_1C")
+              $localisation.get("#UI_GAME_PRIORITY_1C")
             }}</md-radio>
             <md-radio v-model="corescount" value="2">{{
-              localization.get("#UI_GAME_PRIORITY_2C")
+              $localisation.get("#UI_GAME_PRIORITY_2C")
             }}</md-radio>
             <md-radio v-model="corescount" value="3">{{
-              localization.get("#UI_GAME_PRIORITY_3C")
+              $localisation.get("#UI_GAME_PRIORITY_3C")
             }}</md-radio>
             <md-radio v-model="corescount" value="4">{{
-              localization.get("#UI_GAME_PRIORITY_4C")
+              $localisation.get("#UI_GAME_PRIORITY_4C")
             }}</md-radio>
           </div>
         </div>
@@ -97,7 +97,7 @@
     >
       <md-field>
         <label for="priorities">{{
-          localization.get("#UI_GAME_PRIORITY")
+          $localisation.get("#UI_GAME_PRIORITY")
         }}</label>
         <md-select
           @md-selected="saveChoice"
@@ -106,21 +106,21 @@
           id="priorities"
         >
           <md-option value="normal">{{
-            localization.get("#UI_GAME_PRIORITY_NORMAL")
+            $localisation.get("#UI_GAME_PRIORITY_NORMAL")
           }}</md-option>
           <md-option value="abovenormal">{{
-            localization.get("#UI_GAME_PRIORITY_ABOVENORMAL")
+            $localisation.get("#UI_GAME_PRIORITY_ABOVENORMAL")
           }}</md-option>
           <md-option value="high">{{
-            localization.get("#UI_GAME_PRIORITY_HIGH")
+            $localisation.get("#UI_GAME_PRIORITY_HIGH")
           }}</md-option>
           <md-option value="realtime">{{
-            localization.get("#UI_GAME_PRIORITY_REALTIME")
+            $localisation.get("#UI_GAME_PRIORITY_REALTIME")
           }}</md-option>
         </md-select>
       </md-field>
       <md-field>
-        <label>{{ localization.get("#UI_START_ARGS") }}</label>
+        <label>{{ $localisation.get("#UI_START_ARGS") }}</label>
         <md-input v-model="args"></md-input>
       </md-field>
     </div>
@@ -128,8 +128,8 @@
 </template>
 
 <script type="text/javascript">
-import Store from "../../utils/Store.js";
-import StoreDefaults from "../../utils/StoreDefaults.js";
+import Store from "@/scripts/Store";
+import StoreDefaults from "@/scripts/StoreDefaults";
 
 const store = new Store({
   configName: "library",
@@ -149,7 +149,6 @@ export default {
       hl1movement: false,
       version: "Steam",
       args: "",
-      localization: this.$parent.localization,
       priority: "normal",
       corescount: "1",
       disableBXT: false,

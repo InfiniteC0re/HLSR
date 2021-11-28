@@ -4,7 +4,7 @@
       <md-empty-state
         class="md-accent"
         md-rounded
-        :md-description="localization.get('#UI_NO_TRACKS')"
+        :md-description="$localisation.get('#UI_NO_TRACKS')"
         :md-size="200"
       ></md-empty-state>
     </div>
@@ -71,7 +71,6 @@ export default {
       barWidth: 0,
       volume: 100,
       updater: null,
-      localization: this.$parent.localization,
       bar: {
         pressed: false,
         x: null,

@@ -133,13 +133,13 @@ if (process.env.NODE_ENV === 'production') {
 
   webConfig.plugins.push(
     new MinifyPlugin(),
-    new CopyWebpackPlugin([
-      {
-        from: path.join(__dirname, '../static'),
-        to: path.join(__dirname, '../dist/web/static'),
-        ignore: ['.*']
-      }
-    ]),
+    // new CopyWebpackPlugin([
+    //   {
+    //     from: path.join(__dirname, '../static'),
+    //     to: path.join(__dirname, '../dist/web/static'),
+    //     ignore: ['.*']
+    //   }
+    // ]),
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': '"production"'
     }),

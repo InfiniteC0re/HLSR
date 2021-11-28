@@ -9,26 +9,26 @@
       <div class="buttons">
         <div class="sbutton">
           <router-link to="/home">
-            <button :class="{ active: $route.name == 'hltp-home' }">
+            <button :class="{ active: $route.name == 'home' }">
               <i class="fas fa-home-lg"></i>
               <!-- <md-tooltip md-direction="right">{{
-                localization.get("#UI_HOME")
+                $localisation.get("#UI_HOME")
               }}</md-tooltip> -->
             </button>
           </router-link>
         </div>
 
-        <div class="sbutton" ref="games_button">
+        <div class="sbutton" ref="gamesButton">
           <button
             :class="{
-              active: $route.name == 'hltp-game-menu',
+              active: $route.name == 'game-menu',
               preActive: gameList,
             }"
             @click="gameList = !gameList"
           >
             <i class="fas fa-play"></i>
             <!-- <md-tooltip md-direction="right">{{
-                localization.get("#UI_LIBRARY")
+                $localisation.get("#UI_LIBRARY")
               }}</md-tooltip> -->
           </button>
           <div class="items" :class="{ opened: gameList }">
@@ -42,7 +42,7 @@
               </div>
               Half-Life
               <span class="time">{{
-                localization.get("#UI_SPENT_TIME", getPlayTime("70"))
+                $localisation.get("#UI_SPENT_TIME", getPlayTime("70"))
               }}</span>
             </div>
             <div
@@ -55,7 +55,7 @@
               </div>
               Half-Life: Opposing Force
               <span class="time">{{
-                localization.get("#UI_SPENT_TIME", getPlayTime("50"))
+                $localisation.get("#UI_SPENT_TIME", getPlayTime("50"))
               }}</span>
             </div>
             <div
@@ -68,7 +68,7 @@
               </div>
               Half-Life: Blue Shift
               <span class="time">{{
-                localization.get("#UI_SPENT_TIME", getPlayTime("130"))
+                $localisation.get("#UI_SPENT_TIME", getPlayTime("130"))
               }}</span>
             </div>
             <div
@@ -81,7 +81,7 @@
               </div>
               Half-Life 2
               <span class="time">{{
-                localization.get("#UI_SPENT_TIME", getPlayTime("220"))
+                $localisation.get("#UI_SPENT_TIME", getPlayTime("220"))
               }}</span>
             </div>
             <div
@@ -94,7 +94,7 @@
               </div>
               Half-Life 2: Ghosting
               <span class="time">{{
-                localization.get("#UI_SPENT_TIME", getPlayTime("218"))
+                $localisation.get("#UI_SPENT_TIME", getPlayTime("218"))
               }}</span>
             </div>
           </div>
@@ -108,40 +108,40 @@
           <button
             :class="{
               active:
-                $route.name == 'hltp-config-editor' ||
-                $route.name == 'hltp-config-constructor',
+                $route.name == 'config-editor' ||
+                $route.name == 'config-constructor',
               preActive: configList,
             }"
           >
             <i class="fas fa-align-left"></i>
             <!-- <md-tooltip md-direction="right">{{
-                localization.get("#UI_CONFIGS")
+                $localisation.get("#UI_CONFIGS")
               }}</md-tooltip> -->
           </button>
           <div class="items" :class="{ opened: configList }">
             <div
               class="item"
               @click="goTo('config-constructor')"
-              :class="{ selected: $route.name == 'hltp-config-constructor' }"
+              :class="{ selected: $route.name == 'config-constructor' }"
             >
-              {{ localization.get("#UI_CONFIGS_CONSTRUCTOR") }}
+              {{ $localisation.get("#UI_CONFIGS_CONSTRUCTOR") }}
             </div>
             <div
               class="item"
               @click="goTo('config-editor')"
-              :class="{ selected: $route.name == 'hltp-config-editor' }"
+              :class="{ selected: $route.name == 'config-editor' }"
             >
-              {{ localization.get("#UI_CONFIGS_ADVANCED") }}
+              {{ $localisation.get("#UI_CONFIGS_ADVANCED") }}
             </div>
           </div>
         </div>
 
         <div class="sbutton">
           <router-link to="/customization">
-            <button :class="{ active: $route.name == 'hltp-customization' }">
+            <button :class="{ active: $route.name == 'customization' }">
               <i class="fas fa-sliders-h"></i>
               <!-- <md-tooltip md-direction="right">{{
-                localization.get("#UI_CUSTOMIZATION")
+                $localisation.get("#UI_CUSTOMIZATION")
               }}</md-tooltip> -->
             </button>
           </router-link>
@@ -166,7 +166,7 @@
           />
         </svg>
         <md-tooltip v-if="!steamActive" md-direction="right">{{
-          localization.get("#UI_STEAM_RECONNECT")
+          $localisation.get("#UI_STEAM_RECONNECT")
         }}</md-tooltip>
       </div>
 
@@ -184,8 +184,8 @@
 </template>
 
 <script>
-import Store from "../utils/Store.js";
-import StoreDefaults from "../utils/StoreDefaults.js";
+import Store from "@/scripts/Store.js";
+import StoreDefaults from "@/scripts/StoreDefaults.js";
 
 const store = new Store({
   configName: "library",
@@ -200,11 +200,11 @@ const storeSettings = new Store({
 export default {
   data() {
     return {
-      localization: this.$parent.localization,
       gameList: false,
       configList: false,
       color: "white",
       version: null,
+      c: 0,
     };
   },
   methods: {
@@ -265,13 +265,8 @@ export default {
       }
     },
     clickHandle(e) {
-      if (!e.path.includes(this.$refs.games_button)) {
-        this.gameList = false;
-      }
-
-      if (!e.path.includes(this.$refs.configButton)) {
-        this.configList = false;
-      }
+      if (!e.path.includes(this.$refs.gamesButton)) this.gameList = false;
+      if (!e.path.includes(this.$refs.configButton)) this.configList = false;
     },
   },
   computed: {
@@ -320,7 +315,7 @@ export default {
     top: -32px;
     width: 100%;
     height: 100vh;
-    background: rgba(23, 46, 86, 0.3);
+    backdrop-filter: blur(48px);
   }
 
   .bottom {
@@ -399,20 +394,20 @@ export default {
         .items {
           display: flex;
           flex-direction: column;
-          width: 300px;
+          width: max-content;
           position: absolute;
           background-color: rgba(20, 20, 20, 0.8);
           box-shadow: inset 0 0 0 2px rgb(42, 42, 42);
-          backdrop-filter: blur(16px);
+          backdrop-filter: blur(12px);
           top: 50%;
           left: 76px;
-          font-size: 1rem;
+          font-size: 0.9rem;
+          line-height: 1px;
           font-weight: 500;
-          padding: 8px 0;
           transform: translate(0, -50%);
           border-radius: 6px;
           opacity: 0;
-          transition: 0.07s ease opacity;
+          transition: 0.15s ease opacity;
           pointer-events: none;
 
           &.opened {
@@ -432,15 +427,31 @@ export default {
             width: 100%;
             display: flex;
             align-items: center;
+            position: relative;
+
+            &::after {
+              content: "";
+              position: absolute;
+              height: 2px;
+              left: 2px;
+              right: 2px;
+              bottom: 0;
+              background: rgba(255, 255, 255, 0.03);
+            }
+
+            &:nth-last-child(1)::after {
+              display: none;
+            }
 
             .lambda__container {
+              margin-right: 12px;
+
               .lambda {
                 background: url(../assets/lambda.svg);
                 background-size: cover;
                 background-position: center;
                 width: 14px;
                 height: 14px;
-                margin-right: 8px;
                 filter: invert(0.4);
                 transition: 100ms ease;
                 position: relative;
@@ -466,6 +477,7 @@ export default {
 
             span.time {
               margin-left: auto;
+              padding-left: 20px;
               color: rgba(255, 255, 255, 0.15);
               font-weight: 100;
               font-size: 0.8rem;
@@ -493,6 +505,8 @@ export default {
 
             &.selected {
               color: #00abff;
+              cursor: default;
+              pointer-events: none;
 
               .lambda__container {
                 .lambda {
@@ -535,7 +549,7 @@ export default {
             width: 50px;
             height: 50px;
             border-radius: 8px;
-            border: 1.8px solid #00abff;
+            border: 2px solid #00abff;
           }
         }
       }

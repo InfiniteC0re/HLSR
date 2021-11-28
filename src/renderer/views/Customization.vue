@@ -1,12 +1,12 @@
 <template>
   <div id="wrap">
     <div id="form">
-      <div class="title">{{ localization.get("#UI_CUSTOMIZATION") }}</div>
+      <div class="title">{{ $localisation.get("#UI_CUSTOMIZATION") }}</div>
       <GameSelector v-model="selectedGame" />
       <div class="wrapper">
         <div class="block-background">
           <div class="block-background-title title-form">
-            {{ localization.get("#UI_CUSTOMIZATION_MENU_BACKGROUNDS") }}
+            {{ $localisation.get("#UI_CUSTOMIZATION_MENU_BACKGROUNDS") }}
           </div>
           <div class="block-background-wrapper">
             <BackgroundItem
@@ -21,7 +21,7 @@
         </div>
         <div class="block-aim">
           <div class="block-background-title title-form">
-            {{ localization.get("#UI_CUSTOMIZATION_SCOPE_SETTINGS") }}
+            {{ $localisation.get("#UI_CUSTOMIZATION_SCOPE_SETTINGS") }}
           </div>
           <div class="block-crosshairs-wrapper">
             <AimItem
@@ -36,7 +36,7 @@
         </div>
         <div class="block-checkbox">
           <div class="block-checkbox-title title-form">
-            {{ localization.get("#UI_CUSTOMIZATION_HUD_SETTINGS") }}
+            {{ $localisation.get("#UI_CUSTOMIZATION_HUD_SETTINGS") }}
           </div>
           <div class="selector2">
             <Block
@@ -53,7 +53,7 @@
         </div>
         <div class="block-checkbox">
           <div class="block-checkbox-title title-form">
-            {{ localization.get("#UI_CUSTOMIZATION_SPRITES") }}
+            {{ $localisation.get("#UI_CUSTOMIZATION_SPRITES") }}
           </div>
           <div class="selector2">
             <Block
@@ -70,18 +70,18 @@
         </div>
         <div class="block-checkbox">
           <div class="block-checkbox-title title-form">
-            {{ localization.get("#UI_CUSTOMIZATION_SKYBOXES") }}
+            {{ $localisation.get("#UI_CUSTOMIZATION_SKYBOXES") }}
           </div>
           <div class="block-checkbox-checkbox">
             <div class="checkboxes">
               <CheckBox
-                :text="localization.get('#UI_CUSTOMIZATION_LQ')"
+                :text="$localisation.get('#UI_CUSTOMIZATION_LQ')"
                 value="LQ"
                 name="skyboxes"
                 v-model="skyboxes"
               />
               <CheckBox
-                :text="localization.get('#UI_CUSTOMIZATION_HD')"
+                :text="$localisation.get('#UI_CUSTOMIZATION_HD')"
                 value="HD"
                 name="skyboxes"
                 v-model="skyboxes"
@@ -109,7 +109,7 @@
             @click="saveConfigHandle"
             :disabled="!installed || isGameStarted"
           >
-            <p>{{ localization.get("#UI_CUSTOMIZATION_BUTTON_SAVE") }}</p>
+            <p>{{ $localisation.get("#UI_CUSTOMIZATION_BUTTON_SAVE") }}</p>
             <i class="fas fa-save"></i>
           </ButtonAlt>
         </div>
@@ -119,7 +119,7 @@
             :red="true"
             :disabled="!installed || isGameStarted"
           >
-            <p>{{ localization.get("#UI_CUSTOMIZATION_BUTTON_RESET") }}</p>
+            <p>{{ $localisation.get("#UI_CUSTOMIZATION_BUTTON_RESET") }}</p>
             <i class="far fa-ban"></i>
           </ButtonAlt>
         </div>
@@ -129,15 +129,15 @@
 </template>
 
 <script>
-import Store from "../../utils/Store.js";
-import StoreDefaults from "../../utils/StoreDefaults.js";
-import GameSelector from "../Elements/GameSelector";
-import BackgroundItem from "./backgroundItem/BackgroundItem";
-import AimItem from "./aimItem/AimItem";
-import CheckBox from "./checkbox/CheckBox";
-import Block from "./Block";
-import ButtonAlt from "../Elements/Button";
-import GameControl from "../../utils/GameControl";
+import Store from "@/scripts/Store";
+import StoreDefaults from "@/scripts/StoreDefaults";
+import GameSelector from "@/components/Elements/GameSelector";
+import BackgroundItem from "@/components/Customization/backgroundItem/BackgroundItem";
+import AimItem from "@/components/Customization/aimItem/AimItem";
+import CheckBox from "@/components/Customization/checkbox/CheckBox";
+import Block from "@/components/Customization/Block";
+import ButtonAlt from "@/components/Elements/Button";
+import GameControl from "@/scripts/GameControl";
 
 const store = new Store({
   configName: "library",
@@ -161,8 +161,6 @@ export default {
       installed: false,
       gameId: "70",
       selectedGame: 0,
-      localization: this.$parent.localization,
-      hlsrconsole: this.$parent.hlsrconsole,
       skyboxes: "LQ",
       hud: "Standard",
       sprites: "Standard",
@@ -257,7 +255,7 @@ export default {
       let isInstalled = GameControl.checkInstalled(store, this.gameId);
 
       if (isInstalled) {
-        let patchesPath = this.hlsrconsole.getCustomization();
+        let patchesPath = this.$hlsrConsole.getCustomization();
         let patchPath = "";
         let extractPath = "";
 
@@ -299,22 +297,22 @@ export default {
 
         if (this.selectedGame == 0) {
           extractPath = rPath.join(path, "valve", "resource", "background");
-          this.hlsrconsole.execute(["patch", patchPath, extractPath]);
+          this.$hlsrConsole.execute(["patch", patchPath, extractPath]);
           extractPath = rPath.join(path, "valve_WON", "resource", "background");
-          this.hlsrconsole.execute(["patch", patchPath, extractPath]);
+          this.$hlsrConsole.execute(["patch", patchPath, extractPath]);
         } else if (this.selectedGame == 1) {
           extractPath = rPath.join(path, "gearbox", "resource", "background");
-          this.hlsrconsole.execute(["patch", patchPath, extractPath]);
+          this.$hlsrConsole.execute(["patch", patchPath, extractPath]);
           extractPath = rPath.join(
             path,
             "gearbox_WON",
             "resource",
             "background"
           );
-          this.hlsrconsole.execute(["patch", patchPath, extractPath]);
+          this.$hlsrConsole.execute(["patch", patchPath, extractPath]);
         } else if (this.selectedGame == 2) {
           extractPath = rPath.join(path, "bshift", "resource", "background");
-          this.hlsrconsole.execute(["patch", patchPath, extractPath]);
+          this.$hlsrConsole.execute(["patch", patchPath, extractPath]);
         }
 
         // Skyboxes
@@ -334,17 +332,17 @@ export default {
 
         if (this.selectedGame == 0) {
           extractPath = rPath.join(path, "valve", "gfx", "env");
-          this.hlsrconsole.execute(["patch", patchPath, extractPath]);
+          this.$hlsrConsole.execute(["patch", patchPath, extractPath]);
           extractPath = rPath.join(path, "valve_WON", "gfx", "env");
-          this.hlsrconsole.execute(["patch", patchPath, extractPath]);
+          this.$hlsrConsole.execute(["patch", patchPath, extractPath]);
         } else if (this.selectedGame == 1) {
           extractPath = rPath.join(path, "gearbox", "gfx", "env");
-          this.hlsrconsole.execute(["patch", patchPath, extractPath]);
+          this.$hlsrConsole.execute(["patch", patchPath, extractPath]);
           extractPath = rPath.join(path, "gearbox_WON", "gfx", "env");
-          this.hlsrconsole.execute(["patch", patchPath, extractPath]);
+          this.$hlsrConsole.execute(["patch", patchPath, extractPath]);
         } else if (this.selectedGame == 2) {
           extractPath = rPath.join(path, "bshift", "gfx", "env");
-          this.hlsrconsole.execute(["patch", patchPath, extractPath]);
+          this.$hlsrConsole.execute(["patch", patchPath, extractPath]);
         }
 
         // Item Sprites
@@ -364,17 +362,17 @@ export default {
 
         if (this.selectedGame == 0) {
           extractPath = rPath.join(path, "valve", "models");
-          this.hlsrconsole.execute(["patch", patchPath, extractPath]);
+          this.$hlsrConsole.execute(["patch", patchPath, extractPath]);
           extractPath = rPath.join(path, "valve_WON", "models");
-          this.hlsrconsole.execute(["patch", patchPath, extractPath]);
+          this.$hlsrConsole.execute(["patch", patchPath, extractPath]);
         } else if (this.selectedGame == 1) {
           extractPath = rPath.join(path, "gearbox", "models");
-          this.hlsrconsole.execute(["patch", patchPath, extractPath]);
+          this.$hlsrConsole.execute(["patch", patchPath, extractPath]);
           extractPath = rPath.join(path, "gearbox_WON", "models");
-          this.hlsrconsole.execute(["patch", patchPath, extractPath]);
+          this.$hlsrConsole.execute(["patch", patchPath, extractPath]);
         } else if (this.selectedGame == 2) {
           extractPath = rPath.join(path, "bshift", "models");
-          this.hlsrconsole.execute(["patch", patchPath, extractPath]);
+          this.$hlsrConsole.execute(["patch", patchPath, extractPath]);
         }
 
         // Crosshairs
@@ -403,17 +401,17 @@ export default {
 
         if (this.selectedGame == 0) {
           extractPath = rPath.join(path, "valve", "sprites");
-          this.hlsrconsole.execute(["patch", patchPath, extractPath]);
+          this.$hlsrConsole.execute(["patch", patchPath, extractPath]);
           extractPath = rPath.join(path, "valve_WON", "sprites");
-          this.hlsrconsole.execute(["patch", patchPath, extractPath]);
+          this.$hlsrConsole.execute(["patch", patchPath, extractPath]);
         } else if (this.selectedGame == 1) {
           extractPath = rPath.join(path, "gearbox", "sprites");
-          this.hlsrconsole.execute(["patch", patchPath, extractPath]);
+          this.$hlsrConsole.execute(["patch", patchPath, extractPath]);
           extractPath = rPath.join(path, "gearbox_WON", "sprites");
-          this.hlsrconsole.execute(["patch", patchPath, extractPath]);
+          this.$hlsrConsole.execute(["patch", patchPath, extractPath]);
         } else if (this.selectedGame == 2) {
           extractPath = rPath.join(path, "bshift", "sprites");
-          this.hlsrconsole.execute(["patch", patchPath, extractPath]);
+          this.$hlsrConsole.execute(["patch", patchPath, extractPath]);
         }
 
         console.log(patchPath, extractPath);
@@ -435,22 +433,22 @@ export default {
 
         if (this.selectedGame == 0) {
           extractPath = rPath.join(path, "valve", "sprites");
-          this.hlsrconsole.execute(["patch", patchPath, extractPath]);
+          this.$hlsrConsole.execute(["patch", patchPath, extractPath]);
           extractPath = rPath.join(path, "valve_WON", "sprites");
-          this.hlsrconsole.execute(["patch", patchPath, extractPath]);
+          this.$hlsrConsole.execute(["patch", patchPath, extractPath]);
         } else if (this.selectedGame == 1) {
           extractPath = rPath.join(path, "gearbox", "sprites");
-          this.hlsrconsole.execute(["patch", patchPath, extractPath]);
+          this.$hlsrConsole.execute(["patch", patchPath, extractPath]);
           extractPath = rPath.join(path, "gearbox_WON", "sprites");
-          this.hlsrconsole.execute(["patch", patchPath, extractPath]);
+          this.$hlsrConsole.execute(["patch", patchPath, extractPath]);
         } else if (this.selectedGame == 2) {
           extractPath = rPath.join(path, "bshift", "sprites");
-          this.hlsrconsole.execute(["patch", patchPath, extractPath]);
+          this.$hlsrConsole.execute(["patch", patchPath, extractPath]);
         }
 
         // Send a notification
         this.$store.commit("createNotification", {
-          text: this.localization.get("#UI_NOTIFICATION_DONE"),
+          text: this.$localisation.get("#UI_NOTIFICATION_DONE"),
         });
       }
     },
@@ -505,8 +503,7 @@ export default {
   flex-direction: column;
 }
 .block-button {
-  z-index: 20px;
-  margin-top: 40px;
+  margin-top: 32px;
   display: flex;
   flex-direction: row;
 }

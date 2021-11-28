@@ -2,7 +2,7 @@
   <div id="wrap">
     <div id="form">
       <div class="title">
-        {{ localization.get("#UI_HOME") }}
+        {{ $localisation.get("#UI_HOME") }}
         <md-button
           @click.stop="changelog = true"
           class="md-icon-button"
@@ -12,23 +12,23 @@
             class="fal fa-clipboard-list"
             style="color: #00abff"
           ></md-icon>
-          <md-tooltip>{{ localization.get("#UI_CHANGELOG") }}</md-tooltip>
+          <md-tooltip>{{ $localisation.get("#UI_CHANGELOG") }}</md-tooltip>
         </md-button>
       </div>
       <div id="grid">
         <div class="box quick-play">
           <div class="mini-title">
-            {{ localization.get("#UI_QUICK_START") }}
+            {{ $localisation.get("#UI_QUICK_START") }}
           </div>
           <div id="quick-play-list">
             <div class="quick-play-game" @click.self="lastLaunchedGameStart">
               <span
                 class="quick-play-game-name"
                 :class="{ gray: isQuickGameButtonActive }"
-                >{{ lastLaunchedGame }}</span
+                >{{ lastLaunchedGameName }}</span
               >
               <md-button
-                :disabled="!lastLaunchedGame"
+                :disabled="!checkLastLaunchedGameInstalled"
                 @click.stop="openPrefs"
                 class="md-icon-button"
                 style="margin-left: auto"
@@ -40,13 +40,13 @@
         </div>
         <div class="box box1">
           <div class="mini-title">
-            {{ localization.get("#UI_STEAM_FRIENDS") }}
+            {{ $localisation.get("#UI_STEAM_FRIENDS") }}
           </div>
           <div class="center" v-if="steamFriends.length == 0">
             <md-empty-state
               class="md-accent"
               md-rounded
-              :md-description="localization.get('#UI_NO_FRIENDS')"
+              :md-description="$localisation.get('#UI_NO_FRIENDS')"
               :md-size="200"
             ></md-empty-state>
           </div>
@@ -60,7 +60,7 @@
         </div>
         <div class="box box3">
           <div class="mini-title clickable" @click="openSCSettings">
-            {{ localization.get("#UI_SOUNDCLOUD") }}
+            {{ $localisation.get("#UI_SOUNDCLOUD") }}
             <i
               data-v-ebaf0836=""
               class="md-icon md-icon-font fas fa-cog md-theme-default"
@@ -77,33 +77,33 @@
     </div>
     <md-dialog :md-active.sync="changelog">
       <md-dialog-title
-        v-html="localization.get('#UI_CHANGELOG')"
+        v-html="$localisation.get('#UI_CHANGELOG')"
       ></md-dialog-title>
       <md-dialog-content
         style="opacity: 0.4"
-        v-html="localization.get('#UI_CHANGELOG_CONTENT')"
+        v-html="$localisation.get('#UI_CHANGELOG_CONTENT')"
       ></md-dialog-content>
     </md-dialog>
     <md-dialog :md-active.sync="soundCloudSettings">
       <md-dialog-title
-        v-html="localization.get('#UI_SOUNDCLOUD_SETTINGS')"
+        v-html="$localisation.get('#UI_SOUNDCLOUD_SETTINGS')"
       ></md-dialog-title>
       <md-dialog-content>
         <span
           style="opacity: 0.4"
-          v-html="localization.get('#UI_SOUNDCLOUD_SETTINGS_DESC')"
+          v-html="$localisation.get('#UI_SOUNDCLOUD_SETTINGS_DESC')"
         ></span>
         <md-field>
-          <label>{{ localization.get("#UI_SOUNDCLOUD_PLAYLIST") }}</label>
+          <label>{{ $localisation.get("#UI_SOUNDCLOUD_PLAYLIST") }}</label>
           <md-input v-model="playlistInput" class="playlistInput"></md-input>
         </md-field>
       </md-dialog-content>
       <md-dialog-actions>
         <md-button class="md-primary" @click="soundCloudSettings = false">{{
-          localization.get("#UI_CANCEL")
+          $localisation.get("#UI_CANCEL")
         }}</md-button>
         <md-button class="md-primary" @click="saveSCPlaylist">{{
-          localization.get("#UI_CUSTOMIZATION_BUTTON_SAVE")
+          $localisation.get("#UI_CUSTOMIZATION_BUTTON_SAVE")
         }}</md-button>
       </md-dialog-actions>
     </md-dialog>
@@ -111,19 +111,18 @@
 </template>
 
 <script>
-import Store from "../utils/Store.js";
-import StoreDefaults from "../utils/StoreDefaults.js";
-import SteamFriend from "./Home/SteamFriend";
-import SoundCloudWidget from "./Home/SoundCloud";
-import GameControl from "../utils/GameControl";
-import { ipcRenderer } from "electron";
+import Store from "@/scripts/Store";
+import StoreDefaults from "@/scripts/StoreDefaults";
+import SteamFriend from "@/components/Home/SteamFriend";
+import SoundCloudWidget from "@/components/Home/SoundCloud";
+import GameControl from "@/scripts/GameControl";
 
 const store = new Store({
   configName: "library",
   defaults: StoreDefaults.library,
 });
 
-const settings_store = new Store({
+const settingsStore = new Store({
   configName: "settings",
   defaults: StoreDefaults.settings,
 });
@@ -135,8 +134,6 @@ export default {
     return {
       soundCloudSettings: false,
       changelog: false,
-      hlsrconsole: this.$parent.hlsrconsole,
-      localization: this.$parent.localization,
       navigator: navigator,
       playlistInput: "",
     };
@@ -155,30 +152,30 @@ export default {
     },
     isQuickGameButtonActive() {
       let id = store.get("lastLaunched");
+      
+      let game = GameControl.getGame(id);
+      if (!game) return false;
+      
+      let licenses = this.$store.state.steamworks.licenses;
 
       return (
-        (navigator.onLine == false &&
-          GameControl.checkInstalled(store, id) == false) ||
+        (navigator.onLine == false && this.checkLastLaunchedGameInstalled) ||
         this.isGameStarted ||
-        (id != "220" && id != "218" && !this.steamActive)
+        (!licenses[id] && game.needSteam)
       );
     },
-    lastLaunchedGame() {
+    checkLastLaunchedGameInstalled() {
       let id = store.get("lastLaunched");
 
-      if (!GameControl.checkInstalled(store, id))
-        return this.localization.get("#UI_RECENTGAME_NOGAME");
+      return GameControl.checkInstalled(store, id);
+    },
+    lastLaunchedGameName() {
+      let id = store.get("lastLaunched");
+
+      if (!this.checkLastLaunchedGameInstalled)
+        return this.$localisation.get("#UI_RECENTGAME_NOGAME");
 
       return GameControl.getTitle(id);
-    },
-    lastLaunchedGameButton() {
-      if (!this.isQuickGameButtonActive) return;
-      let id = store.get("lastLaunched");
-
-      if (!GameControl.checkInstalled(store, id)) return true;
-
-      if (id.length > 0) return false;
-      else return true;
     },
   },
   methods: {
@@ -198,14 +195,14 @@ export default {
         },
       });
 
-      let config = settings_store.get("config");
+      let config = settingsStore.get("config");
       config.soundcloudPlaylist = this.playlistInput;
-      settings_store.set("config", config);
+      settingsStore.set("config", config);
 
       this.soundCloudSettings = false;
 
       this.$store.commit("createNotification", {
-        text: this.localization.get("#UI_NOTIFICATION_SAVED"),
+        text: this.$localisation.get("#UI_NOTIFICATION_SAVED"),
       });
     },
     openPrefs() {
@@ -217,7 +214,7 @@ export default {
 
       if (GameControl.checkInstalled(store, gameID) && !this.isGameStarted)
         GameControl.startGame(
-          this.hlsrconsole,
+          this.$hlsrConsole,
           store,
           gameID,
           this.$store,
@@ -226,7 +223,7 @@ export default {
     },
   },
   mounted() {
-    let config = settings_store.get("config");
+    let config = settingsStore.get("config");
     this.playlistInput = config.soundcloudPlaylist || "";
 
     if (this.$store.state.shouldOpenChangelog == true) {
@@ -234,7 +231,7 @@ export default {
       this.$store.state.shouldOpenChangelog = false;
 
       this.$store.commit("createNotification", {
-        text: this.localization.get("#NEW_UPDATE_INSTALLED"),
+        text: this.$localisation.get("#NEW_UPDATE_INSTALLED"),
       });
     }
   },

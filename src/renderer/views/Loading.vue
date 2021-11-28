@@ -1,6 +1,6 @@
 <template>
   <div id="wrapper">
-    <Header absolute="true" />
+    <Logo :absolute="true" />
     <div class="info left">
       <span>Developed by InfiniteC0re</span>
     </div>
@@ -59,23 +59,21 @@
 </template>
 
 <script>
-import LoadingIndicator from "./LoadingIndicator";
-import BackgroundTheme from "./BackgroundTheme";
-import Header from "./NavBar/Header";
+import LoadingIndicator from "@/components/LoadingIndicator";
+import Logo from "@/components/Logo";
 
 export default {
   name: "LoadingScreen",
-  components: { BackgroundTheme, Header, LoadingIndicator },
+  components: { Logo, LoadingIndicator },
   data() {
     return {
-      localization: this.$parent.localization,
       splash: "",
     };
   },
   mounted() {
     if (localStorage.getItem("wasLaunched"))
-      this.splash = this.localization.get("#UI_WELCOME_BACK");
-    else this.splash = this.localization.get("#UI_WELCOME_HLSR");
+      this.splash = this.$localisation.get("#UI_WELCOME_BACK");
+    else this.splash = this.$localisation.get("#UI_WELCOME_HLSR");
 
     localStorage.setItem("wasLaunched", true);
 

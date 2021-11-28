@@ -53,8 +53,7 @@ export default {
       rpc: true,
       experimental: false,
       noParticles: false,
-      soundcloudPlaylist: "",
-      compactMode: true
+      soundcloudPlaylist: ""
     },
   },
   scripts: {

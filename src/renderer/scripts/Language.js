@@ -1,12 +1,12 @@
-import Store from "../utils/Store.js";
-import StoreDefaults from "../utils/StoreDefaults.js";
+import Store from "@/scripts/Store.js";
+import StoreDefaults from "@/scripts/StoreDefaults.js";
 
 const store = new Store({
   configName: "settings",
   defaults: StoreDefaults.settings,
 });
 
-class localization {
+class Localisation {
   constructor() {
     this.lang = store.get("config").language;
     this.localData = {
@@ -166,7 +166,30 @@ class localization {
         "#SHORTCUT_LAUNCH": "Launch",
         "#UI_FOUND_CYRILLIC": "Found cyrillic symbols in game path. Work is not guaranteed",
         "#UI_FOUND_CYRILLIC_HINT": "Recommended to reinstall the game on another path",
-        "#UI_CHANGELOG_CONTENT": `<h4>Update from 05/12/2021 [v. 0.2.1]</h4>
+        "#UI_ACRYLLIC_THEME": "Acryllic Background",
+        "#UI_BLOBS_THEME": "Animated Background",
+        "#UI_NO_LICENSE": "You don't have a license in Steam",
+        "#UI_NO_STEAM": "Probably you haven't started Steam",
+        "#UI_CHANGELOG_CONTENT": `<h4>Update from 06/14/2021 [v. 0.2.2]</h4>
+<ul>
+  <li>Added Half-Life 2 license checking Steam</li>
+  <li>Fixed a bug when free disk space wasn't calculated on some PCs</li>
+  <li>Fixed a bug with settings button of Quick Launch widget</li>
+  <li>Data in the Script Editor are saved in memory when you go outside of the editor</li>
+  <li>Added no game license warning</li>
+  <li>New animated HLSR UI theme (works with GLSL so probably won't work everywhere)</li>
+  <li>Steamworks module was replaced with HLSR Native</li>
+  <li>Improved games license validation in Steam</li>
+  <li>Steam friends will now be displayed regardless of the presence of an HL1 license</li>
+  <li>HLSR is no more showing in Steam as Half-Life 1</li>
+  <h3 style="margin:6px 0;">Developer Mode</h3>
+  <li>Better files structure</li>
+  <li>Removed HLSRC file extension support</li>
+  <li>Added full HLSD file extension support</li>
+  <li>HLSD files viewer</li>
+  <li>HLSD file can store any media (audio, images, videos) and scripts in HLSC data type</li>
+</ul><br/>
+<h4>Update from 05/12/2021 [v. 0.2.1]</h4>
 <ul>
   <li>Now HLSR can display more than just one notification</li>
   <li>Notifications can be closed with click now</li>
@@ -208,7 +231,7 @@ class localization {
   <li>Game managment code optimization</li>
   <li>Now game screen in library is covering a window frame too</li>
   <li>Fixed images appearance in customization menu</li>
-  <li>Fixed localization bugs</li>
+  <li>Fixed localisation bugs</li>
   <li>New notifications type</li>
   <li>Removed snow theme</li>
 </ul><br/>
@@ -452,7 +475,30 @@ Used in launcher:
         "#SHORTCUT_LAUNCH": "Запустить",
         "#UI_FOUND_CYRILLIC": "По пути к игре найдена кириллица. Работа не гарантируется",
         "#UI_FOUND_CYRILLIC_HINT": "Рекоммендуется переустановить игру по другому пути",
-        "#UI_CHANGELOG_CONTENT": `<h4>Обновление от 12.05.2021 [v. 0.2.1]</h4>
+        "#UI_ACRYLLIC_THEME": "Акрилловый фон",
+        "#UI_BLOBS_THEME": "Анимированный фон",
+        "#UI_NO_LICENSE": "У вас нет лицензии в Steam",
+        "#UI_NO_STEAM": "Скорее всего, вы не запустили Steam",
+        "#UI_CHANGELOG_CONTENT": `<h4>Обновление от 14.06.2021 [v. 0.2.2]</h4>
+<ul>
+  <li>Добавлена проверка наличия Half-Life 2 в Steam</li>
+  <li>Исправлен баг с проверкой свободного места на некоторых ОС</li>
+  <li>Исправлен баг с кнопкой параметров быстрого старта, когда при отсутствии игры кнопка работала</li>
+  <li>Данные в редакторе скриптов теперь сохраняются при переходах</li>
+  <li>Добавлены предупреждения о том, что в Steam нет лицензии игры</li>
+  <li>Новая тема лаунчера, работающая на GLSL шейдерах (может работать не везде)</li>
+  <li>Модуль Steamworks заменён на HLSR Native</li>
+  <li>Улучшена проверка лицензий игр в Steam</li>
+  <li>Друзья Steam теперь будут отображены вне зависимости от наличия лицензии какой-либо игры</li>
+  <li>Теперь HLSR не отображается в Steam как Half-Life 1</li>
+  <h3 style="margin:6px 0;">Режим разработчика</h3>
+  <li>Разбиение кода по файлам</li>
+  <li>Удалена поддержка расширения HLSRC</li>
+  <li>Добавлена поддержка расширения HLSD</li>
+  <li>Просмотрщик HLSD файлов</li>
+  <li>HLSD файл может хранить в себе медиа файлы (аудио, изображения, видео), а также скрипты в виде HLSC данных</li>
+</ul><br/>
+<h4>Обновление от 12.05.2021 [v. 0.2.1]</h4>
 <ul>
   <li>Теперь на экране может быть отображено более одного оповещения</li>
   <li>Оповещение может быть закрыто кликом</li>
@@ -611,4 +657,4 @@ Used in launcher:
   }
 }
 
-export default localization;
+export default Localisation;

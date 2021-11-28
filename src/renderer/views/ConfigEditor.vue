@@ -1,18 +1,18 @@
 <template>
   <div id="wrap">
     <div id="form">
-      <div class="title">{{ localization.get("#UI_CONFIGS_ADVANCED") }}</div>
+      <div class="title">{{ $localisation.get("#UI_CONFIGS_ADVANCED") }}</div>
       <div class="toolbar">
         <div class="menubutton" @click="openFile">
-          {{ localization.get("#UI_EDITOR_OPEN") }}
+          {{ $localisation.get("#UI_EDITOR_OPEN") }}
           <md-tooltip>CTRL-O</md-tooltip>
         </div>
         <div class="menubutton" @click="saveFile">
-          {{ localization.get("#UI_EDITOR_SAVE") }}
+          {{ $localisation.get("#UI_EDITOR_SAVE") }}
           <md-tooltip>CTRL-S</md-tooltip>
         </div>
         <div class="menubutton" @click="hints">
-          {{ localization.get("#UI_EDITOR_HINTS") }}
+          {{ $localisation.get("#UI_EDITOR_HINTS") }}
           <md-tooltip>CTRL-Space</md-tooltip>
         </div>
         <div style="margin-left: auto; margin-right: 10px">{{ fileName }}</div>
@@ -28,14 +28,13 @@
 </template>
 
 <script>
-import { codemirror } from "vue-codemirror";
-import "@/utils/hlscripts/hlscripts.js";
-import Store from "../utils/Store.js";
-import StoreDefaults from "../utils/StoreDefaults.js";
-import GameControl from "@/Utils/GameControl";
-
+const remote = require("@electron/remote");
 import fs from "fs";
-import { remote } from "electron";
+import "@/scripts/hlscripts.js";
+import Store from "@/scripts/Store.js";
+import StoreDefaults from "@/scripts/StoreDefaults.js";
+import GameControl from "@/scripts/GameControl";
+import { codemirror } from "vue-codemirror";
 
 const library = new Store({
   configName: "library",
@@ -69,23 +68,32 @@ export default {
         });
     },
     saveFile() {
-      if (this.filePath) {
-        fs.writeFileSync(this.filePath, this.code);
-
-        // Send a notification
-        this.$store.commit("createNotification", {
-          text: this.localization.get("#UI_NOTIFICATION_SAVED"),
+      if (!this.filePath) {
+        let filePath = remote.dialog.showSaveDialogSync({
+          filters: [
+            { name: "Config", extensions: ["cfg"] },
+            { name: "All Files", extensions: ["*"] },
+          ],
         });
+
+        if (filePath) this.filePath = filePath;
+        else return;
       }
+
+      this.fileName = this.filePath.split("\\").reverse()[0];
+      fs.writeFileSync(this.filePath, this.code);
+
+      // Send a notification
+      this.$store.commit("createNotification", {
+        text: this.$localisation.get("#UI_NOTIFICATION_SAVED"),
+      });
     },
     hints() {
-      console.log(this.cm);
       this.cm.showHint({ completeSingle: false });
     },
   },
   data() {
     return {
-      localization: this.$parent.localization,
       cm: null,
       code: "",
       fileName: "",
@@ -115,6 +123,16 @@ export default {
       },
     };
   },
+  mounted() {
+    this.filePath = this.$store.state.scriptEditor.filePath;
+    this.fileName = this.$store.state.scriptEditor.fileName;
+    this.code = this.$store.state.scriptEditor.content;
+  },
+  beforeDestroy() {
+    this.$store.state.scriptEditor.filePath = this.filePath;
+    this.$store.state.scriptEditor.fileName = this.fileName;
+    this.$store.state.scriptEditor.content = this.code;
+  },
 };
 </script>
 
@@ -122,6 +140,7 @@ export default {
 #form {
   overflow: hidden;
 }
+
 .CodeMirror {
   height: 100%;
 }
