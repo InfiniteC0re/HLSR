@@ -44,7 +44,7 @@ import "@/scripts/soundcloud";
 // CSS
 import "codemirror/lib/codemirror.css";
 import "codemirror/addon/hint/show-hint.css";
-import "@/css/infinite.css";
+import "@/css/codemirror-dracula-custom.css";
 
 // CodeMirror Addons
 import "codemirror/addon/selection/active-line.js";
@@ -455,7 +455,7 @@ body {
   font-size: 36px;
   font-weight: 900;
   text-transform: uppercase;
-  color: #00abff;
+  color: var(--accent-color);
   text-shadow: 1px 1px 8px rgba(0, 0, 0, 0.4);
   line-height: normal;
   display: flex;

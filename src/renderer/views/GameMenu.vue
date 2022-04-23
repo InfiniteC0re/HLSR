@@ -364,7 +364,7 @@ export default {
 }
 
 .md-raised.installedGame {
-  background: #00abffc7 !important;
+  background: #00ABC7 !important;
   color: #fff !important;
 }
 
@@ -401,7 +401,7 @@ export default {
 .navpanel .navbutton.active {
   border-left: 4px solid;
   padding-left: 0px;
-  color: #00abff !important;
+  color: var(--accent-color) !important;
 }
 
 .navpanel .warning {

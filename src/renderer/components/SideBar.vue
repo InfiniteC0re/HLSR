@@ -334,7 +334,7 @@ export default {
       height: 46px;
       font-size: 19px;
       border: none;
-      background: #00abff;
+      background: var(--accent-color);
       outline: none;
       border-radius: 8px;
       color: #fff;
@@ -418,7 +418,7 @@ export default {
           .item {
             cursor: pointer;
             padding: 0px 14px;
-            height: 40px;
+            height: 44px;
             text-align: left;
             display: flex;
             align-items: center;
@@ -504,7 +504,7 @@ export default {
             }
 
             &.selected {
-              color: #00abff;
+              color: var(--accent-color);
               cursor: default;
               pointer-events: none;
 
@@ -549,7 +549,7 @@ export default {
             width: 50px;
             height: 50px;
             border-radius: 8px;
-            border: 2px solid #00abff;
+            border: 2px solid var(--accent-color);
           }
         }
       }

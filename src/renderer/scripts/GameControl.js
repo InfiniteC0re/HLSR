@@ -1,9 +1,8 @@
-import {
-  ipcRenderer
-} from "electron";
+import { ipcRenderer } from "electron";
 import GameList from "../GameList";
-const electron = require('electron');
-const remote = process.type == "renderer" ? require("@electron/remote") : electron;
+const electron = require("electron");
+const remote =
+  process.type == "renderer" ? require("@electron/remote") : electron;
 
 export default {
   checkInstalled(store, appid) {
@@ -28,24 +27,24 @@ export default {
         config[gameID].livesplit ? "-livesplit" : "",
         config[gameID].steam ? "-steam" : "",
         config[gameID].allcores ? "-allcores" : "",
-        config[gameID].allcores == false && config[gameID].corescount == "1" ?
-        "-onecore" :
-        "",
-        config[gameID].allcores == false && config[gameID].corescount == "2" ?
-        "-twocores" :
-        "",
-        config[gameID].allcores == false && config[gameID].corescount == "3" ?
-        "-threecores" :
-        "",
-        config[gameID].allcores == false && config[gameID].corescount == "4" ?
-        "-fourcores" :
-        "",
+        config[gameID].allcores == false && config[gameID].corescount == "1"
+          ? "-onecore"
+          : "",
+        config[gameID].allcores == false && config[gameID].corescount == "2"
+          ? "-twocores"
+          : "",
+        config[gameID].allcores == false && config[gameID].corescount == "3"
+          ? "-threecores"
+          : "",
+        config[gameID].allcores == false && config[gameID].corescount == "4"
+          ? "-fourcores"
+          : "",
         "-" + config[gameID].priority,
-        config[gameID].hl1movement && gameID == "218" ?
-        "-game ghosting " + config[gameID].args :
-        gameID == "218" ?
-        "-game ghostingmod " + config[gameID].args :
-        config[gameID].args,
+        config[gameID].hl1movement && gameID == "218"
+          ? "-game ghosting " + config[gameID].args
+          : gameID == "218"
+          ? "-game ghostingmod " + config[gameID].args
+          : config[gameID].args,
       ],
       () => {
         // Завершение работы hlsr-console
@@ -100,9 +99,11 @@ export default {
       if (typeof fn === "string") {
         let gamePath = path.join(libraryPath, fn);
 
-        fs.rmdirSync(gamePath, {
-          recursive: true
-        });
+        try {
+          fs.rmSync(gamePath, {
+            recursive: true,
+          });
+        } catch (e) {};
       }
     });
 
@@ -144,10 +145,7 @@ export default {
 
     if (configPath) return configPath;
     else {
-      let lib_path = path.join(
-        remote.app.getPath("userData"),
-        "library"
-      );
+      let lib_path = path.join(remote.app.getPath("userData"), "library");
 
       if (!require("fs").existsSync(lib_path))
         require("fs").mkdirSync(lib_path);
@@ -155,19 +153,49 @@ export default {
       return lib_path;
     }
   },
-  getTempPath(store) {
+  getCacheDir(store) {
+    const fs = require("fs");
     const path = require("path");
 
-    let configPath = store.get("libraryPath");
+    let libPath = store.get("libraryPath");
+    let cacheDir = null;
 
-    if (configPath) return path.join(configPath, "downloads");
+    if (libPath) cacheDir = path.join(libPath, "cache");
     else
-      return path.join(
-        remote ?
-        remote.app.getPath("userData") :
-        electron.app.getPath("userData"),
+      cacheDir = path.join(
+        remote
+          ? remote.app.getPath("userData")
+          : electron.app.getPath("userData"),
+        "cache"
+      );
+
+    if (!fs.existsSync(cacheDir)) {
+      fs.mkdirSync(cacheDir);
+    }
+
+    return cacheDir;
+  },
+  getCacheDir_OLDPATH(store) {
+    const fs = require("fs");
+    const path = require("path");
+
+    let libPath = store.get("libraryPath");
+    let cacheDir = null;
+
+    if (libPath) cacheDir = path.join(libPath, "downloads");
+    else
+      cacheDir = path.join(
+        remote
+          ? remote.app.getPath("userData")
+          : electron.app.getPath("userData"),
         "temp"
       );
+    
+    return cacheDir;
+  },
+  makeCacheFile(store) {
+    const path = require("path");
+    return path.join(this.getCacheDir(store), "cache_" + Date.now());
   },
   getSourceRunsLink(id) {
     let game = GameList.find((t) => t.id == id);

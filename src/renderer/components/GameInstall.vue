@@ -222,16 +222,15 @@ export default {
 
           let info = {
             url: this.game.info.url,
-            properties: {
-              directory: GameControl.getTempPath(store),
-            },
+            archive: GameControl.makeCacheFile(store),
           };
 
-          // Начать загрузку
+          // Start the download
           ipcRenderer.send("game-download", info);
 
           ipcRenderer.once("game-canceled", () => {
             ipcRenderer.removeAllListeners("game-download-complete");
+            ipcRenderer.removeAllListeners("game-installed");
             ipcRenderer.removeAllListeners("set-progress");
 
             this.canceled = true;
@@ -248,7 +247,7 @@ export default {
             });
           });
 
-          ipcRenderer.once("game-download-complete", (e, l_path) => {
+          ipcRenderer.once("game-download-complete", (e) => {
             let game = this.game;
             let install_path = GameControl.getLibraryPath(store);
 
@@ -262,11 +261,11 @@ export default {
 
             // Ask main to unpack downloaded game
             ipcRenderer.send("game-unpack", {
-              archive: l_path,
+              archive: info.archive,
               extractTo: extract_path,
             });
 
-            ipcRenderer.once("game-unpack-complete", (e) => {
+            ipcRenderer.once("game-installed", (e) => {
               // Game was unpacked
               let installed = store.get("installed");
 
@@ -288,6 +287,7 @@ export default {
               this.$store.state.sidebarBlocked = false;
 
               ipcRenderer.removeAllListeners("set-progress");
+              ipcRenderer.removeAllListeners("game-canceled");
             });
           });
 
@@ -295,8 +295,8 @@ export default {
         })
         .catch(this.handleAvailabilityErrors);
     },
-    progressUpdate(e, args) {
-      this.progress = Math.round(args.percent);
+    progressUpdate(e, percent) {
+      this.progress = Math.round(percent);
     },
     testPermissions(dir) {
       return new Promise((resolve, reject) => {
@@ -304,7 +304,7 @@ export default {
           try {
             require("fs").writeFileSync(
               dir + "/permissions_test.txt",
-              "you can delete this file"
+              "permissions test"
             );
           } catch (e) {
             this.$store.commit("createNotification", {
@@ -488,7 +488,7 @@ export default {
 
         .bar {
           flex: 0;
-          background: #00abff;
+          background: var(--accent-color);
           position: relative;
           border-radius: 4px;
           transition: 0.1s ease;

@@ -21,7 +21,7 @@
         v-model="code"
         @ready="onCmReady"
         :options="cmOption"
-        style="flex: 1; overflow: auto"
+        style="flex: 1; overflow: auto; border-radius: 6px"
       />
     </div>
   </div>

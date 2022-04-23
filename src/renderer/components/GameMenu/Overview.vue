@@ -59,7 +59,7 @@ export default {
 
 <style scoped>
 .title {
-  color: #00abff !important;
+  color: var(--accent-color) !important;
   font-size: 20px !important;
   font-weight: bold !important;
   margin-left: 16px !important;

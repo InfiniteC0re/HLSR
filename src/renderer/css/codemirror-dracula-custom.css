@@ -22,15 +22,17 @@
 
 .toolbar {
   width: 100%;
-  height: 28px;
+  height: 32px;
   background: rgba(0,0,0,.16);
   margin-top: 16px;
+  margin-bottom: 6px;
   display: flex;
-  border-bottom: 1px solid;
-  border-color: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  overflow: hidden;
   color: rgb(108, 108, 108);
   align-items: center;
 }
+
 .toolbar .menubutton {
   height: 100%;
   padding: 0 10px;
@@ -40,6 +42,7 @@
   color: rgb(108, 108, 108);
   font-size: 14px;
 }
+
 .toolbar .menubutton:hover {
   background: rgba(255, 255, 255, 0.1);
   color: rgb(158, 158, 158);

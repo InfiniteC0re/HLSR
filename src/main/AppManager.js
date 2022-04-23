@@ -1,7 +1,4 @@
-import {
-  app,
-  ipcMain
-} from "electron";
+import { app, ipcMain } from "electron";
 import hlsrNative from "hlsr-native";
 import UpdateManager from "./UpdateManager";
 import GameManager from "./GameManager";
@@ -21,21 +18,23 @@ class AppManager {
 
   startGameQuick() {
     if (this.quickLaunchInfo.appid)
-      this.window.webContents.send("start-game-quick", this.quickLaunchInfo.appid);
+      this.window.webContents.send(
+        "start-game-quick",
+        this.quickLaunchInfo.appid
+      );
   }
 
   parseArgs(args) {
-    args = args.filter((t) => t != "--allow-file-access-from-files");
-
     if (process.env.NODE_ENV === "production") {
+      args = args.filter((t) => t != "--allow-file-access-from-files");
+
       // Check start arguments
       if (args.length >= 1) {
         let firstArg = args[0];
 
         // Quick launch
         if (firstArg == "-quick") {
-          let appID = args[1];
-          this.quickLaunchInfo.appid = appID;
+          this.quickLaunchInfo.appid = args[1];
         }
       }
     }
@@ -71,8 +70,7 @@ class AppManager {
     ipcMain.on("getSteamFriends", (e) => {
       if (this.connectedToSteam)
         e.returnValue = steamworks.GetFriends("launcher", false);
-      else
-        e.returnValue = [];
+      else e.returnValue = [];
     });
 
     ipcMain.on("getLicenses", (e) => {
@@ -80,10 +78,10 @@ class AppManager {
       let hasHL2 = steamworks.BIsSubscribedApp(220);
 
       e.returnValue = {
-        "70": hasHL1,
-        "50": hasHL1,
-        "130": hasHL1,
-        "220": hasHL2,
+        70: hasHL1,
+        50: hasHL1,
+        130: hasHL1,
+        220: hasHL2,
       };
     });
 
@@ -97,7 +95,8 @@ class AppManager {
           url: "https://hlsr.pro/analytics/",
           method: "POST",
           headers: {
-            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36",
+            "user-agent":
+              "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36",
             "content-type": "application/x-www-form-urlencoded",
           },
           data: `steam=${name}`,
@@ -110,8 +109,7 @@ class AppManager {
     ipcMain.on("setRichPresence", (e, srpc) => {
       if (this.connectedToSteam)
         e.returnValue = steamworks.SetRichPresence("launcher", srpc);
-      else
-        e.returnValue = false;
+      else e.returnValue = false;
     });
 
     ipcMain.on("ready", (e) => {
@@ -121,7 +119,7 @@ class AppManager {
       this.updateManager.startCheckingInterval();
     });
 
-    this.gameManager.cleanTemp();
+    this.gameManager.clearCache();
     this.updateManager.initialize();
     this.gameManager.initialize();
   }

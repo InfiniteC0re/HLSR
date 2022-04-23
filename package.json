@@ -56,7 +56,6 @@
     "@electron/remote": "^2.0.1",
     "axios": "^0.19.2",
     "discord-rpc": "3.2.0",
-    "electron-dl": "https://github.com/InfiniteC0re/electron-dl",
     "electron-unhandled": "^3.0.2",
     "electron-updater": "^4.3.4",
     "hlsr-console": "^1.0.8",

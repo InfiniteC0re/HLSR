@@ -92,7 +92,7 @@ export default {
   font-family: Roboto;
   font-style: normal;
   font-size: 17px;
-  color: #00abff;
+  color: var(--accent-color);
   letter-spacing: 1px;
 }
 </style>

@@ -69,7 +69,7 @@ class Localisation {
         "#UI_CONFIGS_CONSTRUCTOR": "Constructor",
         "#UI_CONFIGS_ADVANCED": "Editor",
         "#UI_SCRIPT_SETTINGS":
-          "Settings of the <b style='color:#00abff;'>%0%</b> script",
+          "Settings of the <b style='color:var(--accent-color);'>%0%</b> script",
         "#UI_SCRIPT_SCRIPTLESS": "Scriptless Category",
         "#UI_SCRIPT_SCRIPTED": "Scripted Category",
         "#UI_SCRIPT_BINDS": "Binds",
@@ -300,7 +300,7 @@ class Localisation {
 	<li>The appearance of the changelog</li>
 </ul>
 `,
-        "#UI_ABOUT_TITLE": `<span style="color:#00abff;font-weight:bold;font-size:18px">HLSR [v. ${
+        "#UI_ABOUT_TITLE": `<span style="color:var(--accent-color);font-weight:bold;font-size:18px">HLSR [v. ${
           require("../../../package.json").version
         }]</span>`,
         "#UI_ABOUT_CONTENT": `Developers: <span style="color:#ff492c">InfiniteC0re#7307</span>, <span style="color:#ffd45b">alsbykov#8131</span><br/>
@@ -608,7 +608,7 @@ Used in launcher:
 	<li>Появление ченджлога</li>
 </ul>
 `,
-        "#UI_ABOUT_TITLE": `<span style="color:#00abff;font-weight:bold;font-size:18px">HLSR [v. ${
+        "#UI_ABOUT_TITLE": `<span style="color:var(--accent-color);font-weight:bold;font-size:18px">HLSR [v. ${
           require("../../../package.json").version
         }]</span>`,
         "#UI_ABOUT_CONTENT": `Разработчики: <span style="color:#ff492c">InfiniteC0re#7307</span>, <span style="color:#ffd45b">alsbykov#8131</span><br/>

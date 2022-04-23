@@ -222,7 +222,7 @@ export default {
 
     &.active {
       &::before {
-        background: #00abff;
+        background: var(--accent-color);
       }
     }
 
@@ -331,7 +331,7 @@ export default {
         .bar {
           height: 100%;
           border-radius: 8px;
-          background: #00abff;
+          background: var(--accent-color);
         }
       }
 

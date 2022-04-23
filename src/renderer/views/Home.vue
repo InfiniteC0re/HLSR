@@ -6,11 +6,11 @@
         <md-button
           @click.stop="changelog = true"
           class="md-icon-button"
-          style="margin-left: auto; color: #00abff"
+          style="margin-left: auto; color: var(--accent-color)"
         >
           <md-icon
             class="fal fa-clipboard-list"
-            style="color: #00abff"
+            style="color: var(--accent-color)"
           ></md-icon>
           <md-tooltip>{{ $localisation.get("#UI_CHANGELOG") }}</md-tooltip>
         </md-button>

@@ -42,7 +42,7 @@ export default {};
 <style lang="scss" scoped>
 @use 'sass:math';
 
-$color: #00abff;
+$color: var(--accent-color);
 $size: 18px;
 $time: 2;
 

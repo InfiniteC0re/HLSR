@@ -73,7 +73,7 @@ export default {
 }
 
 .active {
-  box-shadow: inset 0px 0px 0px 3px #00abff;
+  box-shadow: inset 0px 0px 0px 3px var(--accent-color);
   cursor: default;
 }
 
