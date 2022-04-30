@@ -1,4 +1,6 @@
 import Axios from "axios";
+import sevenBin from "7zip-bin";
+import Seven from "node-7z";
 import fs from "fs";
 
 const timeoutTime = 10000;
@@ -36,22 +38,51 @@ const downloadFile = (url, archive, progressCb) => {
 
         writeStream.on("finish", () => {
           if (timeoutId) clearTimeout(timeoutId);
-
-          writeStream.close(() => {
-            resolve(archive);
-            // the stream has been closed, can unpack the archive
-            // event.sender.send("game-download-complete");
-
-            // ipcMain.once("game-unpack", (e, args) => {
-            
-            // });
-          });
+          writeStream.close(() => resolve(archive));
         });
       })
       .catch(timeoutCallback);
   });
 };
 
+const extractArchive = (archive, extractPath, split, progressCb) => {
+  return new Promise(async (resolve, reject) => {
+    const pathTo7zip = sevenBin.path7za;
+
+    const stream = Seven.extractFull(
+      split ? archive[0] : archive,
+      extractPath,
+      {
+        $bin: pathTo7zip,
+        $progress: true,
+      }
+    );
+
+    stream.on("progress", (progress) => progressCb(progress / 100));
+
+    stream.on("end", () => {
+      if (!stream.destroyed) {
+        stream.destroy();
+
+        let cacheFiles = split ? archive : [archive];
+        for (const cacheFile of cacheFiles) {
+          fs.rm(cacheFile, (err) => {
+            if (err) console.log("Unable to remove the cache file: " + err);
+          });
+        }
+
+        resolve();
+      }
+    });
+
+    stream.on("error", (err) => {
+      stream.destroy();
+      reject(err);
+    });
+  });
+};
+
 export default {
   downloadFile,
+  extractArchive,
 };

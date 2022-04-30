@@ -208,7 +208,8 @@ export default {
     },
     unbindEvents() {
       ipcRenderer.removeAllListeners("progress-update");
-      ipcRenderer.removeAllListeners("game-installed");
+      ipcRenderer.removeAllListeners("download-game-reply");
+      ipcRenderer.removeAllListeners("unpack-game-reply");
     },
     startInstall() {
       if (this.installed) {
@@ -274,35 +275,6 @@ export default {
               });
             }
           });
-
-          // ipcRenderer.once("game-download-complete", (e) => {
-          //   let libraryPath = GameControl.getLibraryPath(store);
-
-          //   ipcRenderer.once("game-installed", (e) => {
-          //     // Game was unpacked
-          //     let installed = store.get("installed");
-
-          //     if (!installed[this.game.id]) installed[this.game.id] = {};
-          //     installed[this.game.id].installed = true;
-          //     installed[this.game.id].directory = libraryPath;
-
-          //     store.set("installed", installed);
-
-          //     new Notification("HLSR", {
-          //       body: this.$localisation.get(
-          //         "#UI_NOTIFICATION_INSTALLED",
-          //         this.game
-          //       ),
-          //     });
-
-          //     this.installed = true;
-          //     this.installing = false;
-          //     this.$store.state.sidebarBlocked = false;
-
-          //     ipcRenderer.removeAllListeners("progress-update");
-          //     ipcRenderer.removeAllListeners("game-canceled");
-          //   });
-          // });
         })
         .catch(this.handleAvailabilityErrors);
     },

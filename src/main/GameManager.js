@@ -3,8 +3,6 @@ import StoreDefaults from "../renderer/scripts/StoreDefaults.js";
 import Store from "../renderer/scripts/Store.js";
 import GameControl from "../renderer/scripts/GameControl";
 import GameInstaller from "./GameInstaller.js";
-import sevenBin from "7zip-bin";
-import Seven from "node-7z";
 import path from "path";
 import fs from "fs";
 
@@ -51,8 +49,6 @@ class GameManager {
       if (!game) return;
 
       const archives = game.info.archives;
-      const archivesCount = game.info.archives.length;
-      let downloadedPercent = 0;
 
       const LibraryStore = new Store({
         configName: "library",
@@ -88,44 +84,26 @@ class GameManager {
       if (!game.info.isStandalone)
         extractPath = path.join(extractPath, game.info.libraryPath);
 
-      const pathTo7zip = sevenBin.path7za;
-      const stream = Seven.extractFull(`${cacheFileBase}.001`, extractPath, {
-        $bin: pathTo7zip,
-        $progress: true,
-      });
-
-      stream.on("progress", (progress) => {
-        this.window.setProgressBar(progress.percent / 100);
-        ipcEvent.sender.send("progressUpdate", progress.percent);
-      });
-
-      stream.on("end", () => {
-        this.window.setProgressBar(0);
-        stream.destroy();
-
-        ipcEvent.sender.send("unpack-game-reply", {
-          status: 0,
-          err: null,
-        });
-
-        for (const cacheFile of cacheFiles) {
-          fs.rm(cacheFile, (err) => {
-            if (err) console.log("Unable to remove the cache file: " + err);
+      GameInstaller.extractArchive(
+        cacheFiles,
+        extractPath,
+        true,
+        progressCallback
+      )
+        .then(() => {
+          this.window.setProgressBar(0);
+          ipcEvent.sender.send("unpack-game-reply", {
+            status: 0,
+            err: null,
           });
-        }
-      });
-
-      stream.on("error", (err) => {
-        this.window.setProgressBar(0);
-        stream.destroy();
-
-        this.window.webContents.send("unpack-game-reply", {
-          status: 1,
-          err,
+        })
+        .catch((err) => {
+          this.window.setProgressBar(0);
+          this.window.webContents.send("unpack-game-reply", {
+            status: 1,
+            err,
+          });
         });
-
-        console.log("Unpack error:", err);
-      });
     });
 
     ipcMain.on("game-download", async (event, info) => {});
