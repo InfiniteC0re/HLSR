@@ -22,19 +22,19 @@
           <button
             :class="{
               active: $route.name == 'game-menu',
-              preActive: gameList,
+              preActive: showGameList,
             }"
-            @click="gameList = !gameList"
+            @click="showGameList = !showGameList"
           >
             <i class="fas fa-play"></i>
             <!-- <md-tooltip md-direction="right">{{
                 $localisation.get("#UI_LIBRARY")
               }}</md-tooltip> -->
           </button>
-          <div class="items" :class="{ opened: gameList }">
+          <div class="items" :class="{ opened: showGameList }">
             <div
               class="item"
-              @click="goTo('game', { id: '70' })"
+              @click="navigateTo('game', { id: '70' })"
               :class="{ selected: $route.query.id == '70' }"
             >
               <div class="lambda__container">
@@ -47,7 +47,7 @@
             </div>
             <div
               class="item"
-              @click="goTo('game', { id: '50' })"
+              @click="navigateTo('game', { id: '50' })"
               :class="{ selected: $route.query.id == '50' }"
             >
               <div class="lambda__container">
@@ -60,7 +60,7 @@
             </div>
             <div
               class="item"
-              @click="goTo('game', { id: '130' })"
+              @click="navigateTo('game', { id: '130' })"
               :class="{ selected: $route.query.id == '130' }"
             >
               <div class="lambda__container">
@@ -73,7 +73,7 @@
             </div>
             <div
               class="item"
-              @click="goTo('game', { id: '220' })"
+              @click="navigateTo('game', { id: '220' })"
               :class="{ selected: $route.query.id == '220' }"
             >
               <div class="lambda__container">
@@ -86,7 +86,7 @@
             </div>
             <div
               class="item"
-              @click="goTo('game', { id: '218' })"
+              @click="navigateTo('game', { id: '218' })"
               :class="{ selected: $route.query.id == '218' }"
             >
               <div class="lambda__container">
@@ -121,14 +121,14 @@
           <div class="items" :class="{ opened: configList }">
             <div
               class="item"
-              @click="goTo('config-constructor')"
+              @click="navigateTo('config-constructor')"
               :class="{ selected: $route.name == 'config-constructor' }"
             >
               {{ $localisation.get("#UI_CONFIGS_CONSTRUCTOR") }}
             </div>
             <div
               class="item"
-              @click="goTo('config-editor')"
+              @click="navigateTo('config-editor')"
               :class="{ selected: $route.name == 'config-editor' }"
             >
               {{ $localisation.get("#UI_CONFIGS_ADVANCED") }}
@@ -200,7 +200,7 @@ const storeSettings = new Store({
 export default {
   data() {
     return {
-      gameList: false,
+      showGameList: false,
       configList: false,
       color: "white",
       version: null,
@@ -243,14 +243,13 @@ export default {
         this.$parent.steamRetry();
       }
     },
-    goTo(path, query) {
+    navigateTo(path, query) {
       let router = this.$router;
       let route = this.$route;
 
-      this.gameList = false;
+      this.showGameList = false;
 
       if (!query) query = {};
-
       if (route.path != "/" + path) return router.push({ path, query });
 
       if (route.query.id != query.id || query.refresh) {
@@ -265,7 +264,7 @@ export default {
       }
     },
     clickHandle(e) {
-      if (!e.path.includes(this.$refs.gamesButton)) this.gameList = false;
+      if (!e.path.includes(this.$refs.gamesButton)) this.showGameList = false;
       if (!e.path.includes(this.$refs.configButton)) this.configList = false;
     },
   },

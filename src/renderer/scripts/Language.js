@@ -303,7 +303,7 @@ class Localisation {
         "#UI_ABOUT_TITLE": `<span style="color:var(--accent-color);font-weight:bold;font-size:18px">HLSR [v. ${
           require("../../../package.json").version
         }]</span>`,
-        "#UI_ABOUT_CONTENT": `Developers: <span style="color:#ff492c">InfiniteC0re#7307</span>, <span style="color:#ffd45b">alsbykov#8131</span><br/>
+        "#UI_ABOUT_CONTENT": `Developers: <span style="color:#ff492c">InfiniteC0re#7307</span><br/>
 Scripts: <span style="color:#97d4ff">N4Rk0t1k#0302</span>, <span style="color:#c3a4ff">Parklez</span><br/>
 Help with UI design: <span style="color:#ac6cff">Дизайнер [bmd.GG]#9384</span><br/>
 Project support: <span style="color:#b7ffaa">ALLAN#0012</span><br/><br/>
@@ -317,7 +317,7 @@ Used in launcher:
   <li>Ghosting Mod</li>
   <li>Cutsceneless Mod</li>
   <li>HL1 Movement Mod</li>
-  <li>SmartSteamEmu (to make Source SDK Base 2007 work properly)</li>
+  <li>SmartSteamEmu (Ghosting)</li>
 </ul>
 `,
       },
@@ -611,7 +611,7 @@ Used in launcher:
         "#UI_ABOUT_TITLE": `<span style="color:var(--accent-color);font-weight:bold;font-size:18px">HLSR [v. ${
           require("../../../package.json").version
         }]</span>`,
-        "#UI_ABOUT_CONTENT": `Разработчики: <span style="color:#ff492c">InfiniteC0re#7307</span>, <span style="color:#ffd45b">alsbykov#8131</span><br/>
+        "#UI_ABOUT_CONTENT": `Разработчики: <span style="color:#ff492c">InfiniteC0re#7307</span><br/>
 Скрипты: <span style="color:#97d4ff">N4Rk0t1k#0302</span>, <span style="color:#c3a4ff">Parklez</span><br/>
 Помощь в UI дизайне: <span style="color:#ac6cff">Дизайнер [bmd.GG]#9384</span><br/>
 Поддержка проекта: <span style="color:#b7ffaa">ALLAN#0012</span><br/><br/>
@@ -625,7 +625,7 @@ Used in launcher:
   <li>Ghosting Mod</li>
   <li>Cutsceneless Mod</li>
   <li>HL1 Movement Mod</li>
-  <li>SmartSteamEmu (для работы Source SDK Base 2007)</li>
+  <li>SmartSteamEmu (Ghosting)</li>
   <li>RInput</li>
 </ul>
 `,

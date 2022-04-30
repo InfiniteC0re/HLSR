@@ -56,7 +56,7 @@ import "codemirror/addon/search/matchesonscrollbar.js";
 import "codemirror/addon/search/searchcursor.js";
 import "codemirror/addon/search/match-highlighter.js";
 import GameControl from "./scripts/GameControl";
-import GameList from "./GameList";
+import GameList from "../games.config";
 
 const { ipcRenderer } = require("electron");
 const remote = require("@electron/remote");
@@ -209,9 +209,10 @@ export default {
       if (steamName) rpc.smallImageText = steamName;
 
       let gameState = this.$store.state.game;
+      
       if (gameState.started) {
         rpc.details = this.$localisation.get("#RPC_PLAYING", gameState.name);
-        rpc.startTimestamp = gameState.date;
+        rpc.startTimestamp = gameState.startDate;
         return this.setRPC(rpc); // Пропуск установки RPC для SoundCloud виджета (игра в приоритете)
       }
 

@@ -152,10 +152,10 @@ export default {
     },
     isQuickGameButtonActive() {
       let id = store.get("lastLaunched");
-      
+
       let game = GameControl.getGame(id);
       if (!game) return false;
-      
+
       let licenses = this.$store.state.steamworks.licenses;
 
       return (
@@ -207,7 +207,7 @@ export default {
     },
     openPrefs() {
       let gameID = store.get("lastLaunched");
-      this.$parent.$refs.navbar.goTo("game", { id: gameID, section: 1 });
+      this.$parent.$refs.navbar.navigateTo("game", { id: gameID, section: 1 });
     },
     lastLaunchedGameStart() {
       let gameID = store.get("lastLaunched");

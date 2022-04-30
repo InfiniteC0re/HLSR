@@ -227,11 +227,10 @@ export default new vuex.Store({
     setParticlesState(state, disabled) {
       state.noParticles = disabled;
     },
-    setLastGame(state, name) {
-      if (!name) state.game.started = false;
-      else state.game.started = true;
+    setCurrentGame(state, name) {
+      state.game.started = !!name;
       state.game.name = name;
-      state.game.date = Date.now();
+      state.game.startDate = Date.now();
     },
   },
 });

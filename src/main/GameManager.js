@@ -1,10 +1,11 @@
 import { ipcMain } from "electron";
-import sevenBin from "7zip-bin";
-import Seven from "node-7z";
 import StoreDefaults from "../renderer/scripts/StoreDefaults.js";
 import Store from "../renderer/scripts/Store.js";
-import Axios from "axios";
 import GameControl from "../renderer/scripts/GameControl";
+import GameInstaller from "./GameInstaller.js";
+import sevenBin from "7zip-bin";
+import Seven from "node-7z";
+import path from "path";
 import fs from "fs";
 
 class GameManager {
@@ -13,8 +14,6 @@ class GameManager {
   }
 
   clearCache() {
-    const path = require("path");
-
     const LibraryStore = new Store({
       configName: "library",
       defaults: StoreDefaults.library,
@@ -26,7 +25,10 @@ class GameManager {
           for (const file in files) {
             fs.rm(path.join(dir, files[file]), { recursive: true }, (err2) => {
               if (err2)
-                console.log("An error has occured while removing a cache file: ", err2);
+                console.log(
+                  "An error has occured while removing a cache file: ",
+                  err2
+                );
             });
           }
         }
@@ -42,83 +44,91 @@ class GameManager {
   }
 
   initialize() {
-    ipcMain.on("game-download", async (event, info) => {
-      const timeoutTime = 10000;
-      let timeoutId = null;
+    ipcMain.on("download-game", async (ipcEvent, data) => {
+      const { gameId } = data;
 
-      const timeoutCallback = (e) => {
-        event.sender.send("game-canceled");
-        console.error("Download error:", e);
+      const game = GameControl.getGame(gameId);
+      if (!game) return;
+
+      const archives = game.info.archives;
+      const archivesCount = game.info.archives.length;
+      let downloadedPercent = 0;
+
+      const LibraryStore = new Store({
+        configName: "library",
+        defaults: StoreDefaults.library,
+      });
+
+      const progressCallback = (progress) => {
+        this.window.setProgressBar(progress);
+        ipcEvent.sender.send("progress-update", progress * 100);
       };
 
-      Axios({
-        url: info.url,
-        method: "GET",
-        responseType: "stream",
-        headers: {
-          "user-agent": "Mozilla/5.0 (X11; Linux armv7l) AppleWebKit/537.36 (KHTML, like Gecko) Raspbian Chromium/74.0.3729.157 Chrome/74.0.3729.157 Safari/537.36",
-        },
-      })
-        .then(({ data, headers }) => {
-          const contentLength = headers["content-length"];
-          const writeStream = fs.createWriteStream(info.archive);
-          let downloadedCount = 0;
+      let cacheFileBase = GameControl.getCacheFileName(LibraryStore);
+      let cacheFiles = [];
 
-          data.on("data", (chunk) => {
-            downloadedCount += chunk.length;
+      for (let i = 0; i < archives.length; i++) {
+        let url = archives[i];
 
-            let progress = downloadedCount / contentLength;
-            this.window.setProgressBar(progress);
-            event.sender.send("set-progress", progress * 100);
+        try {
+          let fn = `${cacheFileBase}.${(i + 1).toString().padStart(3, "0")}`;
+          await GameInstaller.downloadFile(url, fn, progressCallback);
+          cacheFiles.push(fn);
+        } catch (err) {
+          ipcEvent.sender.send("download-game-reply", { status: 1, err });
+          return;
+        }
+      }
 
-            if (timeoutId) clearTimeout(timeoutId);
-            timeoutId = setTimeout(timeoutCallback, timeoutTime);
+      ipcEvent.sender.send("download-game-reply", { status: 0, err: null });
+
+      // extracting downloaded archives
+      let extractPath = GameControl.getLibraryPath(LibraryStore);
+
+      if (!game.info.isStandalone)
+        extractPath = path.join(extractPath, game.info.libraryPath);
+
+      const pathTo7zip = sevenBin.path7za;
+      const stream = Seven.extractFull(`${cacheFileBase}.001`, extractPath, {
+        $bin: pathTo7zip,
+        $progress: true,
+      });
+
+      stream.on("progress", (progress) => {
+        this.window.setProgressBar(progress.percent / 100);
+        ipcEvent.sender.send("progressUpdate", progress.percent);
+      });
+
+      stream.on("end", () => {
+        this.window.setProgressBar(0);
+        stream.destroy();
+
+        ipcEvent.sender.send("unpack-game-reply", {
+          status: 0,
+          err: null,
+        });
+
+        for (const cacheFile of cacheFiles) {
+          fs.rm(cacheFile, (err) => {
+            if (err) console.log("Unable to remove the cache file: " + err);
           });
+        }
+      });
 
-          data.pipe(writeStream);
+      stream.on("error", (err) => {
+        this.window.setProgressBar(0);
+        stream.destroy();
 
-          writeStream.on("finish", () => {
-            if (timeoutId) clearTimeout(timeoutId);
+        this.window.webContents.send("unpack-game-reply", {
+          status: 1,
+          err,
+        });
 
-            writeStream.close(() => {
-              // the stream has been closed, can unpack the archive
-              event.sender.send("game-download-complete");
-
-              ipcMain.once("game-unpack", (e, args) => {
-                const pathTo7zip = sevenBin.path7za;
-
-                const stream = Seven.extractFull(args.archive, args.extractTo, {
-                  $bin: pathTo7zip,
-                  $progress: true,
-                });
-
-                stream.on("progress", (progress) => {
-                  this.window.setProgressBar(progress.percent / 100);
-                  this.window.webContents.send("set-progress", progress.percent);
-                });
-
-                stream.on("end", () => {
-                  this.window.setProgressBar(0);
-                  stream.destroy();
-                  
-                  this.window.webContents.send("game-installed");
-
-                  fs.rm(args.archive, (err) => {
-                    if (err) console.log("Unable to remove the cache file");
-                  });
-                });
-
-                stream.on("error", (err) => {
-                  this.window.setProgressBar(0);
-                  stream.destroy();
-
-                  event.sender.send("game-canceled");
-                });
-              });
-            });
-          });
-        }).catch(timeoutCallback);
+        console.log("Unpack error:", err);
+      });
     });
+
+    ipcMain.on("game-download", async (event, info) => {});
   }
 }
 

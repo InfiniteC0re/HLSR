@@ -1,6 +1,8 @@
 import { ipcRenderer } from "electron";
-import GameList from "../GameList";
+import GameList from "../../games.config";
 const electron = require("electron");
+const path = require("path");
+const fs = require("fs");
 const remote =
   process.type == "renderer" ? require("@electron/remote") : electron;
 
@@ -15,54 +17,47 @@ export default {
   },
   startGame(hlsrConsole, store, gameID, globalstore, navbar) {
     let config = store.get("config");
+    let params = config[gameID];
+
+    let coresParams = {
+      1: "-onecore",
+      2: "-twocores",
+      3: "-threecores",
+      4: "-fourcores",
+    };
 
     hlsrConsole.execute(
       [
-        "game", // Launch Mode
-        this.getLibraryPath(store), // Library Path
+        "game", // action
+        this.getLibraryPath(store), // path of the library
         gameID,
-        config[gameID].edited_dll ? "-dll" : "",
-        config[gameID].bxt ? "-bxt" : "",
-        config[gameID].rinput ? "-ri" : "",
-        config[gameID].livesplit ? "-livesplit" : "",
-        config[gameID].steam ? "-steam" : "",
-        config[gameID].allcores ? "-allcores" : "",
-        config[gameID].allcores == false && config[gameID].corescount == "1"
-          ? "-onecore"
-          : "",
-        config[gameID].allcores == false && config[gameID].corescount == "2"
-          ? "-twocores"
-          : "",
-        config[gameID].allcores == false && config[gameID].corescount == "3"
-          ? "-threecores"
-          : "",
-        config[gameID].allcores == false && config[gameID].corescount == "4"
-          ? "-fourcores"
-          : "",
-        "-" + config[gameID].priority,
-        config[gameID].hl1movement && gameID == "218"
-          ? "-game ghosting " + config[gameID].args
+        params.edited_dll ? "-dll" : "",
+        params.bxt ? "-bxt" : "",
+        params.rinput ? "-ri" : "",
+        params.livesplit ? "-livesplit" : "",
+        params.steam ? "-steam" : "",
+        params.allcores ? "-allcores" : coresParams[params.corescount],
+        "-" + params.priority,
+        gameID == "218" && params.hl1movement
+          ? "-game ghosting " + params.args
           : gameID == "218"
-          ? "-game ghostingmod " + config[gameID].args
-          : config[gameID].args,
+          ? "-game ghostingmod " + params.args
+          : params.args,
       ],
       () => {
         // Завершение работы hlsr-console
         config = store.get("config");
+        params = config[gameID];
 
-        if (
-          config[gameID].inGameTime == undefined ||
-          config[gameID].inGameTime == null ||
-          config[gameID].inGameTime < 0
-        )
-          config[gameID].inGameTime = 0;
+        if (!params.inGameTime || typeof params.inGameTime != "number")
+          params.inGameTime = 0;
 
-        config[gameID].inGameTime += Date.now() - globalstore.state.game.date;
-
+        params.inGameTime += Date.now() - globalstore.state.game.startDate;
         store.set("config", config);
 
-        if (globalstore) globalstore.commit("setLastGame", null);
+        if (globalstore) globalstore.commit("setCurrentGame", null);
         if (navbar) navbar.$forceUpdate();
+
         ipcRenderer.sendSync("setRichPresence", "HLSR");
       }
     );
@@ -71,31 +66,28 @@ export default {
     ipcRenderer.sendSync("setRichPresence", `HLSR [${gameTitle}]`);
 
     store.set("lastLaunched", gameID);
-    if (globalstore) globalstore.commit("setLastGame", gameTitle);
+    if (globalstore) globalstore.commit("setCurrentGame", gameTitle);
   },
   getTitle(id) {
-    return GameList.find((t) => t.id == id).name || "Unknown game";
+    return this.getGame(id).name || "Unknown game";
   },
   getIcon(id) {
-    return GameList.find((t) => t.id == id).iconFile;
+    return this.getGame(id).iconFile;
   },
   getBackground(id) {
-    return GameList.find((t) => t.id == id).background;
+    return this.getGame(id).background;
   },
   getGame(id) {
     return GameList.find((t) => t.id == id);
   },
   uninstallGame(store, id) {
     const libraryPath = this.getLibraryPath(store);
-
-    const fs = require("fs");
-    const path = require("path");
-    const game = GameList.find((t) => t.id == id);
+    const game = this.getGame(id);
     if (!game) return;
 
     let installed = store.get("installed");
 
-    game.info.removePaths.forEach((fn) => {
+    game.info.uninstallPaths.forEach((fn) => {
       if (typeof fn === "string") {
         let gamePath = path.join(libraryPath, fn);
 
@@ -103,7 +95,7 @@ export default {
           fs.rmSync(gamePath, {
             recursive: true,
           });
-        } catch (e) {};
+        } catch (e) {}
       }
     });
 
@@ -116,14 +108,13 @@ export default {
 
     store.set("installed", installed);
   },
-  openGameFolder(id, store) {
-    const path = require("path");
+  openGameDir(id, store) {
     const libraryPath = this.getLibraryPath(store);
 
-    let game = GameList.find((t) => t.id == id);
+    let game = this.getGame(id);
     if (!game) return;
 
-    let open_path = path.join(libraryPath, game.info.removePaths[0]);
+    let open_path = path.join(libraryPath, game.info.uninstallPaths[0]);
 
     if (id == "218") {
       let cfg = store.get("config")[id];
@@ -139,66 +130,39 @@ export default {
     }
   },
   getLibraryPath(store) {
-    const path = require("path");
+    let libPath = store.get("libraryPath");
+    if (libPath) return libPath;
 
-    let configPath = store.get("libraryPath");
+    libPath = path.join(remote.app.getPath("userData"), "library");
+    if (!fs.existsSync(libPath)) fs.mkdirSync(libPath);
 
-    if (configPath) return configPath;
-    else {
-      let lib_path = path.join(remote.app.getPath("userData"), "library");
-
-      if (!require("fs").existsSync(lib_path))
-        require("fs").mkdirSync(lib_path);
-
-      return lib_path;
-    }
+    return libPath;
   },
   getCacheDir(store) {
-    const fs = require("fs");
-    const path = require("path");
-
     let libPath = store.get("libraryPath");
     let cacheDir = null;
 
     if (libPath) cacheDir = path.join(libPath, "cache");
-    else
-      cacheDir = path.join(
-        remote
-          ? remote.app.getPath("userData")
-          : electron.app.getPath("userData"),
-        "cache"
-      );
+    else cacheDir = path.join(remote.app.getPath("userData"), "cache");
 
-    if (!fs.existsSync(cacheDir)) {
-      fs.mkdirSync(cacheDir);
-    }
+    if (!fs.existsSync(cacheDir)) fs.mkdirSync(cacheDir);
 
     return cacheDir;
   },
   getCacheDir_OLDPATH(store) {
-    const fs = require("fs");
-    const path = require("path");
-
     let libPath = store.get("libraryPath");
     let cacheDir = null;
 
     if (libPath) cacheDir = path.join(libPath, "downloads");
-    else
-      cacheDir = path.join(
-        remote
-          ? remote.app.getPath("userData")
-          : electron.app.getPath("userData"),
-        "temp"
-      );
-    
+    else cacheDir = path.join(remote.app.getPath("userData"), "temp");
+
     return cacheDir;
   },
-  makeCacheFile(store) {
-    const path = require("path");
+  getCacheFileName(store) {
     return path.join(this.getCacheDir(store), "cache_" + Date.now());
   },
   getSourceRunsLink(id) {
-    let game = GameList.find((t) => t.id == id);
+    let game = this.getGame(id);
     return game ? game.info.sourceruns : null;
   },
 };

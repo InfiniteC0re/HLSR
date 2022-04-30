@@ -34,11 +34,11 @@
         </p>
         <p>
           {{ $localisation.get("#UI_SPACE_REQUIRED_AFTER") }}
-          {{ game.info.size }} MB
+          {{ game.info.totalSize }} MB
         </p>
         <p>
           {{ $localisation.get("#UI_SPACE_REQUIRED_TO") }}
-          {{ game.info.size + game.info.archive }} MB
+          {{ game.info.totalSize + game.info.archiveSize }} MB
         </p>
       </div>
 
@@ -80,8 +80,6 @@ import AltButton from "@/components/Elements/Button";
 import Store from "@/scripts/Store.js";
 import StoreDefaults from "@/scripts/StoreDefaults.js";
 import GameControl from "@/scripts/GameControl";
-
-const path = require("path");
 
 const store = new Store({
   configName: "library",
@@ -142,7 +140,9 @@ export default {
 
         if (
           diskSpaceInfo.Result == 1 &&
-          this.freeSpace - (this.game.info.size + this.game.info.archive) >= 100
+          this.freeSpace -
+            (this.game.info.totalSize + this.game.info.archiveSize) >=
+            100
         ) {
           resolve();
         } else {
@@ -206,6 +206,10 @@ export default {
           });
       });
     },
+    unbindEvents() {
+      ipcRenderer.removeAllListeners("progress-update");
+      ipcRenderer.removeAllListeners("game-installed");
+    },
     startInstall() {
       if (this.installed) {
         this.$parent.refresh();
@@ -213,85 +217,92 @@ export default {
         return;
       }
 
+      ipcRenderer.on("progress-update", this.progressUpdate);
+
       this.checkInstallAvailability()
         .then(() => {
-          this.$store.state.sidebarBlocked = true;
           this.installing = true;
-
           this.status = this.$localisation.get("#UI_DOWNLOADING");
-
-          let info = {
-            url: this.game.info.url,
-            archive: GameControl.makeCacheFile(store),
-          };
+          this.$store.state.sidebarBlocked = true;
+          let gameId = this.game.id;
 
           // Start the download
-          ipcRenderer.send("game-download", info);
+          ipcRenderer.send("download-game", { gameId });
 
-          ipcRenderer.once("game-canceled", () => {
-            ipcRenderer.removeAllListeners("game-download-complete");
-            ipcRenderer.removeAllListeners("game-installed");
-            ipcRenderer.removeAllListeners("set-progress");
+          ipcRenderer.once("download-game-reply", (e, reply) => {
+            if (reply.status == 0) {
+              this.status = this.$localisation.get("#UI_EXTRACTING");
+              this.progress = 0;
 
-            this.canceled = true;
-            this.installed = true;
-            this.installing = false;
-            this.$store.state.sidebarBlocked = false;
+              ipcRenderer.once("unpack-game-reply", (e, unpackReply) => {
+                this.unbindEvents();
+                this.installed = true;
+                this.installing = false;
+                this.$store.state.sidebarBlocked = false;
 
-            this.$store.commit("createNotification", {
-              text: this.$localisation.get(
-                this.$localisation.get("#UNABLE_TO_DOWNLOAD", this.game.name)
-              ),
-              type: 1,
-              lifetime: 0,
-            });
-          });
+                if (unpackReply.status == 0) {
+                  let libPath = GameControl.getLibraryPath(store);
+                  let installed = store.get("installed");
 
-          ipcRenderer.once("game-download-complete", (e) => {
-            let game = this.game;
-            let install_path = GameControl.getLibraryPath(store);
+                  if (!installed[gameId]) installed[gameId] = { inGameTime: 0 };
+                  installed[gameId].installed = true;
+                  installed[gameId].directory = libPath;
 
-            this.status = this.$localisation.get("#UI_EXTRACTING");
-            this.progress = 0;
+                  store.set("installed", installed);
 
-            let extract_path = install_path;
-
-            if (!game.info.isStandalone)
-              extract_path = path.join(extract_path, game.info.installPath);
-
-            // Ask main to unpack downloaded game
-            ipcRenderer.send("game-unpack", {
-              archive: info.archive,
-              extractTo: extract_path,
-            });
-
-            ipcRenderer.once("game-installed", (e) => {
-              // Game was unpacked
-              let installed = store.get("installed");
-
-              if (!installed[this.game.id]) installed[this.game.id] = {};
-              installed[this.game.id].installed = true;
-              installed[this.game.id].directory = install_path;
-
-              store.set("installed", installed);
-
-              new Notification("HLSR", {
-                body: this.$localisation.get(
-                  "#UI_NOTIFICATION_INSTALLED",
-                  this.game
-                ),
+                  new Notification("HLSR", {
+                    body: this.$localisation.get(
+                      "#UI_NOTIFICATION_INSTALLED",
+                      this.game
+                    ),
+                  });
+                }
               });
-
+            } else if (reply.status == 1) {
+              this.unbindEvents();
               this.installed = true;
               this.installing = false;
+              this.canceled = true;
               this.$store.state.sidebarBlocked = false;
 
-              ipcRenderer.removeAllListeners("set-progress");
-              ipcRenderer.removeAllListeners("game-canceled");
-            });
+              this.$store.commit("createNotification", {
+                text: this.$localisation.get(
+                  this.$localisation.get("#UNABLE_TO_DOWNLOAD", this.game.name)
+                ),
+                type: 1,
+                lifetime: 0,
+              });
+            }
           });
 
-          ipcRenderer.on("set-progress", this.progressUpdate);
+          // ipcRenderer.once("game-download-complete", (e) => {
+          //   let libraryPath = GameControl.getLibraryPath(store);
+
+          //   ipcRenderer.once("game-installed", (e) => {
+          //     // Game was unpacked
+          //     let installed = store.get("installed");
+
+          //     if (!installed[this.game.id]) installed[this.game.id] = {};
+          //     installed[this.game.id].installed = true;
+          //     installed[this.game.id].directory = libraryPath;
+
+          //     store.set("installed", installed);
+
+          //     new Notification("HLSR", {
+          //       body: this.$localisation.get(
+          //         "#UI_NOTIFICATION_INSTALLED",
+          //         this.game
+          //       ),
+          //     });
+
+          //     this.installed = true;
+          //     this.installing = false;
+          //     this.$store.state.sidebarBlocked = false;
+
+          //     ipcRenderer.removeAllListeners("progress-update");
+          //     ipcRenderer.removeAllListeners("game-canceled");
+          //   });
+          // });
         })
         .catch(this.handleAvailabilityErrors);
     },

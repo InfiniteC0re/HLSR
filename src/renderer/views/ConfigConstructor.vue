@@ -24,12 +24,26 @@
             class="md-icon-button md-accent"
           >
             <md-icon class="fal fa-glass-citrus"></md-icon>
-            <md-tooltip>{{ $localisation.get("#UI_SCRIPT_UPDATE") }}</md-tooltip>
+            <md-tooltip>{{
+              $localisation.get("#UI_SCRIPT_UPDATE")
+            }}</md-tooltip>
           </md-button>
         </md-badge>
       </div>
       <div class="constructor__configs">
-        <md-list style="background: transparent" v-if="scripts.scriptless">
+        <ScriptList
+          :list="scripts.scriptless"
+          :title="$localisation.get('#UI_SCRIPT_SCRIPTLESS')"
+          :scriptless="true"
+          @select="onScriptSelect"
+        />
+        <ScriptList
+          :list="scripts.scripted"
+          :title="$localisation.get('#UI_SCRIPT_SCRIPTED')"
+          :scriptless="false"
+          @select="onScriptSelect"
+        />
+        <!-- <md-list style="background: transparent" v-if="scripts.scriptless">
           <md-subheader>{{
             $localisation.get("#UI_SCRIPT_SCRIPTLESS")
           }}</md-subheader>
@@ -37,17 +51,13 @@
             class="md-inset"
             v-for="script in scripts.scriptless"
             :key="script._id"
-            @click="
-              itemClick;
-              if (script.binds) {
-                selected = script;
-                detailsOpen = true;
-              }
-            "
+            @click="itemClick(script)"
           >
             <md-checkbox v-model="script.selected" class="md-primary" />
             <span class="md-list-item-text">{{ script.name }}</span>
           </md-list-item>
+        </md-list>
+        <md-list>
           <md-subheader>{{
             $localisation.get("#UI_SCRIPT_SCRIPTED")
           }}</md-subheader>
@@ -55,18 +65,12 @@
             class="md-inset"
             v-for="script in scripts.scripted"
             :key="script._id"
-            @click="
-              itemClick;
-              if (script.binds) {
-                selected = script;
-                detailsOpen = true;
-              }
-            "
+            @click="itemClick(script)"
           >
             <md-checkbox v-model="script.selected" />
             <span class="md-list-item-text">{{ script.name }}</span>
           </md-list-item>
-        </md-list>
+        </md-list> -->
       </div>
       <div class="constructor__buttons">
         <ButtonAlt @click="save" :disabled="!installed">
@@ -117,6 +121,7 @@ import ButtonAlt from "@/components/Elements/Button";
 import Store from "@/scripts/Store.js";
 import StoreDefaults from "@/scripts/StoreDefaults.js";
 import GameControl from "@/scripts/GameControl";
+import ScriptList from "@/components/ConfigConstructor/ScriptList.vue";
 
 const store = new Store({
   configName: "scripts",
@@ -128,15 +133,11 @@ const library = new Store({
   defaults: StoreDefaults.library,
 });
 
-const gamesPath = require("path").join(
-  GameControl.getLibraryPath(library),
-  "Half-Life"
-);
-
 export default {
   name: "config-constructor",
   components: {
     ButtonAlt,
+    ScriptList,
   },
   data() {
     return {
@@ -157,7 +158,7 @@ export default {
     },
   },
   methods: {
-    needUpdate() {
+    checkScriptsUpdated() {
       this.updateScriptsData();
       let defaultScripts = JSON.parse(
         JSON.stringify(
@@ -166,6 +167,7 @@ export default {
           ]
         )
       );
+
       let currentScripts = JSON.parse(JSON.stringify(this.scripts));
 
       function removeIndeed(section) {
@@ -173,6 +175,7 @@ export default {
           delete defaultScripts[section][i].selected;
           delete defaultScripts[section][i].binds;
         }
+
         for (let i = 0; i < currentScripts[section].length; i++) {
           delete currentScripts[section][i].selected;
           delete currentScripts[section][i].binds;
@@ -181,32 +184,31 @@ export default {
 
       removeIndeed("scriptless");
       removeIndeed("scripted");
-      if (JSON.stringify(defaultScripts) != JSON.stringify(currentScripts))
-        return 1;
-      else return 0;
-    },
-    itemClick: (e) => {
-      console.log(e.currentTarget);
+
+      this.needsUpdate =
+        JSON.stringify(defaultScripts) != JSON.stringify(currentScripts)
+          ? 1
+          : 0;
     },
     updateScripts() {
       let settingsData = StoreDefaults.scripts.data;
-      settingsData.games[this.game].store =
-        settingsData.db[settingsData.games[this.game].db];
+      let game = settingsData.games[this.game];
+
+      game.store = settingsData.db[game.db];
       store.set("data", settingsData);
 
-      this.needsUpdate = this.needUpdate();
+      this.checkScriptsUpdated();
     },
-    compile() {
-      let scriptedSelected = this.scripts.scripted.filter((x) => {
-        return x.selected;
-      });
-      let scriptlessSelected = this.scripts.scriptless.filter((x) => {
-        return x.selected;
-      });
-      let all = scriptedSelected.concat(scriptlessSelected);
+    generate() {
+      let scriptedSelected = this.scripts.scripted.filter((x) => x.selected);
+      let scriptlessSelected = this.scripts.scriptless.filter(
+        (x) => x.selected
+      );
 
-      let output = `echo "HLSR BETA"`;
-      all.forEach((script) => {
+      let selected = scriptedSelected.concat(scriptlessSelected);
+
+      let output = `echo "This config was generated with HLSR"`;
+      selected.forEach((script) => {
         output += "\n//" + script.name + "\n";
 
         if (script.commands) {
@@ -232,45 +234,45 @@ export default {
       return output;
     },
     save() {
-      var ctx = this;
       var fs = require("fs");
       var path = require("path");
-      var data = this.compile();
+      var data = this.generate();
+
+      const gamesPath = path.join(
+        GameControl.getLibraryPath(library),
+        "Half-Life"
+      );
 
       if (fs.existsSync(gamesPath)) {
-        var paths = [];
+        let dirs = [];
 
-        if (this.game == "hl") {
-          paths.push(path.join(gamesPath, "valve", "hlsr.cfg"));
-          paths.push(path.join(gamesPath, "valve_WON", "hlsr.cfg"));
-        } else if (this.game == "hlof") {
-          paths.push(path.join(gamesPath, "gearbox", "hlsr.cfg"));
-          paths.push(path.join(gamesPath, "gearbox_WON", "hlsr.cfg"));
-        } else if (this.game == "hlbs") {
-          paths.push(path.join(gamesPath, "bshift", "hlsr.cfg"));
+        switch (this.game) {
+          case "hl":
+            dirs = ["valve", "valve_WON"];
+            break;
+          case "hlof":
+            dirs = ["gearbox", "gearbox_WON"];
+            break;
+          case "hlbs":
+            dirs = ["bshift"];
+            break;
         }
 
-        paths.forEach((cfg) => {
-          let gamePath = cfg.split("\\");
-          gamePath.splice(-1);
+        let patchDirs = dirs.map((dir) =>
+          path.join(gamesPath, dir, "hlsr.cfg")
+        );
 
-          if (fs.existsSync(gamePath.join("\\"))) fs.writeFileSync(cfg, data);
+        patchDirs.forEach((cfgPath) => {
+          if (fs.existsSync(path.dirname(cfgPath)))
+            fs.writeFileSync(cfgPath, data);
         });
 
-        let settingsData = store.get("data");
-        settingsData.games[this.game].store = ctx.scripts;
-        store.set("data", settingsData);
-
-        // Send a notification
-        this.$store.commit("createNotification", {
-          text: this.$localisation.get("#UI_NOTIFICATION_SAVED"),
-        });
+        this.saveDB();
       }
     },
     saveToFile() {
-      var ctx = this;
       var fs = require("fs");
-      var data = this.compile();
+      var data = this.generate();
 
       remote.dialog
         .showSaveDialog({
@@ -280,16 +282,22 @@ export default {
           if (file.filePath) {
             fs.writeFileSync(file.filePath, data);
 
-            let settingsData = store.get("data");
-            settingsData.games[this.game].store = ctx.scripts;
-            store.set("data", settingsData);
+            this.saveDB();
           }
         });
     },
+    saveDB() {
+      let settingsData = store.get("data");
+      settingsData.games[this.game].store = this.scripts;
+      store.set("data", settingsData);
+
+      // Send a notification
+      this.$store.commit("createNotification", {
+        text: this.$localisation.get("#UI_NOTIFICATION_SAVED"),
+      });
+    },
     updateScriptsData() {
       let data = store.get("data");
-      let db = data.db;
-
       this.scripts = data.games[this.game].store;
 
       if (Object.keys(this.scripts).length == 0) {
@@ -297,12 +305,17 @@ export default {
       }
     },
     onGameSelect() {
-      this.needsUpdate = this.needUpdate();
-      console.log(this.game);
+      this.checkScriptsUpdated();
+    },
+    onScriptSelect(script) {
+      if (script.binds) {
+        this.selected = script;
+        this.detailsOpen = true;
+      }
     },
   },
   mounted() {
-    this.needsUpdate = this.needUpdate();
+    this.checkScriptsUpdated();
     this.installed = GameControl.checkInstalled(library, "70");
   },
 };

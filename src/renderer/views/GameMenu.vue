@@ -176,7 +176,7 @@ export default {
     uninstallGameHandle() {
       GameControl.uninstallGame(store, this.game.id);
 
-      this.$parent.$refs.navbar.goTo("game", {
+      this.$parent.$refs.navbar.navigateTo("game", {
         id: this.game.id,
         refresh: true,
       });
@@ -242,7 +242,7 @@ export default {
         if (isStandalone || isParentInstalled) {
           this.installationWindow = true;
         } else {
-          this.$parent.$refs.navbar.goTo("game", {
+          this.$parent.$refs.navbar.navigateTo("game", {
             id: this.game.info.requiredGame,
             install: true,
           });
@@ -253,7 +253,7 @@ export default {
       remote.shell.openExternal(GameControl.getSourceRunsLink(this.game.id));
     },
     gameFolder() {
-      GameControl.openGameFolder(this.game.id, store);
+      GameControl.openGameDir(this.game.id, store);
     },
     refresh() {
       this.installed = GameControl.checkInstalled(store, this.game.id);
@@ -364,7 +364,7 @@ export default {
 }
 
 .md-raised.installedGame {
-  background: #00ABC7 !important;
+  background: #00abffc7 !important;
   color: #fff !important;
 }
 
