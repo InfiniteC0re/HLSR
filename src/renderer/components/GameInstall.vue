@@ -227,7 +227,7 @@ export default {
           this.$store.state.sidebarBlocked = true;
           let gameId = this.game.id;
 
-          // Start the download
+          // start the download
           ipcRenderer.send("download-game", { gameId });
 
           ipcRenderer.once("download-game-reply", (e, reply) => {

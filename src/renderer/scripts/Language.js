@@ -168,11 +168,11 @@ class Localisation {
         "#UI_FOUND_CYRILLIC_HINT": "Recommended to reinstall the game on another path",
         "#UI_ACRYLLIC_THEME": "Acryllic Background",
         "#UI_BLOBS_THEME": "Animated Background",
-        "#UI_NO_LICENSE": "You don't have a license in Steam",
-        "#UI_NO_STEAM": "Probably you haven't started Steam",
+        "#UI_NO_LICENSE": "No licence found in Steam",
+        "#UI_NO_STEAM": "Start Steam to play this game",
         "#UI_CHANGELOG_CONTENT": `<h4>Update from 06/14/2021 [v. 0.2.2]</h4>
 <ul>
-  <li>Added Half-Life 2 license checking Steam</li>
+  <li>Added Half-Life 2 license checking</li>
   <li>Fixed a bug when free disk space wasn't calculated on some PCs</li>
   <li>Fixed a bug with settings button of Quick Launch widget</li>
   <li>Data in the Script Editor are saved in memory when you go outside of the editor</li>

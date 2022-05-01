@@ -11,7 +11,7 @@ class GameManager {
     this.window = window;
   }
 
-  clearCache() {
+  cleanCache() {
     const LibraryStore = new Store({
       configName: "library",
       defaults: StoreDefaults.library,
@@ -49,6 +49,8 @@ class GameManager {
       if (!game) return;
 
       const archives = game.info.archives;
+      let archivesCount = archives.length;
+      let downloadedArchives = 0;
 
       const LibraryStore = new Store({
         configName: "library",
@@ -56,6 +58,8 @@ class GameManager {
       });
 
       const progressCallback = (progress) => {
+        console.log(progress);
+        progress = (progress + downloadedArchives) / archivesCount;
         this.window.setProgressBar(progress);
         ipcEvent.sender.send("progress-update", progress * 100);
       };
@@ -69,6 +73,7 @@ class GameManager {
         try {
           let fn = `${cacheFileBase}.${(i + 1).toString().padStart(3, "0")}`;
           await GameInstaller.downloadFile(url, fn, progressCallback);
+          downloadedArchives++;
           cacheFiles.push(fn);
         } catch (err) {
           ipcEvent.sender.send("download-game-reply", { status: 1, err });
@@ -84,12 +89,9 @@ class GameManager {
       if (!game.info.isStandalone)
         extractPath = path.join(extractPath, game.info.libraryPath);
 
-      GameInstaller.extractArchive(
-        cacheFiles,
-        extractPath,
-        true,
-        progressCallback
-      )
+      archivesCount = 1;
+      downloadedArchives = 0;
+      GameInstaller.extractArchive(cacheFiles, extractPath, progressCallback)
         .then(() => {
           this.window.setProgressBar(0);
           ipcEvent.sender.send("unpack-game-reply", {

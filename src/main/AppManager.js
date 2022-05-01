@@ -119,7 +119,7 @@ class AppManager {
       this.updateManager.startCheckingInterval();
     });
 
-    this.gameManager.clearCache();
+    this.gameManager.cleanCache();
     this.updateManager.initialize();
     this.gameManager.initialize();
   }

@@ -45,27 +45,26 @@ const downloadFile = (url, archive, progressCb) => {
   });
 };
 
-const extractArchive = (archive, extractPath, split, progressCb) => {
+const extractArchive = (archive, extractPath, progressCb) => {
   return new Promise(async (resolve, reject) => {
     const pathTo7zip = sevenBin.path7za;
 
-    const stream = Seven.extractFull(
-      split ? archive[0] : archive,
-      extractPath,
-      {
-        $bin: pathTo7zip,
-        $progress: true,
-      }
-    );
+    let firstArchive = archive;
+    if (Array.isArray(archive)) firstArchive = archive[0];
+    else archive = [archive];
 
-    stream.on("progress", (progress) => progressCb(progress / 100));
+    const stream = Seven.extractFull(firstArchive, extractPath, {
+      $bin: pathTo7zip,
+      $progress: true,
+    });
+
+    stream.on("progress", (progress) => progressCb(progress.percent / 100));
 
     stream.on("end", () => {
       if (!stream.destroyed) {
         stream.destroy();
 
-        let cacheFiles = split ? archive : [archive];
-        for (const cacheFile of cacheFiles) {
+        for (const cacheFile of archive) {
           fs.rm(cacheFile, (err) => {
             if (err) console.log("Unable to remove the cache file: " + err);
           });
