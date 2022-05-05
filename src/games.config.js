@@ -111,7 +111,10 @@ export default [
         "#UI_LIVESPLIT",
         "RInput",
       ],
-      archives: ["http://194.87.95.20/games/Ghosting.zip"],
+      archives: [
+        "https://github.com/InfiniteC0re/HLSR/releases/download/Ghosting/Ghosting.zip.001",
+        "https://github.com/InfiniteC0re/HLSR/releases/download/Ghosting/Ghosting.zip.002",
+      ],
       sourceruns: "https://wiki.sourceruns.org/wiki/Ghosting_mod",
     },
   },

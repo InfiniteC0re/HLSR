@@ -38,7 +38,7 @@
     <div class="section">{{ $localisation.get("#UI_EXTERNAL_TOOLS") }}</div>
     <div class="flex">
       <div>
-        <div class="container">
+        <div class="container" v-if="!disableBXT">
           <md-checkbox
             v-model="bxt"
             @change="saveChoice"

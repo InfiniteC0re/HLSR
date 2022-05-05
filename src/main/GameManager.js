@@ -58,7 +58,6 @@ class GameManager {
       });
 
       const progressCallback = (progress) => {
-        console.log(progress);
         progress = (progress + downloadedArchives) / archivesCount;
         this.window.setProgressBar(progress);
         ipcEvent.sender.send("progress-update", progress * 100);
