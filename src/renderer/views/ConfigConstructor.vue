@@ -2,7 +2,7 @@
   <div id="wrap">
     <div id="form">
       <div class="title">
-        {{ $localisation.get("#UI_CONFIGS_CONSTRUCTOR") }}
+        {{ $t("#UI_CONFIGS_CONSTRUCTOR") }}
         <div style="flex: 1; margin: 0px 32px; margin-right: 100px">
           <md-field>
             <label for="games">Game</label>
@@ -25,7 +25,7 @@
           >
             <md-icon class="fal fa-glass-citrus"></md-icon>
             <md-tooltip>{{
-              $localisation.get("#UI_SCRIPT_UPDATE")
+              $t("#UI_SCRIPT_UPDATE")
             }}</md-tooltip>
           </md-button>
         </md-badge>
@@ -33,19 +33,19 @@
       <div class="constructor__configs">
         <ScriptList
           :list="scripts.scriptless"
-          :title="$localisation.get('#UI_SCRIPT_SCRIPTLESS')"
+          :title="$t('#UI_SCRIPT_SCRIPTLESS')"
           :scriptless="true"
           @select="onScriptSelect"
         />
         <ScriptList
           :list="scripts.scripted"
-          :title="$localisation.get('#UI_SCRIPT_SCRIPTED')"
+          :title="$t('#UI_SCRIPT_SCRIPTED')"
           :scriptless="false"
           @select="onScriptSelect"
         />
         <!-- <md-list style="background: transparent" v-if="scripts.scriptless">
           <md-subheader>{{
-            $localisation.get("#UI_SCRIPT_SCRIPTLESS")
+            $t("#UI_SCRIPT_SCRIPTLESS")
           }}</md-subheader>
           <md-list-item
             class="md-inset"
@@ -59,7 +59,7 @@
         </md-list>
         <md-list>
           <md-subheader>{{
-            $localisation.get("#UI_SCRIPT_SCRIPTED")
+            $t("#UI_SCRIPT_SCRIPTED")
           }}</md-subheader>
           <md-list-item
             class="md-inset"
@@ -74,11 +74,11 @@
       </div>
       <div class="constructor__buttons">
         <ButtonAlt @click="save" :disabled="!installed">
-          <p>{{ $localisation.get("#UI_SCRIPT_GENERATE") }}</p>
+          <p>{{ $t("#UI_SCRIPT_GENERATE") }}</p>
           <i class="fas fa-save"></i>
         </ButtonAlt>
         <ButtonAlt @click="saveToFile" :red="true">
-          <p>{{ $localisation.get("#UI_SCRIPT_SAVE") }}</p>
+          <p>{{ $t("#UI_SCRIPT_SAVE") }}</p>
           <i class="fas fa-file-alt"></i>
         </ButtonAlt>
       </div>
@@ -87,27 +87,27 @@
 
       <md-dialog :md-active.sync="detailsOpen" :mdClickOutsideToClose="true">
         <md-dialog-title
-          v-html="$localisation.get('#UI_SCRIPT_SETTINGS', selected.name)"
+          v-html="$t('#UI_SCRIPT_SETTINGS', selected.name)"
         ></md-dialog-title>
         <md-dialog-content v-if="selected">
           <span style="opacity: 0.2; margin-bottom: 12px; display: flex">{{
-            $localisation.get("#UI_SCRIPT_BINDS")
+            $t("#UI_SCRIPT_BINDS")
           }}</span>
           <div class="binds">
             <div class="inline" v-for="bind in selected.binds" :key="bind._id">
               <md-field style="margin-right: 4px">
-                <label>{{ $localisation.get("#UI_SCRIPT_KEY") }}</label>
+                <label>{{ $t("#UI_SCRIPT_KEY") }}</label>
                 <md-input v-model="bind.key"></md-input>
               </md-field>
               <md-field style="margin-left: 4px">
-                <label>{{ $localisation.get("#UI_SCRIPT_COMMAND") }}</label>
+                <label>{{ $t("#UI_SCRIPT_COMMAND") }}</label>
                 <md-input v-model="bind.command" readonly></md-input>
               </md-field>
             </div>
           </div>
           <video v-if="selected.video" :src="video" width autoplay loop></video>
           <div v-if="selected.author" style="margin-top: 10px; opacity: 0.4">
-            {{ selected.author }}
+            Author: {{ selected.author }}
           </div>
         </md-dialog-content>
       </md-dialog>
@@ -118,9 +118,9 @@
 <script>
 const remote = require("@electron/remote");
 import ButtonAlt from "@/components/Elements/Button";
-import Store from "@/scripts/Store.js";
-import StoreDefaults from "@/scripts/StoreDefaults.js";
-import GameControl from "@/scripts/GameControl";
+import Store from "@/utils/Store.js";
+import StoreDefaults from "@/utils/StoreDefaults.js";
+import GameControl from "@/utils/GameControl";
 import ScriptList from "@/components/ConfigConstructor/ScriptList.vue";
 
 const store = new Store({
@@ -293,7 +293,7 @@ export default {
 
       // Send a notification
       this.$store.commit("createNotification", {
-        text: this.$localisation.get("#UI_NOTIFICATION_SAVED"),
+        text: this.$t("#UI_NOTIFICATION_SAVED"),
       });
     },
     updateScriptsData() {

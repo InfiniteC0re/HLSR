@@ -54,6 +54,7 @@
   "dependencies": {
     "7zip-bin": "^5.1.1",
     "@electron/remote": "^2.0.1",
+    "@vue/runtime-dom": "^3.2.33",
     "axios": "^0.19.2",
     "discord-rpc": "3.2.0",
     "electron-unhandled": "^3.0.2",

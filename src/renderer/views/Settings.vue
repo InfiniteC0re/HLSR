@@ -1,61 +1,61 @@
 <template>
   <div id="wrap" ref="settings">
     <div id="form">
-      <div class="title">{{ $localisation.get("#UI_SETTINGS") }}</div>
+      <div class="title">{{ $t("#UI_SETTINGS") }}</div>
       <div id="settings-scroll">
         <div class="section basictext">
-          {{ $localisation.get("#UI_INTERFACE_SETTINGS") }}
+          {{ $t("#UI_INTERFACE_SETTINGS") }}
         </div>
         <Dropdown
           v-model="language"
-          :text="$localisation.get('#UI_INTERFACE_LANGUAGE')"
+          :text="$t('#UI_INTERFACE_LANGUAGE')"
           @change="saveChoice()"
           :items="languages"
         />
         <Dropdown
           v-model="theme"
-          :text="$localisation.get('#UI_INTERFACE_THEME')"
+          :text="$t('#UI_INTERFACE_THEME')"
           @change="themeChange()"
           :items="themes"
         />
         <div class="section basictext">
-          {{ $localisation.get("#UI_MISC_SETTINGS") }}
+          {{ $t("#UI_MISC_SETTINGS") }}
         </div>
         <Checkbox
           v-model="rpc"
           @change="saveChoice()"
-          :text="$localisation.get('#UI_DISCORD_RPC_SETTINGS')"
+          :text="$t('#UI_DISCORD_RPC_SETTINGS')"
         />
         <Checkbox
           v-model="noParticles"
           @change="saveChoice()"
-          :text="$localisation.get('#UI_NO_PARTICLES')"
+          :text="$t('#UI_NO_PARTICLES')"
         />
       </div>
       <div id="bottom">
         <div class="social">
           <div class="social-button" @click="openDiscord">
             <i class="fab fa-discord"></i>
-            <md-tooltip>{{ $localisation.get("#UI_DISCORD") }}</md-tooltip>
+            <md-tooltip>{{ $t("#UI_DISCORD") }}</md-tooltip>
           </div>
           <div class="social-button" @click="dialogOpen = true">
             <i class="fal fa-info-circle"></i>
-            <md-tooltip>{{ $localisation.get("#UI_ABOUT_PROGRAM") }}</md-tooltip>
+            <md-tooltip>{{ $t("#UI_ABOUT_PROGRAM") }}</md-tooltip>
           </div>
         </div>
       </div>
 
-      <!-- <checkbox v-model="experimental" @change="saveChoice" :text="$localisation.get('#UI_EXPERIMENTAL_MODE_SETTINGS')"/> -->
+      <!-- <checkbox v-model="experimental" @change="saveChoice" :text="$t('#UI_EXPERIMENTAL_MODE_SETTINGS')"/> -->
 
       <!-- Диалоговое окно  -->
       <md-dialog :md-active.sync="dialogOpen" :mdClickOutsideToClose="true">
         <md-dialog-title
-          v-html="$localisation.get('#UI_ABOUT_TITLE')"
+          v-html="$t('#UI_ABOUT_TITLE')"
         ></md-dialog-title>
         <md-dialog-content style="display: flex; user-select: text">
           <div
             class="left-block"
-            v-html="$localisation.get('#UI_ABOUT_CONTENT')"
+            v-html="$t('#UI_ABOUT_CONTENT')"
           ></div>
           <div class="right-block">
             <img
@@ -74,8 +74,8 @@
 const remote = require("@electron/remote");
 import Checkbox from "@/components/Elements/Checkbox";
 import Dropdown from "@/components/Elements/Dropdown";
-import Store from "@/scripts/Store.js";
-import StoreDefaults from "@/scripts/StoreDefaults.js";
+import Store from "@/utils/Store.js";
+import StoreDefaults from "@/utils/StoreDefaults.js";
 
 const store = new Store({
   configName: "settings",
@@ -112,16 +112,15 @@ export default {
     },
     updateLocale() {
       this.languages = [
-        { name: this.$parent.$localisation.get("#UI_ENGLISH"), id: 0 },
-        { name: this.$parent.$localisation.get("#UI_RUSSIAN"), id: 1 },
+        { name: this.$parent.$t("#UI_ENGLISH"), id: 0 },
+        { name: this.$parent.$t("#UI_RUSSIAN"), id: 1 },
       ];
 
       this.themes = [
-        { name: this.$parent.$localisation.get("#UI_GRADIENT_THEME"), id: 0 },
-        { name: this.$parent.$localisation.get("#UI_BLUE_THEME"), id: 1 },
-        { name: this.$parent.$localisation.get("#UI_RED_THEME"), id: 2 },
-        // a freelancer theme was here (id 3)
-        { name: this.$parent.$localisation.get("#UI_BLOBS_THEME"), id: 4 },
+        { name: this.$parent.$t("#UI_GRADIENT_THEME"), id: 0 },
+        { name: this.$parent.$t("#UI_BLUE_THEME"), id: 1 },
+        { name: this.$parent.$t("#UI_RED_THEME"), id: 2 },
+        { name: this.$parent.$t("#UI_BLOBS_THEME"), id: 4 },
       ];
 
       if (store.get("config").mlpMode)
@@ -136,14 +135,13 @@ export default {
       //   let acryllicSupported = parseInt(release[2]) >= 17134;
       //   if (acryllicSupported) {
       //     this.themes.push({
-      //       name: this.$parent.$localisation.get("#UI_ACRYLLIC_THEME"),
+      //       name: this.$parent.$t("#UI_ACRYLLIC_THEME"),
       //       id: 4,
       //     });
       //   }
       // }
     },
     themeChange() {
-      if (this.$parent.lancerMode) return;
       this.saveChoice();
       this.$parent.$refs.theme.updateTheme();
     },
@@ -152,14 +150,14 @@ export default {
       let langChanged = config.language != this.language;
 
       config.language = this.language;
-      if (!this.$parent.lancerMode) config.theme = this.theme;
+      config.theme = this.theme;
       config.rpc = this.rpc;
       config.experimental = this.experimental;
       config.noParticles = this.noParticles;
       store.set("config", config);
 
       if (langChanged) {
-        this.$localisation.update();
+        this.$localization.update();
         this.$parent.$refs.navbar.$forceUpdate();
 
         this.updateLocale();
@@ -167,7 +165,7 @@ export default {
 
       this.$store.commit("setParticlesState", config.noParticles);
 
-      if (restart && require("process").env.WEBPACK_DEV_SERVER !== "true") {
+      if (restart && !this.$isDebug) {
         let app = remote.app;
 
         app.relaunch();
@@ -175,7 +173,7 @@ export default {
       } else if (restart) {
         // Send a notification
         this.$store.commit("createNotification", {
-          text: this.$localisation.get("#RESTART_APP"),
+          text: this.$t("#RESTART_APP"),
         });
       }
     },

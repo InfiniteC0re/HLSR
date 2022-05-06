@@ -134,18 +134,13 @@ export default {
     if (libPath) return libPath;
 
     libPath = path.join(remote.app.getPath("userData"), "library");
-    if (!fs.existsSync(libPath)) fs.mkdirSync(libPath);
+    if (!fs.existsSync(libPath)) fs.mkdirSync(libPath, { recursive: true });
 
     return libPath;
   },
   getCacheDir(store) {
-    let libPath = store.get("libraryPath");
-    let cacheDir = null;
-
-    if (libPath) cacheDir = path.join(libPath, "cache");
-    else cacheDir = path.join(remote.app.getPath("userData"), "cache");
-
-    if (!fs.existsSync(cacheDir)) fs.mkdirSync(cacheDir);
+    let cacheDir = path.join(this.getLibraryPath(store), "dlcache");
+    if (!fs.existsSync(cacheDir)) fs.mkdirSync(cacheDir, { recursive: true });
 
     return cacheDir;
   },

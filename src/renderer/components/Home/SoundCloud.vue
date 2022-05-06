@@ -4,7 +4,7 @@
       <md-empty-state
         class="md-accent"
         md-rounded
-        :md-description="$localisation.get('#UI_NO_TRACKS')"
+        :md-description="$t('#UI_NO_TRACKS')"
         :md-size="200"
       ></md-empty-state>
     </div>

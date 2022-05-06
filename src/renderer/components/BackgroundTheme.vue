@@ -10,8 +10,8 @@
 </template>
 
 <script>
-import Store from "../scripts/Store.js";
-import StoreDefaults from "../scripts/StoreDefaults.js";
+import Store from "../utils/Store.js";
+import StoreDefaults from "../utils/StoreDefaults.js";
 
 const store = new Store({
   configName: "settings",
@@ -85,16 +85,14 @@ export default {
 
 <style scoped>
 #backgroundtheme {
-  height: 100%;
-  width: 100%;
   display: flex;
   overflow: hidden;
   z-index: -5;
-  height: 100%;
-  width: 100%;
   position: absolute;
   top: 0;
+  bottom: 0;
   left: 0;
+  right: 0;
 }
 
 .background {
@@ -110,9 +108,9 @@ export default {
   content: "";
   position: absolute;
   top: 0;
+  bottom: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  right: 0;
   background: rgba(23, 46, 86, 0.7);
   z-index: 1;
 }

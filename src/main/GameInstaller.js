@@ -75,6 +75,7 @@ const extractArchive = (archive, extractPath, progressCb) => {
     });
 
     stream.on("error", (err) => {
+      console.log(err);
       stream.destroy();
       reject(err);
     });

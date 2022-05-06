@@ -1,10 +1,15 @@
 import { ipcMain } from "electron";
-import StoreDefaults from "../renderer/scripts/StoreDefaults.js";
-import Store from "../renderer/scripts/Store.js";
-import GameControl from "../renderer/scripts/GameControl";
+import StoreDefaults from "../renderer/utils/StoreDefaults.js";
+import Store from "../renderer/utils/Store.js";
+import GameControl from "../renderer/utils/GameControl";
 import GameInstaller from "./GameInstaller.js";
 import path from "path";
 import fs from "fs";
+
+function round(num) {
+    var m = Number((Math.abs(num) * 100).toPrecision(15));
+    return Math.round(m) / 100 * Math.sign(num);
+}
 
 class GameManager {
   constructor(window) {
@@ -58,7 +63,7 @@ class GameManager {
       });
 
       const progressCallback = (progress) => {
-        progress = (progress + downloadedArchives) / archivesCount;
+        progress = round((progress + downloadedArchives) / archivesCount);
         this.window.setProgressBar(progress);
         ipcEvent.sender.send("progress-update", progress * 100);
       };
@@ -86,10 +91,11 @@ class GameManager {
       let extractPath = GameControl.getLibraryPath(LibraryStore);
 
       if (!game.info.isStandalone)
-        extractPath = path.join(extractPath, game.info.libraryPath);
+        extractPath = path.join(extractPath, game.info.installPath);
 
       archivesCount = 1;
       downloadedArchives = 0;
+
       GameInstaller.extractArchive(cacheFiles, extractPath, progressCallback)
         .then(() => {
           this.window.setProgressBar(0);

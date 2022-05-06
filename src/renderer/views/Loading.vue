@@ -72,8 +72,8 @@ export default {
   },
   mounted() {
     if (localStorage.getItem("wasLaunched"))
-      this.splash = this.$localisation.get("#UI_WELCOME_BACK");
-    else this.splash = this.$localisation.get("#UI_WELCOME_HLSR");
+      this.splash = this.$t("#UI_WELCOME_BACK");
+    else this.splash = this.$t("#UI_WELCOME_HLSR");
 
     localStorage.setItem("wasLaunched", true);
 

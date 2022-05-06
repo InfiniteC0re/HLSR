@@ -12,7 +12,7 @@
             <button :class="{ active: $route.name == 'home' }">
               <i class="fas fa-home-lg"></i>
               <!-- <md-tooltip md-direction="right">{{
-                $localisation.get("#UI_HOME")
+                $t("#UI_HOME")
               }}</md-tooltip> -->
             </button>
           </router-link>
@@ -28,7 +28,7 @@
           >
             <i class="fas fa-play"></i>
             <!-- <md-tooltip md-direction="right">{{
-                $localisation.get("#UI_LIBRARY")
+                $t("#UI_LIBRARY")
               }}</md-tooltip> -->
           </button>
           <div class="items" :class="{ opened: showGameList }">
@@ -42,7 +42,7 @@
               </div>
               Half-Life
               <span class="time">{{
-                $localisation.get("#UI_SPENT_TIME", getPlayTime("70"))
+                $t("#UI_SPENT_TIME", getPlayTime("70"))
               }}</span>
             </div>
             <div
@@ -55,7 +55,7 @@
               </div>
               Half-Life: Opposing Force
               <span class="time">{{
-                $localisation.get("#UI_SPENT_TIME", getPlayTime("50"))
+                $t("#UI_SPENT_TIME", getPlayTime("50"))
               }}</span>
             </div>
             <div
@@ -68,7 +68,7 @@
               </div>
               Half-Life: Blue Shift
               <span class="time">{{
-                $localisation.get("#UI_SPENT_TIME", getPlayTime("130"))
+                $t("#UI_SPENT_TIME", getPlayTime("130"))
               }}</span>
             </div>
             <div
@@ -81,7 +81,7 @@
               </div>
               Half-Life 2
               <span class="time">{{
-                $localisation.get("#UI_SPENT_TIME", getPlayTime("220"))
+                $t("#UI_SPENT_TIME", getPlayTime("220"))
               }}</span>
             </div>
             <div
@@ -94,7 +94,7 @@
               </div>
               Half-Life 2: Ghosting
               <span class="time">{{
-                $localisation.get("#UI_SPENT_TIME", getPlayTime("218"))
+                $t("#UI_SPENT_TIME", getPlayTime("218"))
               }}</span>
             </div>
           </div>
@@ -115,7 +115,7 @@
           >
             <i class="fas fa-align-left"></i>
             <!-- <md-tooltip md-direction="right">{{
-                $localisation.get("#UI_CONFIGS")
+                $t("#UI_CONFIGS")
               }}</md-tooltip> -->
           </button>
           <div class="items" :class="{ opened: configList }">
@@ -124,14 +124,14 @@
               @click="navigateTo('config-constructor')"
               :class="{ selected: $route.name == 'config-constructor' }"
             >
-              {{ $localisation.get("#UI_CONFIGS_CONSTRUCTOR") }}
+              {{ $t("#UI_CONFIGS_CONSTRUCTOR") }}
             </div>
             <div
               class="item"
               @click="navigateTo('config-editor')"
               :class="{ selected: $route.name == 'config-editor' }"
             >
-              {{ $localisation.get("#UI_CONFIGS_ADVANCED") }}
+              {{ $t("#UI_CONFIGS_ADVANCED") }}
             </div>
           </div>
         </div>
@@ -141,7 +141,7 @@
             <button :class="{ active: $route.name == 'customization' }">
               <i class="fas fa-sliders-h"></i>
               <!-- <md-tooltip md-direction="right">{{
-                $localisation.get("#UI_CUSTOMIZATION")
+                $t("#UI_CUSTOMIZATION")
               }}</md-tooltip> -->
             </button>
           </router-link>
@@ -166,7 +166,7 @@
           />
         </svg>
         <md-tooltip v-if="!steamActive" md-direction="right">{{
-          $localisation.get("#UI_STEAM_RECONNECT")
+          $t("#UI_STEAM_RECONNECT")
         }}</md-tooltip>
       </div>
 
@@ -184,8 +184,8 @@
 </template>
 
 <script>
-import Store from "@/scripts/Store.js";
-import StoreDefaults from "@/scripts/StoreDefaults.js";
+import Store from "@/utils/Store.js";
+import StoreDefaults from "@/utils/StoreDefaults.js";
 
 const store = new Store({
   configName: "library",

@@ -9,7 +9,7 @@
     >
       <md-checkbox v-model="script.selected" :class="{'md-primary': scriptless}" />
       <span class="md-list-item-text">{{ script.name }}</span>
-      <i v-if="script.binds" class="viewIcon icon fas fa-eye"></i>
+      <i v-if="script.binds" class="viewIcon fas fa-cog"></i>
     </md-list-item>
   </md-list>
 </template>
@@ -20,7 +20,7 @@ export default {
     title: {
       type: String,
       default() {
-        return this.$localisation.get("#UI_SCRIPT_SCRIPTLESS");
+        return this.$t("#UI_SCRIPT_SCRIPTLESS");
       },
     },
     scriptless: {
@@ -41,7 +41,7 @@ export default {
 </script>
 
 <style scoped>
-.fa-eye {
+.viewIcon {
   opacity: 0.3;
 }
 </style>

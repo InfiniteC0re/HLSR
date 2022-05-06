@@ -1,135 +1,136 @@
 <template>
   <div id="wrap">
     <div class="title">
-      {{ $localisation.get("#UI_CONFIGURATOR") }}
+      {{ $t("#UI_CONFIGURATOR") }}
     </div>
-    <div class="section" style="margin-top: 16px">
-      {{ $localisation.get("#UI_GAME_VERSION") }}
-    </div>
-    <div class="container">
-      <md-radio v-model="version" @change="saveChoice" value="Steam"
-        >Steam</md-radio
-      >
-      <md-radio
-        v-model="version"
-        @change="saveChoice"
-        :disabled="id == '130' || id == '220' || id == '218'"
-        value="WON"
-        >WON</md-radio
-      >
-    </div>
-    <div class="container">
-      <md-switch
-        v-model="edited_dll"
-        @change="saveChoice"
-        class="md-primary"
-        :disabled="id != '70' || version == 'Steam'"
-        v-if="id != '218'"
-        >{{ $localisation.get("#UI_EDITED_DLL") }}
-      </md-switch>
-      <md-switch
-        v-model="hl1movement"
-        @change="saveChoice"
-        class="md-primary"
-        v-else
-        >{{ $localisation.get("#UI_HL1MOVEMENT") }}
-      </md-switch>
-    </div>
-    <div class="section">{{ $localisation.get("#UI_EXTERNAL_TOOLS") }}</div>
-    <div class="flex">
-      <div>
-        <div class="container" v-if="!disableBXT">
-          <md-checkbox
-            v-model="bxt"
-            @change="saveChoice"
-            class="md-primary"
-            :disabled="disableBXT"
-            >Bunnymod XT</md-checkbox
-          >
-        </div>
-        <div class="container">
-          <md-checkbox
-            v-model="livesplit"
-            @change="saveChoice"
-            class="md-primary"
-            >LiveSplit</md-checkbox
-          >
-        </div>
-        <div class="container">
-          <md-checkbox v-model="rinput" @change="saveChoice" class="md-primary"
-            >RInput</md-checkbox
-          >
-        </div>
+    <div class="settings-panel" v-if="id != 220">
+      <div class="section">
+        {{ $t("#UI_GAME_VERSION") }}
       </div>
-      <div style="margin-left: auto; margin-right: 32px; width: 280px">
-        <div class="container">
-          <md-checkbox v-model="allcores" @change="saveChoice">{{
-            $localisation.get("#UI_GAME_ALLCORES")
-          }}</md-checkbox>
+      <div class="container">
+        <div class="steam-won-select" v-if="id != 130 && id != 218">
+          <md-radio v-model="version" @change="saveChoice" value="Steam"
+            >Steam</md-radio
+          >
+          <md-radio v-model="version" @change="saveChoice" value="WON"
+            >WON</md-radio
+          >
         </div>
-        <div class="container" v-if="!allcores">
-          <div style="display: grid; grid-template-columns: 1fr 1fr">
-            <md-radio v-model="corescount" value="1">{{
-              $localisation.get("#UI_GAME_PRIORITY_1C")
-            }}</md-radio>
-            <md-radio v-model="corescount" value="2">{{
-              $localisation.get("#UI_GAME_PRIORITY_2C")
-            }}</md-radio>
-            <md-radio v-model="corescount" value="3">{{
-              $localisation.get("#UI_GAME_PRIORITY_3C")
-            }}</md-radio>
-            <md-radio v-model="corescount" value="4">{{
-              $localisation.get("#UI_GAME_PRIORITY_4C")
-            }}</md-radio>
+        <md-switch
+          v-model="edited_dll"
+          @change="saveChoice"
+          class="md-primary"
+          :disabled="version == 'Steam'"
+          v-if="id == '70'"
+          >{{ $t("#UI_EDITED_DLL") }}
+        </md-switch>
+        <md-switch
+          v-model="hl1movement"
+          @change="saveChoice"
+          class="md-primary"
+          v-else-if="id == '218'"
+          >{{ $t("#UI_HL1MOVEMENT") }}
+        </md-switch>
+      </div>
+    </div>
+    <div class="settings-panel" style="flex: 1">
+      <div class="section">{{ $t("#UI_EXTERNAL_TOOLS") }}</div>
+      <div class="flex">
+        <div>
+          <div class="container" v-if="!disableBXT">
+            <md-checkbox
+              v-model="bxt"
+              @change="saveChoice"
+              class="md-primary"
+              :disabled="disableBXT"
+              >Bunnymod XT</md-checkbox
+            >
+          </div>
+          <div class="container">
+            <md-checkbox
+              v-model="livesplit"
+              @change="saveChoice"
+              class="md-primary"
+              >LiveSplit</md-checkbox
+            >
+          </div>
+          <div class="container">
+            <md-checkbox
+              v-model="rinput"
+              @change="saveChoice"
+              class="md-primary"
+              >RInput</md-checkbox
+            >
+          </div>
+        </div>
+        <div style="margin-left: auto; margin-right: 32px; width: 280px">
+          <div class="container">
+            <md-checkbox v-model="allcores" @change="saveChoice">{{
+              $t("#UI_GAME_ALLCORES")
+            }}</md-checkbox>
+          </div>
+          <div class="container" v-if="!allcores">
+            <div style="display: grid; grid-template-columns: 1fr 1fr">
+              <md-radio v-model="corescount" value="1">{{
+                $t("#UI_GAME_PRIORITY_1C")
+              }}</md-radio>
+              <md-radio v-model="corescount" value="2">{{
+                $t("#UI_GAME_PRIORITY_2C")
+              }}</md-radio>
+              <md-radio v-model="corescount" value="3">{{
+                $t("#UI_GAME_PRIORITY_3C")
+              }}</md-radio>
+              <md-radio v-model="corescount" value="4">{{
+                $t("#UI_GAME_PRIORITY_4C")
+              }}</md-radio>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    <div
-      class="container"
-      style="
-        width: 100%;
-        display: grid;
-        grid-template-columns: 0.15fr 1fr;
-        grid-gap: 8px;
-        margin-top: auto;
-      "
-    >
-      <md-field>
-        <label for="priorities">{{
-          $localisation.get("#UI_GAME_PRIORITY")
-        }}</label>
-        <md-select
-          @md-selected="saveChoice"
-          v-model="priority"
-          name="priorities"
-          id="priorities"
-        >
-          <md-option value="normal">{{
-            $localisation.get("#UI_GAME_PRIORITY_NORMAL")
-          }}</md-option>
-          <md-option value="abovenormal">{{
-            $localisation.get("#UI_GAME_PRIORITY_ABOVENORMAL")
-          }}</md-option>
-          <md-option value="high">{{
-            $localisation.get("#UI_GAME_PRIORITY_HIGH")
-          }}</md-option>
-          <md-option value="realtime">{{
-            $localisation.get("#UI_GAME_PRIORITY_REALTIME")
-          }}</md-option>
-        </md-select>
-      </md-field>
-      <md-field>
-        <label>{{ $localisation.get("#UI_START_ARGS") }}</label>
-        <md-input v-model="args"></md-input>
-      </md-field>
+      <div
+        class="container"
+        style="
+          width: 100%;
+          display: grid;
+          grid-template-columns: 0.15fr 1fr;
+          grid-gap: 8px;
+          margin-top: auto;
+        "
+      >
+        <md-field>
+          <label for="priorities">{{ $t("#UI_GAME_PRIORITY") }}</label>
+          <md-select
+            @md-selected="saveChoice"
+            v-model="priority"
+            name="priorities"
+            id="priorities"
+          >
+            <md-option value="normal">{{
+              $t("#UI_GAME_PRIORITY_NORMAL")
+            }}</md-option>
+            <md-option value="abovenormal">{{
+              $t("#UI_GAME_PRIORITY_ABOVENORMAL")
+            }}</md-option>
+            <md-option value="high">{{
+              $t("#UI_GAME_PRIORITY_HIGH")
+            }}</md-option>
+            <md-option value="realtime">{{
+              $t("#UI_GAME_PRIORITY_REALTIME")
+            }}</md-option>
+          </md-select>
+        </md-field>
+        <md-field>
+          <label>{{ $t("#UI_START_ARGS") }}</label>
+          <md-input v-model="args"></md-input>
+        </md-field>
+      </div>
     </div>
   </div>
 </template>
 
 <script type="text/javascript">
-import Store from "@/scripts/Store";
-import StoreDefaults from "@/scripts/StoreDefaults";
+import Store from "@/utils/Store";
+import StoreDefaults from "@/utils/StoreDefaults";
 
 const store = new Store({
   configName: "library",
@@ -213,7 +214,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .title {
   color: var(--accent-color) !important;
   font-size: 20px !important;
@@ -240,5 +241,14 @@ div#wrap {
 
 .md-disabled {
   color: gray;
+}
+
+.settings-panel {
+  display: flex;
+  flex-direction: column;
+
+  &:nth-child(2) {
+    margin-top: 16px;
+  }
 }
 </style>

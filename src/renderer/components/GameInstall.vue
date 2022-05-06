@@ -1,11 +1,11 @@
 <template>
   <div class="install-menu">
     <h1 v-if="game">
-      {{ $localisation.get("#UI_INSTALLING_GAME") }}{{ game.name }}
+      {{ $t("#UI_INSTALLING_GAME") }}{{ game.name }}
     </h1>
     <div class="content">
       <div class="path">
-        <p>{{ $localisation.get("#UI_HLSR_LIB_WILL_BE_PLACED") }}</p>
+        <p>{{ $t("#UI_HLSR_LIB_WILL_BE_PLACED") }}</p>
         <div class="path-button">
           <p>{{ selectedPath }}</p>
           <div
@@ -17,27 +17,27 @@
           >
             <i class="far fa-folder"></i>
             <md-tooltip md-direction="left" v-if="disallowedToChangePath">{{
-              $localisation.get("#REMOVE_GAMES_TO_CHANGE")
+              $t("#REMOVE_GAMES_TO_CHANGE")
             }}</md-tooltip>
           </div>
         </div>
       </div>
-      <p>{{ $localisation.get("#UI_DOWNLOADABLE_CONTENT") }}</p>
+      <p>{{ $t("#UI_DOWNLOADABLE_CONTENT") }}</p>
       <ul v-if="game">
         <li v-for="(feature, i) in game.info.features" v-bind:key="i">
-          {{ $localisation.get(feature) }}
+          {{ $t(feature) }}
         </li>
       </ul>
       <div class="space-info" v-if="game">
         <p :class="{ red: noSpace }">
-          {{ $localisation.get("#UI_FREE_SPACE") }} {{ freeSpace }} MB
+          {{ $t("#UI_FREE_SPACE") }} {{ freeSpace }} MB
         </p>
         <p>
-          {{ $localisation.get("#UI_SPACE_REQUIRED_AFTER") }}
+          {{ $t("#UI_SPACE_REQUIRED_AFTER") }}
           {{ game.info.totalSize }} MB
         </p>
         <p>
-          {{ $localisation.get("#UI_SPACE_REQUIRED_TO") }}
+          {{ $t("#UI_SPACE_REQUIRED_TO") }}
           {{ game.info.totalSize + game.info.archiveSize }} MB
         </p>
       </div>
@@ -45,7 +45,7 @@
       <div class="progress-wrap" v-if="installing">
         <div class="status">
           <div class="left">
-            {{ $localisation.get("#UI_PROGRESS") }} {{ progress }}%
+            {{ $t("#UI_PROGRESS") }} {{ progress }}%
           </div>
           <div class="right">
             {{ status }}
@@ -57,14 +57,14 @@
       </div>
       <div class="buttons" v-if="!installing">
         <AltButton :red="true" @click="cancel" :disabled="installed">
-          <span>{{ $localisation.get("#UI_CANCEL") }}</span>
+          <span>{{ $t("#UI_CANCEL") }}</span>
           <i class="far fa-ban"></i>
         </AltButton>
         <AltButton @click="startInstall" :disabled="installDisabled">
           <span>{{
             !installed
-              ? $localisation.get("#UI_INSTALL")
-              : $localisation.get("#UI_DONE")
+              ? $t("#UI_INSTALL")
+              : $t("#UI_DONE")
           }}</span>
           <i class="fal fa-arrow-right"></i>
         </AltButton>
@@ -77,9 +77,9 @@
 const remote = require("@electron/remote");
 import { ipcRenderer } from "electron";
 import AltButton from "@/components/Elements/Button";
-import Store from "@/scripts/Store.js";
-import StoreDefaults from "@/scripts/StoreDefaults.js";
-import GameControl from "@/scripts/GameControl";
+import Store from "@/utils/Store.js";
+import StoreDefaults from "@/utils/StoreDefaults.js";
+import GameControl from "@/utils/GameControl";
 
 const store = new Store({
   configName: "library",
@@ -160,15 +160,15 @@ export default {
           break;
         case 4: // Not Empty Folder
           this.$store.commit("createNotification", {
-            text: this.$localisation.get(
-              this.$localisation.get("#FOLDER_NOT_EMPTY")
+            text: this.$t(
+              this.$t("#FOLDER_NOT_EMPTY")
             ),
             type: 1,
           });
           break;
         case 5: // Cyrillic Symbols
           this.$store.commit("createNotification", {
-            text: this.$localisation.get("#INSTALLATION_CYRILLIC"),
+            text: this.$t("#INSTALLATION_CYRILLIC"),
             type: 1,
           });
           break;
@@ -223,7 +223,7 @@ export default {
       this.checkInstallAvailability()
         .then(() => {
           this.installing = true;
-          this.status = this.$localisation.get("#UI_DOWNLOADING");
+          this.status = this.$t("#UI_DOWNLOADING");
           this.$store.state.sidebarBlocked = true;
           let gameId = this.game.id;
 
@@ -232,7 +232,7 @@ export default {
 
           ipcRenderer.once("download-game-reply", (e, reply) => {
             if (reply.status == 0) {
-              this.status = this.$localisation.get("#UI_EXTRACTING");
+              this.status = this.$t("#UI_EXTRACTING");
               this.progress = 0;
 
               ipcRenderer.once("unpack-game-reply", (e, unpackReply) => {
@@ -252,7 +252,7 @@ export default {
                   store.set("installed", installed);
 
                   new Notification("HLSR", {
-                    body: this.$localisation.get(
+                    body: this.$t(
                       "#UI_NOTIFICATION_INSTALLED",
                       this.game
                     ),
@@ -267,8 +267,8 @@ export default {
               this.$store.state.sidebarBlocked = false;
 
               this.$store.commit("createNotification", {
-                text: this.$localisation.get(
-                  this.$localisation.get("#UNABLE_TO_DOWNLOAD", this.game.name)
+                text: this.$t(
+                  this.$t("#UNABLE_TO_DOWNLOAD", this.game.name)
                 ),
                 type: 1,
                 lifetime: 0,
@@ -291,8 +291,8 @@ export default {
             );
           } catch (e) {
             this.$store.commit("createNotification", {
-              text: this.$localisation.get(
-                this.$localisation.get("#ERROR_NO_WRITE_PERMISSIONS")
+              text: this.$t(
+                this.$t("#ERROR_NO_WRITE_PERMISSIONS")
               ),
               type: 1,
             });
@@ -302,8 +302,8 @@ export default {
           }
         } else {
           this.$store.commit("createNotification", {
-            text: this.$localisation.get(
-              this.$localisation.get("#PATH_NOT_EXISTS")
+            text: this.$t(
+              this.$t("#PATH_NOT_EXISTS")
             ),
             type: 1,
           });
@@ -322,7 +322,7 @@ export default {
         remote.dialog
           .showOpenDialog(eWindow, {
             properties: ["openDirectory"],
-            title: this.$localisation.get("#SELECT_LIBRARY_FOLDER"),
+            title: this.$t("#SELECT_LIBRARY_FOLDER"),
           })
           .then((result) => {
             if (result.canceled == true) return;
@@ -331,8 +331,8 @@ export default {
 
             if (!require("fs").existsSync(newLibDir)) {
               this.$store.commit("createNotification", {
-                text: this.$localisation.get(
-                  this.$localisation.get("#PATH_NOT_EXISTS")
+                text: this.$t(
+                  this.$t("#PATH_NOT_EXISTS")
                 ),
                 type: 1,
               });

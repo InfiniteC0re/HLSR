@@ -1,12 +1,12 @@
 <template>
   <div id="wrap">
     <div id="form">
-      <div class="title">{{ $localisation.get("#UI_CUSTOMIZATION") }}</div>
+      <div class="title">{{ $t("#UI_CUSTOMIZATION") }}</div>
       <GameSelector v-model="selectedGame" />
       <div class="wrapper">
         <div class="block-background">
           <div class="block-background-title title-form">
-            {{ $localisation.get("#UI_CUSTOMIZATION_MENU_BACKGROUNDS") }}
+            {{ $t("#UI_CUSTOMIZATION_MENU_BACKGROUNDS") }}
           </div>
           <div class="block-background-wrapper">
             <BackgroundItem
@@ -21,7 +21,7 @@
         </div>
         <div class="block-aim">
           <div class="block-background-title title-form">
-            {{ $localisation.get("#UI_CUSTOMIZATION_SCOPE_SETTINGS") }}
+            {{ $t("#UI_CUSTOMIZATION_SCOPE_SETTINGS") }}
           </div>
           <div class="block-crosshairs-wrapper">
             <AimItem
@@ -36,7 +36,7 @@
         </div>
         <div class="block-checkbox">
           <div class="block-checkbox-title title-form">
-            {{ $localisation.get("#UI_CUSTOMIZATION_HUD_SETTINGS") }}
+            {{ $t("#UI_CUSTOMIZATION_HUD_SETTINGS") }}
           </div>
           <div class="selector2">
             <Block
@@ -53,7 +53,7 @@
         </div>
         <div class="block-checkbox">
           <div class="block-checkbox-title title-form">
-            {{ $localisation.get("#UI_CUSTOMIZATION_SPRITES") }}
+            {{ $t("#UI_CUSTOMIZATION_SPRITES") }}
           </div>
           <div class="selector2">
             <Block
@@ -70,18 +70,18 @@
         </div>
         <div class="block-checkbox">
           <div class="block-checkbox-title title-form">
-            {{ $localisation.get("#UI_CUSTOMIZATION_SKYBOXES") }}
+            {{ $t("#UI_CUSTOMIZATION_SKYBOXES") }}
           </div>
           <div class="block-checkbox-checkbox">
             <div class="checkboxes">
               <CheckBox
-                :text="$localisation.get('#UI_CUSTOMIZATION_LQ')"
+                :text="$t('#UI_CUSTOMIZATION_LQ')"
                 value="LQ"
                 name="skyboxes"
                 v-model="skyboxes"
               />
               <CheckBox
-                :text="$localisation.get('#UI_CUSTOMIZATION_HD')"
+                :text="$t('#UI_CUSTOMIZATION_HD')"
                 value="HD"
                 name="skyboxes"
                 v-model="skyboxes"
@@ -109,7 +109,7 @@
             @click="saveConfigHandle"
             :disabled="!installed || isGameStarted"
           >
-            <p>{{ $localisation.get("#UI_CUSTOMIZATION_BUTTON_SAVE") }}</p>
+            <p>{{ $t("#UI_CUSTOMIZATION_BUTTON_SAVE") }}</p>
             <i class="fas fa-save"></i>
           </ButtonAlt>
         </div>
@@ -119,7 +119,7 @@
             :red="true"
             :disabled="!installed || isGameStarted"
           >
-            <p>{{ $localisation.get("#UI_CUSTOMIZATION_BUTTON_RESET") }}</p>
+            <p>{{ $t("#UI_CUSTOMIZATION_BUTTON_RESET") }}</p>
             <i class="far fa-ban"></i>
           </ButtonAlt>
         </div>
@@ -129,15 +129,15 @@
 </template>
 
 <script>
-import Store from "@/scripts/Store";
-import StoreDefaults from "@/scripts/StoreDefaults";
+import Store from "@/utils/Store";
+import StoreDefaults from "@/utils/StoreDefaults";
 import GameSelector from "@/components/Elements/GameSelector";
 import BackgroundItem from "@/components/Customization/backgroundItem/BackgroundItem";
 import AimItem from "@/components/Customization/aimItem/AimItem";
 import CheckBox from "@/components/Customization/checkbox/CheckBox";
 import Block from "@/components/Customization/Block";
 import ButtonAlt from "@/components/Elements/Button";
-import GameControl from "@/scripts/GameControl";
+import GameControl from "@/utils/GameControl";
 
 const store = new Store({
   configName: "library",
@@ -448,7 +448,7 @@ export default {
 
         // Send a notification
         this.$store.commit("createNotification", {
-          text: this.$localisation.get("#UI_NOTIFICATION_DONE"),
+          text: this.$t("#UI_NOTIFICATION_DONE"),
         });
       }
     },

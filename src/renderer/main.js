@@ -12,7 +12,6 @@ import {
   MdSnackbar,
   MdEmptyState,
   MdDialog,
-  MdSteppers,
   MdContent,
   MdMenu,
   MdList,
@@ -26,7 +25,7 @@ import "@/assets/css/theme.css";
 import "@/assets/font-awesome/css/all.css";
 import "@/assets/fonts/fonts.css";
 import HLSRConsole from "hlsr-console";
-import Localisation from "@/scripts/Language.js";
+import LocalizationHelper from "@/utils/locales";
 
 Vue.use(MdButton);
 Vue.use(MdCheckbox);
@@ -39,7 +38,6 @@ Vue.use(MdBadge);
 Vue.use(MdSnackbar);
 Vue.use(MdEmptyState);
 Vue.use(MdDialog);
-Vue.use(MdSteppers);
 Vue.use(MdContent);
 Vue.use(MdMenu);
 Vue.use(MdList);
@@ -50,8 +48,10 @@ import App from "./App";
 import router from "./router";
 import store from "./store";
 
-Vue.localisation = Vue.prototype.$localisation = new Localisation();
-Vue.console = Vue.prototype.$hlsrConsole = new HLSRConsole();
+Vue.prototype.$localization = LocalizationHelper;
+Vue.prototype.$t = LocalizationHelper.get.bind(LocalizationHelper);
+Vue.prototype.$hlsrConsole = new HLSRConsole();
+Vue.prototype.$isDebug = require("process").env.WEBPACK_DEV_SERVER === "true";
 Vue.config.productionTip = false;
 
 new Vue({

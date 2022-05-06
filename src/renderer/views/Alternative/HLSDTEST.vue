@@ -1,39 +1,39 @@
 <template>
   <div id="wrap">
     <div id="form">
-      <div class="title">{{ $localisation.get("#DEBUG_HLSD") }}</div>
+      <div class="title">{{ $t("#DEBUG_HLSD") }}</div>
       <input type="file" @change="fileSelected" />
       <div class="info-table">
         <div class="cell">
           <h3 style="margin-bottom: 8px">Информация о файле</h3>
           <div class="entry">
-            <div class="name">{{ $localisation.get("#HLSD_NAME") }}</div>
+            <div class="name">{{ $t("#HLSD_NAME") }}</div>
             <div class="value">{{ hlsc.name ? hlsc.name : "Значение" }}</div>
           </div>
           <div class="entry">
-            <div class="name">{{ $localisation.get("#HLSD_DESC") }}</div>
+            <div class="name">{{ $t("#HLSD_DESC") }}</div>
             <div class="value">
               {{ hlsc.description ? hlsc.description : "Значение" }}
             </div>
           </div>
           <div class="entry">
-            <div class="name">{{ $localisation.get("#HLSD_AUTHOR") }}</div>
+            <div class="name">{{ $t("#HLSD_AUTHOR") }}</div>
             <div class="value">
               {{ hlsc.author ? hlsc.author : "Значение" }}
             </div>
           </div>
           <div class="entry">
-            <div class="name">{{ $localisation.get("#HLSD_GAME") }}</div>
+            <div class="name">{{ $t("#HLSD_GAME") }}</div>
             <div class="value">{{ hlsc.game ? hlsc.game : "Значение" }}</div>
           </div>
           <div class="entry">
-            <div class="name">{{ $localisation.get("#HLSD_SCRIPTLESS") }}</div>
+            <div class="name">{{ $t("#HLSD_SCRIPTLESS") }}</div>
             <div class="value">
               {{ hlsc.scriptless ? hlsc.scriptless : "Значение" }}
             </div>
           </div>
           <div class="entry">
-            <div class="name">{{ $localisation.get("#HLSD_DATA_LEN") }}</div>
+            <div class="name">{{ $t("#HLSD_DATA_LEN") }}</div>
             <div class="value">
               {{ hlsc.scriptJSON ? hlsc.scriptJSON.length : "Значение" }}
             </div>

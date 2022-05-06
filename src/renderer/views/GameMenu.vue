@@ -31,14 +31,14 @@
 
               <md-menu-content style="margin-top: 3px; width: 280px">
                 <md-menu-item @click="gameFolder">
-                  <span>{{ $localisation.get("#UI_GAME_FOLDER") }}</span>
+                  <span>{{ $t("#UI_GAME_FOLDER") }}</span>
                   <md-icon
                     class="fas fa-folder"
                     style="margin-right: 2px"
                   ></md-icon>
                 </md-menu-item>
                 <md-menu-item @click="makeShortcut">
-                  <span>{{ $localisation.get("#UI_MAKE_SHORTCUT") }}</span>
+                  <span>{{ $t("#UI_MAKE_SHORTCUT") }}</span>
                   <md-icon
                     class="fas fa-star"
                     style="margin-right: 3.3px"
@@ -49,7 +49,7 @@
                   class="gamemenu_uninstallButton"
                   :disabled="isGameStarted"
                 >
-                  <span>{{ $localisation.get("#UI_UNINSTALL") }}</span>
+                  <span>{{ $t("#UI_UNINSTALL") }}</span>
                   <md-icon class="fas fa-trash"></md-icon>
                 </md-menu-item>
               </md-menu-content>
@@ -62,7 +62,7 @@
               :class="['navbutton', section == 0 ? 'active' : '']"
               @click="section = 0"
             >
-              <div class="text">{{ $localisation.get("#UI_OVERVIEW") }}</div>
+              <div class="text">{{ $t("#UI_OVERVIEW") }}</div>
             </div>
             <div
               :class="[
@@ -76,13 +76,13 @@
                 }
               "
             >
-              <div class="text">{{ $localisation.get("#UI_CONFIGURATOR") }}</div>
+              <div class="text">{{ $t("#UI_CONFIGURATOR") }}</div>
             </div>
             <div
               :class="['navbutton', section == 2 ? 'active' : '']"
               @click="sourceRunsWiki"
             >
-              <div class="text">{{ $localisation.get("#UI_WIKI") }}</div>
+              <div class="text">{{ $t("#UI_WIKI") }}</div>
             </div>
             <div class="warning" v-if="shouldShowWarning">
               <i class="fad fa-exclamation-triangle"></i>
@@ -110,9 +110,9 @@
 const remote = require("@electron/remote");
 import Overview from "@/components/GameMenu/Overview";
 import Configurator from "@/components/GameMenu/Configurator";
-import Store from "@/scripts/Store";
-import StoreDefaults from "@/scripts/StoreDefaults";
-import GameControl from "@/scripts/GameControl";
+import Store from "@/utils/Store";
+import StoreDefaults from "@/utils/StoreDefaults";
+import GameControl from "@/utils/GameControl";
 import AltButton from "@/components/Elements/Button";
 import GameInstall from "@/components/GameInstall.vue";
 
@@ -162,12 +162,12 @@ export default {
     },
     warningMessage() {
       if (!this.isSteamStarted && this.game.needSteam)
-        return this.$localisation.get("#UI_NO_STEAM");
+        return this.$t("#UI_NO_STEAM");
 
       if (this.game.needSteam && !this.hasLicense)
-        return this.$localisation.get("#UI_NO_LICENSE");
+        return this.$t("#UI_NO_LICENSE");
 
-      if (this.cyrillic) return this.$localisation.get("#UI_FOUND_CYRILLIC");
+      if (this.cyrillic) return this.$t("#UI_FOUND_CYRILLIC");
 
       return "";
     },
@@ -182,17 +182,17 @@ export default {
       });
 
       this.$store.commit("createNotification", {
-        text: this.$localisation.get("#UI_NOTIFICATION_REMOVED"),
+        text: this.$t("#UI_NOTIFICATION_REMOVED"),
       });
     },
     makeShortcut() {
-      if (require("process").env.WEBPACK_DEV_SERVER !== "true") {
+      if (!this.$isDebug) {
         let path = require("path");
 
         remote.shell.writeShortcutLink(
           path.join(
             remote.app.getPath("desktop"),
-            `${this.$localisation.get(
+            `${this.$t(
               "#SHORTCUT_LAUNCH"
             )} ${this.game.name.replace(":", "")}.lnk`
           ),
@@ -215,10 +215,10 @@ export default {
     },
     buttonText() {
       if (this.isGameStarted && this.startedGameName == this.game.name)
-        return this.$localisation.get("#UI_STARTED");
+        return this.$t("#UI_STARTED");
       else if (GameControl.checkInstalled(store, this.game.id))
-        return this.$localisation.get("#UI_PLAY");
-      else return this.$localisation.get("#UI_INSTALL");
+        return this.$t("#UI_PLAY");
+      else return this.$t("#UI_INSTALL");
     },
     updateBackground(fn) {
       this.background = `url(${require("@/assets/screenshots/" + fn)})`;

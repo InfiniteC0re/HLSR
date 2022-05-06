@@ -1,18 +1,18 @@
 <template>
   <div id="wrap">
     <div id="form">
-      <div class="title">{{ $localisation.get("#UI_CONFIGS_ADVANCED") }}</div>
+      <div class="title">{{ $t("#UI_CONFIGS_ADVANCED") }}</div>
       <div class="toolbar">
         <div class="menubutton" @click="openFile">
-          {{ $localisation.get("#UI_EDITOR_OPEN") }}
+          {{ $t("#UI_EDITOR_OPEN") }}
           <md-tooltip>CTRL-O</md-tooltip>
         </div>
         <div class="menubutton" @click="saveFile">
-          {{ $localisation.get("#UI_EDITOR_SAVE") }}
+          {{ $t("#UI_EDITOR_SAVE") }}
           <md-tooltip>CTRL-S</md-tooltip>
         </div>
         <div class="menubutton" @click="hints">
-          {{ $localisation.get("#UI_EDITOR_HINTS") }}
+          {{ $t("#UI_EDITOR_HINTS") }}
           <md-tooltip>CTRL-Space</md-tooltip>
         </div>
         <div style="margin-left: auto; margin-right: 10px">{{ fileName }}</div>
@@ -30,10 +30,10 @@
 <script>
 const remote = require("@electron/remote");
 import fs from "fs";
-import "@/scripts/hlscripts.js";
-import Store from "@/scripts/Store.js";
-import StoreDefaults from "@/scripts/StoreDefaults.js";
-import GameControl from "@/scripts/GameControl";
+import "@/utils/hlscripts.js";
+import Store from "@/utils/Store.js";
+import StoreDefaults from "@/utils/StoreDefaults.js";
+import GameControl from "@/utils/GameControl";
 import { codemirror } from "vue-codemirror";
 
 const library = new Store({
@@ -85,7 +85,7 @@ export default {
 
       // Send a notification
       this.$store.commit("createNotification", {
-        text: this.$localisation.get("#UI_NOTIFICATION_SAVED"),
+        text: this.$t("#UI_NOTIFICATION_SAVED"),
       });
     },
     hints() {

@@ -1,30 +1,19 @@
 <template>
-  <div id="frame" @dblclick="bardbl">
-    <div style="display: flex">
-      <div
-        class="framebutton animated"
-        @click="() => {}"
-        v-if="updateAvailable"
-      >
-        <i class="fas fa-sync-alt"></i>
-      </div>
-      <ul class="debugbuttons" v-if="isDev">
-        <router-link to="/debug/hlsd">
-          <div class="framebutton" @click="showDebugMenu">
-            <i class="fas fa-database"></i>
-          </div>
-        </router-link>
-        <div class="framebutton" @click="showDevTools">
-          <i class="fab fa-dev"></i>
-        </div>
-      </ul>
-      <div class="framebutton" @click="remote.getCurrentWindow().minimize()">
-        <i class="fal fa-minus"></i>
-      </div>
-      <div class="framebutton close" @click="remote.getCurrentWindow().close()">
-        <i class="fal fa-times"></i>
-      </div>
-    </div>
+  <div id="frame">
+    <button class="animated" v-if="updateAvailable">
+      <i class="fas fa-sync-alt"></i>
+    </button>
+    <ul class="debugbuttons" v-if="$isDebug">
+      <button @click="showDevTools">
+        <i class="fab fa-dev"></i>
+      </button>
+    </ul>
+    <button @click="remote.getCurrentWindow().minimize()">
+      <i class="fal fa-minus"></i>
+    </button>
+    <button class="red" @click="remote.getCurrentWindow().close()">
+      <i class="fal fa-times"></i>
+    </button>
   </div>
 </template>
 
@@ -33,7 +22,6 @@ const remote = require("@electron/remote");
 
 export default {
   data: () => ({
-    isDev: process.env.WEBPACK_DEV_SERVER === "true",
     remote,
   }),
   computed: {
@@ -45,19 +33,13 @@ export default {
         case 0:
           return "";
         case 1:
-          return this.$localisation.get("#UI_UPDATE_DOWNLOADING");
+          return this.$t("#UI_UPDATE_DOWNLOADING");
         case 2:
-          return this.$localisation.get("#UI_UPDATE_READY");
+          return this.$t("#UI_UPDATE_READY");
       }
     },
   },
   methods: {
-    bardbl(e) {
-      e.preventDefault();
-    },
-    showDebugMenu() {
-      this.$store.commit("checkHLSRC");
-    },
     showDevTools() {
       remote.getCurrentWindow().webContents.openDevTools({
         mode: "undocked",
@@ -67,58 +49,56 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 #frame {
+  -webkit-app-region: drag;
   height: 32px;
   width: 100%;
-  -webkit-app-region: drag;
+  z-index: 9999;
+  display: flex;
   background: transparent;
-  z-index: 999999;
-  display: flex;
   justify-content: flex-end;
-}
 
-.framebutton {
-  height: 32px;
-  width: 48px;
-  color: rgb(255, 255, 255, 0.4);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 20px;
-  z-index: 1;
-  -webkit-app-region: no-drag;
-}
+  button {
+    -webkit-app-region: no-drag;
+    height: 32px;
+    width: 48px;
+    background: none;
+    border: none;
+    outline: none;
+    color: rgb(255, 255, 255, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+    z-index: 1;
 
-.animated {
-  font-size: 1.1rem;
-}
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
 
-.animated i {
-  animation: rotate 2s linear infinite;
-}
+      &.red {
+        background: rgb(255, 0, 76);
+      }
+    }
 
-@keyframes rotate {
-  0% {
-    transform: rotateZ(0);
+    &.animated {
+      font-size: 1.1rem;
+
+      @keyframes rotate {
+        0% {
+          transform: rotateZ(0);
+        }
+
+        100% {
+          transform: rotateZ(360deg);
+        }
+      }
+
+      i {
+        animation: rotate 2s linear infinite;
+      }
+    }
   }
-
-  100% {
-    transform: rotateZ(360deg);
-  }
-}
-
-.framebutton:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
-}
-
-.framebutton.close:hover {
-  background: rgb(255, 0, 76);
-  color: white;
-}
-
-.debugbuttons {
-  display: contents;
 }
 </style>

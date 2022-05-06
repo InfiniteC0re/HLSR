@@ -29,7 +29,7 @@
   display: flex;
   border-radius: 6px;
   overflow: hidden;
-  color: rgb(108, 108, 108);
+  color: rgb(136, 136, 136);
   align-items: center;
 }
 
@@ -39,13 +39,12 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  color: rgb(108, 108, 108);
   font-size: 14px;
 }
 
 .toolbar .menubutton:hover {
   background: rgba(255, 255, 255, 0.1);
-  color: rgb(158, 158, 158);
+  color: rgb(194, 194, 194);
 }
 
 .cm-s-dracula .CodeMirror-gutters { color: #282a36; }

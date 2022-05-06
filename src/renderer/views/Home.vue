@@ -2,7 +2,7 @@
   <div id="wrap">
     <div id="form">
       <div class="title">
-        {{ $localisation.get("#UI_HOME") }}
+        {{ $t("#UI_HOME") }}
         <md-button
           @click.stop="changelog = true"
           class="md-icon-button"
@@ -12,13 +12,13 @@
             class="fal fa-clipboard-list"
             style="color: var(--accent-color)"
           ></md-icon>
-          <md-tooltip>{{ $localisation.get("#UI_CHANGELOG") }}</md-tooltip>
+          <md-tooltip>{{ $t("#UI_CHANGELOG") }}</md-tooltip>
         </md-button>
       </div>
       <div id="grid">
         <div class="box quick-play">
           <div class="mini-title">
-            {{ $localisation.get("#UI_QUICK_START") }}
+            {{ $t("#UI_QUICK_START") }}
           </div>
           <div id="quick-play-list">
             <div class="quick-play-game" @click.self="lastLaunchedGameStart">
@@ -40,13 +40,13 @@
         </div>
         <div class="box box1">
           <div class="mini-title">
-            {{ $localisation.get("#UI_STEAM_FRIENDS") }}
+            {{ $t("#UI_STEAM_FRIENDS") }}
           </div>
           <div class="center" v-if="steamFriends.length == 0">
             <md-empty-state
               class="md-accent"
               md-rounded
-              :md-description="$localisation.get('#UI_NO_FRIENDS')"
+              :md-description="$t('#UI_NO_FRIENDS')"
               :md-size="200"
             ></md-empty-state>
           </div>
@@ -60,15 +60,10 @@
         </div>
         <div class="box box3">
           <div class="mini-title clickable" @click="openSCSettings">
-            {{ $localisation.get("#UI_SOUNDCLOUD") }}
+            {{ $t("#UI_SOUNDCLOUD") }}
             <i
               data-v-ebaf0836=""
-              class="md-icon md-icon-font fas fa-cog md-theme-default"
-              style="
-                font-size: 16px !important;
-                float: right;
-                line-height: 21px;
-              "
+              class="md-icon fas fa-list-music box-icon"
             ></i>
           </div>
           <SoundCloudWidget />
@@ -77,33 +72,33 @@
     </div>
     <md-dialog :md-active.sync="changelog">
       <md-dialog-title
-        v-html="$localisation.get('#UI_CHANGELOG')"
+        v-html="$t('#UI_CHANGELOG')"
       ></md-dialog-title>
       <md-dialog-content
         style="opacity: 0.4"
-        v-html="$localisation.get('#UI_CHANGELOG_CONTENT')"
+        v-html="$t('#UI_CHANGELOG_CONTENT')"
       ></md-dialog-content>
     </md-dialog>
     <md-dialog :md-active.sync="soundCloudSettings">
       <md-dialog-title
-        v-html="$localisation.get('#UI_SOUNDCLOUD_SETTINGS')"
+        v-html="$t('#UI_SOUNDCLOUD_SETTINGS')"
       ></md-dialog-title>
       <md-dialog-content>
         <span
           style="opacity: 0.4"
-          v-html="$localisation.get('#UI_SOUNDCLOUD_SETTINGS_DESC')"
+          v-html="$t('#UI_SOUNDCLOUD_SETTINGS_DESC')"
         ></span>
         <md-field>
-          <label>{{ $localisation.get("#UI_SOUNDCLOUD_PLAYLIST") }}</label>
+          <label>{{ $t("#UI_SOUNDCLOUD_PLAYLIST") }}</label>
           <md-input v-model="playlistInput" class="playlistInput"></md-input>
         </md-field>
       </md-dialog-content>
       <md-dialog-actions>
         <md-button class="md-primary" @click="soundCloudSettings = false">{{
-          $localisation.get("#UI_CANCEL")
+          $t("#UI_CANCEL")
         }}</md-button>
         <md-button class="md-primary" @click="saveSCPlaylist">{{
-          $localisation.get("#UI_CUSTOMIZATION_BUTTON_SAVE")
+          $t("#UI_CUSTOMIZATION_BUTTON_SAVE")
         }}</md-button>
       </md-dialog-actions>
     </md-dialog>
@@ -111,11 +106,11 @@
 </template>
 
 <script>
-import Store from "@/scripts/Store";
-import StoreDefaults from "@/scripts/StoreDefaults";
+import Store from "@/utils/Store";
+import StoreDefaults from "@/utils/StoreDefaults";
 import SteamFriend from "@/components/Home/SteamFriend";
 import SoundCloudWidget from "@/components/Home/SoundCloud";
-import GameControl from "@/scripts/GameControl";
+import GameControl from "@/utils/GameControl";
 
 const store = new Store({
   configName: "library",
@@ -173,7 +168,7 @@ export default {
       let id = store.get("lastLaunched");
 
       if (!this.checkLastLaunchedGameInstalled)
-        return this.$localisation.get("#UI_RECENTGAME_NOGAME");
+        return this.$t("#UI_RECENTGAME_NOGAME");
 
       return GameControl.getTitle(id);
     },
@@ -202,7 +197,7 @@ export default {
       this.soundCloudSettings = false;
 
       this.$store.commit("createNotification", {
-        text: this.$localisation.get("#UI_NOTIFICATION_SAVED"),
+        text: this.$t("#UI_NOTIFICATION_SAVED"),
       });
     },
     openPrefs() {
@@ -231,7 +226,7 @@ export default {
       this.$store.state.shouldOpenChangelog = false;
 
       this.$store.commit("createNotification", {
-        text: this.$localisation.get("#NEW_UPDATE_INSTALLED"),
+        text: this.$t("#NEW_UPDATE_INSTALLED"),
       });
     }
   },
@@ -248,7 +243,6 @@ export default {
   min-height: 0;
   height: 100%;
 }
-
 .box {
   overflow: hidden;
   border-radius: 2px;
@@ -256,8 +250,13 @@ export default {
   display: flex;
   flex-direction: column;
   border-radius: 8px;
-}
 
+  .box-icon {
+    font-size: 16px !important;
+    float: right;
+    line-height: 21px;
+  }
+}
 .quick-play {
   padding: 16px 0;
   grid-column: 1;

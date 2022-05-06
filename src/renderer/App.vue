@@ -35,11 +35,11 @@ import SideBar from "./components/SideBar";
 import Frame from "./components/Frame";
 import BackgroundTheme from "./components/BackgroundTheme";
 import Notification from "./components/Elements/Notification";
-import Store from "./scripts/Store.js";
-import StoreDefaults from "./scripts/StoreDefaults.js";
-import Snow from "./scripts/Snow";
-import BlobsTheme from "./scripts/BlobsTheme";
-import "@/scripts/soundcloud";
+import Store from "./utils/Store.js";
+import StoreDefaults from "./utils/StoreDefaults.js";
+import Snow from "./utils/Snow";
+import BlobsTheme from "./utils/BlobsTheme";
+import "@/utils/SoundCloud";
 
 // CSS
 import "codemirror/lib/codemirror.css";
@@ -55,7 +55,7 @@ import "codemirror/addon/scroll/annotatescrollbar.js";
 import "codemirror/addon/search/matchesonscrollbar.js";
 import "codemirror/addon/search/searchcursor.js";
 import "codemirror/addon/search/match-highlighter.js";
-import GameControl from "./scripts/GameControl";
+import GameControl from "./utils/GameControl";
 import GameList from "../games.config";
 
 const { ipcRenderer } = require("electron");
@@ -78,14 +78,14 @@ export default {
     return {
       rpc: null,
       standardRPC: {
-        details: this.$localisation.get("#RPC_DETAILS"),
+        details: this.$t("#RPC_DETAILS"),
         startTimestamp: Date.now(),
         largeImageKey: "hlsr",
         largeImageText: "v" + require("../../package.json").version,
         smallImageKey: "steam2",
-        smallImageText: this.$localisation.get("#RPC_NOSTEAM"),
+        smallImageText: this.$t("#RPC_NOSTEAM"),
         instance: false,
-        buttons: [{ label: this.$localisation.get("#RPC_WEBSITE"), url: "https://hlsr.pro/" }],
+        buttons: [{ label: this.$t("#RPC_WEBSITE"), url: "https://hlsr.pro/" }],
       },
       lastRPC: {},
       updateAvailable: 0,
@@ -193,16 +193,16 @@ export default {
     updateRPC() {
       if (!settings.get("config").rpc) return;
       let rpc = Object.assign({}, this.standardRPC);
-      rpc.buttons[0].label = this.$localisation.get("#RPC_WEBSITE");
+      rpc.buttons[0].label = this.$t("#RPC_WEBSITE");
 
       if (settings.get("config").mlpMode && settings.get("config").theme == 3) {
         rpc.largeImageKey = "mlp";
         rpc.smallImageKey = "pony-steam";
-        rpc.details = this.$localisation.get("#RPC_MLP");
-        rpc.buttons[0].label = this.$localisation.get("#RPC_GET_FRIENDS");
-        rpc.buttons[0].url = this.$localisation.get("#MLP_URL");
+        rpc.details = this.$t("#RPC_MLP");
+        rpc.buttons[0].label = this.$t("#RPC_GET_FRIENDS");
+        rpc.buttons[0].url = this.$t("#MLP_URL");
       } else {
-        rpc.details = this.$localisation.get("#RPC_DETAILS");
+        rpc.details = this.$t("#RPC_DETAILS");
       }
 
       let steamName = this.$store.state.steamworks.personaName;
@@ -211,7 +211,7 @@ export default {
       let gameState = this.$store.state.game;
       
       if (gameState.started) {
-        rpc.details = this.$localisation.get("#RPC_PLAYING", gameState.name);
+        rpc.details = this.$t("#RPC_PLAYING", gameState.name);
         rpc.startTimestamp = gameState.startDate;
         return this.setRPC(rpc); // Пропуск установки RPC для SoundCloud виджета (игра в приоритете)
       }
@@ -220,7 +220,7 @@ export default {
 
       if (!this.isPaused) {
         this.widget.getPosition((position) => {
-          rpc.details = this.$localisation.get("#RPC_MUSIC");
+          rpc.details = this.$t("#RPC_MUSIC");
           rpc.state = this.song.title;
           rpc.endTimestamp = this.$store.state.soundCloud.endTimestamp;
 
@@ -350,16 +350,16 @@ export default {
       this.launchInfo.started = false;
 
       this.$store.commit("setExtraNotification", {
-        text: this.$localisation.get(
-          this.$localisation.get("#WAITING_FOR_STEAM")
+        text: this.$t(
+          this.$t("#WAITING_FOR_STEAM")
         ),
       });
 
       setTimeout(() => {
         if (this.launchInfo.appid != null && !this.launchInfo.started) {
           this.$store.commit("createNotification", {
-            text: this.$localisation.get(
-              this.$localisation.get("#CANT_START_GAME_NOSTEAM")
+            text: this.$t(
+              this.$t("#CANT_START_GAME_NOSTEAM")
             ),
             type: 1,
             lifetime: 0,

@@ -1,6 +1,6 @@
 <template>
   <div id="wrap">
-    <div class="title">{{ $localisation.get("#UI_OVERVIEW") }}</div>
+    <div class="title">{{ $t("#UI_OVERVIEW") }}</div>
     <div
       class="post"
       v-for="post in posts"
