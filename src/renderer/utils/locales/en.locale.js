@@ -170,6 +170,7 @@ export default {
 <li>Added an icon-indicator for scripts with settings</li>
 <li>Ghosting Mod was moved to GitHub</li>
 <li>Removed old sidebar</li>
+<li>Now you can use not empty directory as a library path</li>
 <li>Removed unnecessary checkboxes in games configurators</li>
 <li>Reworked file downloader module</li>
 <li>Updated UI of sidebar sub-menus</li>
