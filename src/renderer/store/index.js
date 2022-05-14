@@ -134,7 +134,7 @@ export default new vuex.Store({
               let doc = parser.parseFromString(res.data, "text/xml");
 
               try {
-                friend.url = doc.querySelector("avatarFull").textContent;
+                friend.url = doc.querySelector("avatarMedium").textContent;
               } catch (e) {}
 
               newFriends.push(friend);

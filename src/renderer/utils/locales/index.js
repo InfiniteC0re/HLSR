@@ -3,7 +3,7 @@ import StoreDefaults from "@/utils/StoreDefaults.js";
 import en from "./en.locale";
 import ru from "./ru.locale";
 
-const DEFAULT_LANG = "eng";
+const DEFAULT_LANG = "en";
 
 const store = new Store({
   configName: "settings",

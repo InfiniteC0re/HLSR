@@ -1,18 +1,11 @@
 <template>
   <div class="steam-friend" :key="friend.SteamID">
-    <img :src="friend.url" class="steam-friend-avatar" draggable="false" />
+    <img :src="friend.url" @error="imgErr" class="steam-friend-avatar" draggable="false" />
     <div class="steam-friend-info">
       <div class="steam-friend-name">{{ friend.personaName }}</div>
       <div :class="['steam-friend-status', statusColor]">{{ statusText }}</div>
     </div>
-    <div
-      class="steam-friend-right"
-      v-on:click="
-        require('electron').shell.openExternal(
-          `steam://friends/message/${friend.friendID}`
-        )
-      "
-    >
+    <div class="steam-friend-right" @click="() => openFriend(friend.friendID)">
       <i class="fas fa-envelope"></i>
       <md-tooltip>{{ $t("#UI_SEND_MESSAGE") }}</md-tooltip>
     </div>
@@ -20,6 +13,7 @@
 </template>
 
 <script type="text/javascript">
+import { shell } from "electron";
 
 export default {
   name: "steam-friend",
@@ -28,6 +22,14 @@ export default {
     return {
       url: "",
     };
+  },
+  methods: {
+    openFriend(id) {
+      shell.openExternal(`steam://friends/message/${id}`);
+    },
+    imgErr(e) {
+      e.target.src = require("@/assets/noavatar.png");
+    }
   },
   computed: {
     statusText() {

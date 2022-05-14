@@ -163,7 +163,21 @@ export default {
   "#UI_BLOBS_THEME": "Animated Background",
   "#UI_NO_LICENSE": "No licence found in Steam",
   "#UI_NO_STEAM": "Start Steam to play this game",
-  "#UI_CHANGELOG_CONTENT": `<h4>Update from 05/06/2022 [v. 0.2.3]</h4>
+  "#UI_CHANGELOG_CONTENT": `<h4>Update from 05/14.2022 [v. 0.2.4]</h4>
+<ul>
+<li>Updated Half-Life 2: Ghosting</li>
+<li>Fixed localisation bug on the settings screen</li>
+<li>Added tags to scripts in the constructor</li>
+<li>Added default avatar for steam friends</li>
+<li>Fixed bug when ingame time wasn't counted after removing RInput or LiveSplit</li>
+<li>Updated Electron to v18.2.0</li>
+<h3 style="margin:6px 0;">Half-Life 2: Ghosting</h3>
+<li>You should reinstall the game to apply the update</li>
+<li>Size of the downloadable archive reduced by 1.5</li>
+<li>SmartSteamEmu was replaced with RevEmu</li>
+<li>All VPK were unpacked</li>
+</ul><br/>
+<h4>Update from 05/06/2022 [v. 0.2.3]</h4>
 <ul>
 <li>Fixed the bug where downloaded cache wasn't deleted</li>
 <li>Support of installing games from splitted archives</li>

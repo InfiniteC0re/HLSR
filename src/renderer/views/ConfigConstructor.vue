@@ -24,9 +24,7 @@
             class="md-icon-button md-accent"
           >
             <md-icon class="fal fa-glass-citrus"></md-icon>
-            <md-tooltip>{{
-              $t("#UI_SCRIPT_UPDATE")
-            }}</md-tooltip>
+            <md-tooltip>{{ $t("#UI_SCRIPT_UPDATE") }}</md-tooltip>
           </md-button>
         </md-badge>
       </div>
@@ -43,34 +41,6 @@
           :scriptless="false"
           @select="onScriptSelect"
         />
-        <!-- <md-list style="background: transparent" v-if="scripts.scriptless">
-          <md-subheader>{{
-            $t("#UI_SCRIPT_SCRIPTLESS")
-          }}</md-subheader>
-          <md-list-item
-            class="md-inset"
-            v-for="script in scripts.scriptless"
-            :key="script._id"
-            @click="itemClick(script)"
-          >
-            <md-checkbox v-model="script.selected" class="md-primary" />
-            <span class="md-list-item-text">{{ script.name }}</span>
-          </md-list-item>
-        </md-list>
-        <md-list>
-          <md-subheader>{{
-            $t("#UI_SCRIPT_SCRIPTED")
-          }}</md-subheader>
-          <md-list-item
-            class="md-inset"
-            v-for="script in scripts.scripted"
-            :key="script._id"
-            @click="itemClick(script)"
-          >
-            <md-checkbox v-model="script.selected" />
-            <span class="md-list-item-text">{{ script.name }}</span>
-          </md-list-item>
-        </md-list> -->
       </div>
       <div class="constructor__buttons">
         <ButtonAlt @click="save" :disabled="!installed">
@@ -105,7 +75,14 @@
               </md-field>
             </div>
           </div>
-          <video v-if="selected.video" :src="video" width autoplay loop></video>
+          <video
+            v-if="selected.video"
+            style="margin-top: 16px"
+            :src="video"
+            width
+            autoplay
+            loop
+          ></video>
           <div v-if="selected.author" style="margin-top: 10px; opacity: 0.4">
             Author: {{ selected.author }}
           </div>

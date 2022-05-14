@@ -444,10 +444,10 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-16.11.10.tgz#2e3ad0a680d96367103d3e670d41c2fed3da61ae"
   integrity sha512-3aRnHa1KlOEEhJ6+CvyHKK5vE9BcLGjtUpwvqYLRvYNQKMfabu3BwfJaA/SLW8dxe28LsNDjtHwePTuzn3gmOA==
 
-"@types/node@^14.6.2":
-  version "14.17.34"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-14.17.34.tgz#fe4b38b3f07617c0fa31ae923fca9249641038f0"
-  integrity sha512-USUftMYpmuMzeWobskoPfzDi+vkpe0dvcOBRNOscFrGxVp4jomnRxWuVohgqBow2xyIPC0S3gjxV/5079jhmDg==
+"@types/node@^16.11.26":
+  version "16.11.35"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-16.11.35.tgz#6642bdce5b5cee23314b91a7c069981c6bd68791"
+  integrity sha512-QXu45LyepgnhUfnIAj/FyT4uM87ug5KpIrgXfQtUPNAlx8w5hmd8z8emqCLNvG11QkpRSCG9Qg2buMxvqfjfsQ==
 
 "@types/plist@^3.0.1":
   version "3.0.2"
@@ -4338,13 +4338,13 @@ electron-updater@^4.3.4:
     lodash.isequal "^4.5.0"
     semver "^7.3.5"
 
-electron@16.0.0:
-  version "16.0.0"
-  resolved "https://registry.yarnpkg.com/electron/-/electron-16.0.0.tgz#3080cf1ee1e9686990f17eba549379c7107e7151"
-  integrity sha512-B+K/UnEV8NsP7IUOd4VAIYLT0uShLQ/V0p1QQLX0McF8d185AV522faklgMGMtPVWNVL2qifx9rZAsKtHPzmEg==
+electron@18.2.0:
+  version "18.2.0"
+  resolved "https://registry.yarnpkg.com/electron/-/electron-18.2.0.tgz#a0cbf8d5d1a1e9d1c195d86cd6937e721ed60fec"
+  integrity sha512-AN+CKalzA57beuvuI90PVgW/yj6zjw7rpb1h8FvIwBJ3toDC3x0Plfzbzh4Ondecbjci7pSg/NA5ngOk804WIQ==
   dependencies:
     "@electron/get" "^1.13.0"
-    "@types/node" "^14.6.2"
+    "@types/node" "^16.11.26"
     extract-zip "^1.0.3"
 
 elliptic@^6.5.3:
@@ -5933,10 +5933,10 @@ hipchat-notifier@^1.1.0:
     lodash "^4.0.0"
     request "^2.0.0"
 
-hlsr-console@^1.0.8:
-  version "1.0.8"
-  resolved "https://registry.yarnpkg.com/hlsr-console/-/hlsr-console-1.0.8.tgz#d5af68454d30d77b2708d34ffa0121bdb1d47a60"
-  integrity sha512-6lWRhW3G6lTEhhrUW/Bg3h6m57bxR9aGQFfHacFO9XAPz4uKRfhJl00q1VzLnh/V37V5QW9XNp3u97u/wuwPYw==
+hlsr-console@^1.0.9:
+  version "1.0.9"
+  resolved "https://registry.yarnpkg.com/hlsr-console/-/hlsr-console-1.0.9.tgz#62f5e7274e67c105de116eb5536bfe2ca892f2eb"
+  integrity sha512-l/oc8Y+B9UJHvU/sala0xnYaMkx0W5G7Vk9G65TagFMMPalHRxBvQlzAQVRe+fqLjh36HSjqBJYgh0Ma679IOg==
 
 hlsr-hlsd@^1.0.1:
   version "1.0.1"

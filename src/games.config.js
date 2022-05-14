@@ -102,8 +102,8 @@ export default [
       requiredGame: null,
       installPath: "",
       uninstallPaths: ["Ghosting"],
-      totalSize: 4933,
-      archiveSize: 2890,
+      totalSize: 5543,
+      archiveSize: 1573,
       features: [
         "Ghosting Mod",
         "Cutsceneless Mod",
@@ -112,8 +112,7 @@ export default [
         "RInput",
       ],
       archives: [
-        "https://github.com/InfiniteC0re/HLSR/releases/download/Ghosting/Ghosting.zip.001",
-        "https://github.com/InfiniteC0re/HLSR/releases/download/Ghosting/Ghosting.zip.002",
+        "https://github.com/InfiniteC0re/HLSR/releases/download/GhostingRevEmu/Ghosting_revEmu.7z",
       ],
       sourceruns: "https://wiki.sourceruns.org/wiki/Ghosting_mod",
     },
