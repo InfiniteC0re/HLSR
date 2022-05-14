@@ -4,7 +4,6 @@ class UpdateManager {
   constructor(window) {
     this.updateDetected = false;
     this.window = window;
-    this.interval = null;
   }
 
   setWindow(window) {
@@ -53,7 +52,6 @@ class UpdateManager {
   startCheckingInterval() {
     clearInterval(this.interval);
     this.checkUpdates();
-    this.interval = setInterval(this.checkUpdates, 1000 * 60 * 15);
   }
 }
 
