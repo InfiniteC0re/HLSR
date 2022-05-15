@@ -96,7 +96,13 @@ export default [
     name: "Half-Life 2: Ghosting",
     iconFile: "hl2.ico",
     background: "half-life-2-ghosting-background.jpg",
-    needSteam: false,
+    needSteam: true,
+    // patches: {
+    //   "noEmulators": {
+    //     name: "No Steam Emulators",
+    //     description: "Install this patch if you have any issues with the game"
+    //   }
+    // },
     info: {
       isStandalone: true,
       requiredGame: null,
@@ -112,7 +118,7 @@ export default [
         "RInput",
       ],
       archives: [
-        "https://github.com/InfiniteC0re/HLSR/releases/download/GhostingRevEmu/Ghosting_revEmu.7z",
+        "https://github.com/InfiniteC0re/HLSR/releases/download/Ghosting/Ghosting_noEmu.7z",
       ],
       sourceruns: "https://wiki.sourceruns.org/wiki/Ghosting_mod",
     },

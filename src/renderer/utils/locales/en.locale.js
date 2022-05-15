@@ -163,7 +163,17 @@ export default {
   "#UI_BLOBS_THEME": "Animated Background",
   "#UI_NO_LICENSE": "No licence found in Steam",
   "#UI_NO_STEAM": "Start Steam to play this game",
-  "#UI_CHANGELOG_CONTENT": `<h4>Update from 05/14.2022 [v. 0.2.4]</h4>
+  "#UI_CHANGELOG_CONTENT": `<h4>Update from 05/15/2022 [v. 0.2.5]</h4>
+<ul>
+<li>Updated Half-Life 2: Ghosting</li>
+<li>Now the launcher will check updates only when starts</li>
+<li>Now you should start Steam to play Ghosting</li>
+<li>Updated information in "About" window</li>
+<h3 style="margin:6px 0;">Half-Life 2: Ghosting</h3>
+<li>Install this update if you experience problems with the Save Deletion glitch</li>
+<li>You should reinstall the game to apply this update</li>
+<li>Removed revEmu emulator</li>
+</ul><br/><h4>Update from 05/14/2022 [v. 0.2.4]</h4>
 <ul>
 <li>Updated Half-Life 2: Ghosting</li>
 <li>Fixed localisation bug on the settings screen</li>
@@ -172,7 +182,7 @@ export default {
 <li>Fixed bug when ingame time wasn't counted after removing RInput or LiveSplit</li>
 <li>Updated Electron to v18.2.0</li>
 <h3 style="margin:6px 0;">Half-Life 2: Ghosting</h3>
-<li>You should reinstall the game to apply the update</li>
+<li>You should reinstall the game to apply this update</li>
 <li>Size of the downloadable archive reduced by 1.5</li>
 <li>SmartSteamEmu was replaced with RevEmu</li>
 <li>All VPK were unpacked</li>
@@ -340,7 +350,7 @@ Used in launcher:
 <li>Ghosting Mod</li>
 <li>Cutsceneless Mod</li>
 <li>HL1 Movement Mod</li>
-<li>SmartSteamEmu (Ghosting)</li>
+<li>RInput</li>
 </ul>
 `,
 };

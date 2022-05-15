@@ -112,8 +112,6 @@ class GameManager {
           });
         });
     });
-
-    ipcMain.on("game-download", async (event, info) => {});
   }
 }
 

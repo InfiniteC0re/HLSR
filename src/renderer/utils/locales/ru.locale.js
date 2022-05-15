@@ -159,7 +159,18 @@ export default {
   "#UI_BLOBS_THEME": "Анимированный фон",
   "#UI_NO_LICENSE": "Не найдена лицензия игры в Steam",
   "#UI_NO_STEAM": "Проверьте, запущен ли Steam",
-  "#UI_CHANGELOG_CONTENT": `<h4>Обновление от 14.05.2022 [v. 0.2.4]</h4>
+  "#UI_CHANGELOG_CONTENT": `<h4>Обновление от 15.05.2022 [v. 0.2.5]</h4>
+<ul>
+<li>Обновлена сборка Half-Life 2: Ghosting</li>
+<li>Теперь проверка обновлений просходит только при запуске лаунчера</li>
+<li>Теперь для запуска Ghosting необходим запущенный стим</li>
+<li>Обновлено окно "О программе"</li>
+<h3 style="margin:6px 0;">Half-Life 2: Ghosting</h3>
+<li>Установите это обновление, если у вас есть проблемы с Save Deletion</li>
+<li>Для установки обновления необходимо переустановить игру</li>
+<li>Удалён эмулятор revEmu</li>
+</ul><br/>
+<h4>Обновление от 14.05.2022 [v. 0.2.4]</h4>
 <ul>
 <li>Обновлена сборка Half-Life 2: Ghosting</li>
 <li>Исправлена ошибка локализации на экране настроек</li>
@@ -335,7 +346,6 @@ export default {
 <li>Ghosting Mod</li>
 <li>Cutsceneless Mod</li>
 <li>HL1 Movement Mod</li>
-<li>SmartSteamEmu (Ghosting)</li>
 <li>RInput</li>
 </ul>
 `,

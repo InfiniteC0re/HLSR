@@ -81,6 +81,7 @@ class AppManager {
         70: hasHL1,
         50: hasHL1,
         130: hasHL1,
+        218: true,
         220: hasHL2,
       };
     });
