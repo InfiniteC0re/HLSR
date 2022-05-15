@@ -142,7 +142,7 @@ export default {
           GameControl.checkInstalled(store, this.game.id) == false) ||
         this.isGameStarted ||
         this.$store.state.extraNotification ||
-        (!this.hasLicense && this.game.needSteam)
+        this.shouldShowWarning
       );
     },
     isGameStarted() {
@@ -158,7 +158,10 @@ export default {
       return this.$store.state.steamworks.licenses[this.game.id];
     },
     shouldShowWarning() {
-      return (this.game.needSteam && !this.hasLicense) || this.cyrillic;
+      return (
+        (this.game.needSteam && (!this.hasLicense || !this.isSteamStarted)) ||
+        this.cyrillic
+      );
     },
     warningMessage() {
       if (!this.isSteamStarted && this.game.needSteam)
@@ -192,9 +195,10 @@ export default {
         remote.shell.writeShortcutLink(
           path.join(
             remote.app.getPath("desktop"),
-            `${this.$t(
-              "#SHORTCUT_LAUNCH"
-            )} ${this.game.name.replace(":", "")}.lnk`
+            `${this.$t("#SHORTCUT_LAUNCH")} ${this.game.name.replace(
+              ":",
+              ""
+            )}.lnk`
           ),
           "create",
           {
