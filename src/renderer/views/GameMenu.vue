@@ -142,7 +142,7 @@ export default {
           GameControl.checkInstalled(store, this.game.id) == false) ||
         this.isGameStarted ||
         this.$store.state.extraNotification ||
-        this.shouldShowWarning
+        (this.game.needSteam && (!this.hasLicense || !this.isSteamStarted))
       );
     },
     isGameStarted() {
