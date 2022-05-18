@@ -6,11 +6,6 @@ import GameInstaller from "./GameInstaller.js";
 import path from "path";
 import fs from "fs";
 
-function round(num) {
-    var m = Number((Math.abs(num) * 100).toPrecision(15));
-    return Math.round(m) / 100 * Math.sign(num);
-}
-
 class GameManager {
   constructor(window) {
     this.window = window;
@@ -56,16 +51,28 @@ class GameManager {
       const archives = game.info.archives;
       let archivesCount = archives.length;
       let downloadedArchives = 0;
+      let downloadItem = null;
 
       const LibraryStore = new Store({
         configName: "library",
         defaults: StoreDefaults.library,
       });
 
+      ipcMain.once("cancel-download", () => {
+        if (downloadItem) {
+          downloadItem.cancel();
+        }
+      });
+
       const progressCallback = (progress) => {
-        progress = round((progress + downloadedArchives) / archivesCount);
+        progress = (progress + downloadedArchives) / archivesCount;
         this.window.setProgressBar(progress);
         ipcEvent.sender.send("progress-update", progress * 100);
+      };
+
+      const updateCallback = (progress, item) => {
+        downloadItem = item;
+        ipcEvent.sender.send("speed-update", progress.speed);
       };
 
       let cacheFileBase = GameControl.getCacheFileName(LibraryStore);
@@ -76,16 +83,25 @@ class GameManager {
 
         try {
           let fn = `${cacheFileBase}.${(i + 1).toString().padStart(3, "0")}`;
-          await GameInstaller.downloadFile(url, fn, progressCallback);
+          let downloadedPath = await GameInstaller.downloadFile(
+            url,
+            fn,
+            progressCallback,
+            updateCallback
+          );
           downloadedArchives++;
-          cacheFiles.push(fn);
+          cacheFiles.push(downloadedPath);
         } catch (err) {
-          ipcEvent.sender.send("download-game-reply", { status: 1, err });
+          ipcEvent.sender.send("download-game-reply", {
+            status: err != "cancelled" ? 1 : 2,
+            err,
+          });
           return;
         }
       }
 
       ipcEvent.sender.send("download-game-reply", { status: 0, err: null });
+      ipcMain.removeAllListeners("cancel-download");
 
       // extracting downloaded archives
       let extractPath = GameControl.getLibraryPath(LibraryStore);

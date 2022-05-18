@@ -8,9 +8,7 @@ var Blobs = {
     var height = (canvas.height = window.innerHeight);
     document.querySelector("#backgroundtheme").appendChild(canvas);
     var gl = canvas.getContext("webgl");
-
-    var mouse = { x: 0, y: 0 };
-
+    
     var numMetaballs = 30;
     var metaballs = [];
     this.stopped = false;
@@ -168,11 +166,6 @@ void main() {
       }
       return attributeLocation;
     }
-
-    canvas.onmousemove = function(e) {
-      mouse.x = e.clientX;
-      mouse.y = e.clientY;
-    };
   },
   stop() {
     this.stopped = true;

@@ -1,7 +1,11 @@
 :root {
     --accent-color: #00ABFF;
     --md-theme-default-accent: #ff576e;
-    --md-theme-default-theme: dark
+    --md-theme-default-theme: dark;
+}
+
+.md-ripple {
+    -webkit-mask-image: none !important; /* fixes white circles in new versions of electron */
 }
 
 .md-theme-default :not(input):not(textarea)::selection {
@@ -12,8 +16,8 @@
 }
 
 .md-theme-default a:not(.md-button) {
-    color: #448aff;
-    color: var(--accent-color-on-background, #448aff)
+    color: #00ABFF;
+    color: var(--accent-color-on-background, #00ABFF)
 }
 
 .md-theme-default a:not(.md-button):hover {
@@ -64,8 +68,8 @@ html.md-theme-default {
 }
 
 .md-list.md-theme-default .md-autocomplete-items .md-highlight-text-match {
-    color: #448aff;
-    color: var(--accent-color-on-background, #448aff)
+    color: #00ABFF;
+    color: var(--accent-color-on-background, #00ABFF)
 }
 
 .md-list.md-theme-default .md-autocomplete-loading {
@@ -141,13 +145,13 @@ html.md-theme-default {
 }
 
 .md-avatar.md-theme-default.md-primary {
-    background-color: #448aff;
-    background-color: var(--accent-color, #448aff)
+    background-color: #00ABFF;
+    background-color: var(--accent-color, #00ABFF)
 }
 
 .md-avatar.md-theme-default.md-primary.md-avatar-icon {
-    background-color: #448aff;
-    background-color: var(--accent-color, #448aff);
+    background-color: #00ABFF;
+    background-color: var(--accent-color, #00ABFF);
     color: #fff;
     color: var(--md-theme-default-text-primary-on-primary, #fff)
 }
@@ -184,23 +188,23 @@ html.md-theme-default {
 }
 
 .md-bottom-bar.md-theme-default.md-type-fixed .md-bottom-bar-item.md-active {
-    color: #448aff;
-    color: var(--accent-color-on-background, #448aff)
+    color: #00ABFF;
+    color: var(--accent-color-on-background, #00ABFF)
 }
 
 .md-bottom-bar.md-theme-default.md-type-fixed .md-bottom-bar-item.md-active .md-icon {
-    color: #448aff;
-    color: var(--accent-color-on-background, #448aff)
+    color: #00ABFF;
+    color: var(--accent-color-on-background, #00ABFF)
 }
 
 .md-bottom-bar.md-theme-default.md-type-fixed .md-bottom-bar-item.md-active .md-icon svg {
-    fill: #448aff;
-    fill: var(--accent-color-on-background, #448aff)
+    fill: #00ABFF;
+    fill: var(--accent-color-on-background, #00ABFF)
 }
 
 .md-bottom-bar.md-theme-default.md-type-shift {
-    background-color: #448aff;
-    background-color: var(--accent-color, #448aff);
+    background-color: #00ABFF;
+    background-color: var(--accent-color, #00ABFF);
     color: rgba(255, 255, 255, 0.7);
     color: var(--md-theme-default-text-primary-on-primary, rgba(255, 255, 255, 0.7))
 }
@@ -298,18 +302,18 @@ html.md-theme-default {
 }
 
 .md-button.md-theme-default.md-primary {
-    color: #448aff;
-    color: var(--accent-color-on-background, #448aff)
+    color: #00ABFF;
+    color: var(--accent-color-on-background, #00ABFF)
 }
 
 .md-button.md-theme-default.md-primary .md-icon-font {
-    color: #448aff;
-    color: var(--accent-color-on-background, #448aff)
+    color: #00ABFF;
+    color: var(--accent-color-on-background, #00ABFF)
 }
 
 .md-button.md-theme-default.md-primary .md-icon-image {
-    fill: #448aff;
-    fill: var(--accent-color-on-background, #448aff)
+    fill: #00ABFF;
+    fill: var(--accent-color-on-background, #00ABFF)
 }
 
 .md-button.md-theme-default.md-accent {
@@ -344,8 +348,8 @@ html.md-theme-default {
 .md-button.md-theme-default.md-raised:not([disabled]).md-primary {
     color: #fff;
     color: var(--md-theme-default-text-primary-on-primary, #fff);
-    background-color: #448aff;
-    background-color: var(--accent-color, #448aff)
+    background-color: #00ABFF;
+    background-color: var(--accent-color, #00ABFF)
 }
 
 .md-button.md-theme-default.md-raised:not([disabled]).md-primary .md-icon-font {
@@ -396,8 +400,8 @@ html.md-theme-default {
 }
 
 .md-button.md-theme-default.md-fab:not([disabled]).md-primary {
-    background-color: #448aff;
-    background-color: var(--accent-color, #448aff)
+    background-color: #00ABFF;
+    background-color: var(--accent-color, #00ABFF)
 }
 
 .md-button.md-theme-default.md-fab:not([disabled]).md-primary .md-icon-font {
@@ -457,15 +461,15 @@ html.md-theme-default {
 }
 
 .md-card.md-theme-default.md-primary {
-    background-color: #448aff;
-    background-color: var(--accent-color, #448aff);
+    background-color: #00ABFF;
+    background-color: var(--accent-color, #00ABFF);
     color: #fff;
     color: var(--md-theme-default-text-primary-on-primary, #fff)
 }
 
 .md-card.md-theme-default.md-primary .md-card-expand .md-card-actions {
-    background-color: #448aff;
-    background-color: var(--accent-color, #448aff)
+    background-color: #00ABFF;
+    background-color: var(--accent-color, #00ABFF)
 }
 
 .md-card.md-theme-default.md-primary .md-card-header .md-button:not(.md-primary):not(.md-accent),
@@ -549,15 +553,15 @@ html.md-theme-default {
 }
 
 .md-checkbox.md-theme-default.md-checked.md-primary .md-checkbox-container {
-    background-color: #448aff;
-    background-color: var(--accent-color, #448aff);
-    border-color: #448aff;
-    border-color: var(--accent-color, #448aff)
+    background-color: #00ABFF;
+    background-color: var(--accent-color, #00ABFF);
+    border-color: #00ABFF;
+    border-color: var(--accent-color, #00ABFF)
 }
 
 .md-checkbox.md-theme-default.md-checked.md-primary .md-ripple {
-    color: #448aff;
-    color: var(--accent-color, #448aff)
+    color: #00ABFF;
+    color: var(--accent-color, #00ABFF)
 }
 
 .md-checkbox.md-theme-default.md-indeterminate .md-checkbox-container {
@@ -631,8 +635,8 @@ html.md-theme-default {
 }
 
 .md-chip.md-theme-default.md-primary {
-    background-color: #448aff;
-    background-color: var(--accent-color, #448aff);
+    background-color: #00ABFF;
+    background-color: var(--accent-color, #00ABFF);
     color: #fff;
     color: var(--md-theme-default-text-primary-on-primary, #fff)
 }
@@ -711,8 +715,8 @@ html.md-theme-default {
 }
 
 .md-content.md-theme-default.md-primary {
-    background-color: #448aff;
-    background-color: var(--accent-color, #448aff);
+    background-color: #00ABFF;
+    background-color: var(--accent-color, #00ABFF);
     color: #fff;
     color: var(--md-theme-default-text-primary-on-primary, #fff)
 }
@@ -769,8 +773,8 @@ html.md-theme-default {
 }
 
 .md-datepicker-dialog.md-theme-default .md-datepicker-today {
-    color: #448aff;
-    color: var(--accent-color-on-background, #448aff)
+    color: #00ABFF;
+    color: var(--accent-color-on-background, #00ABFF)
 }
 
 .md-datepicker-dialog.md-theme-default .md-datepicker-day-button:hover,
@@ -781,16 +785,16 @@ html.md-theme-default {
 }
 
 .md-datepicker-dialog.md-theme-default .md-datepicker-day-button.md-datepicker-selected {
-    background-color: #448aff;
-    background-color: var(--accent-color, #448aff);
+    background-color: #00ABFF;
+    background-color: var(--accent-color, #00ABFF);
     color: #fff;
     color: var(--md-theme-default-text-primary-on-primary, #fff)
 }
 
 .md-datepicker-dialog.md-theme-default .md-datepicker-month-button.md-datepicker-selected,
 .md-datepicker-dialog.md-theme-default .md-datepicker-year-button.md-datepicker-selected {
-    color: #448aff;
-    color: var(--accent-color-on-background, #448aff)
+    color: #00ABFF;
+    color: var(--accent-color-on-background, #00ABFF)
 }
 
 .md-datepicker-dialog.md-theme-default .md-datepicker-year-selector {
@@ -843,13 +847,13 @@ html.md-theme-default {
 }
 
 .md-empty-state.md-theme-default.md-primary .md-empty-state-icon.md-icon-image svg {
-    fill: #448aff;
-    fill: var(--accent-color-on-background, #448aff)
+    fill: #00ABFF;
+    fill: var(--accent-color-on-background, #00ABFF)
 }
 
 .md-empty-state.md-theme-default.md-primary .md-empty-state-icon.md-icon-font {
-    color: #448aff;
-    color: var(--accent-color-on-background, #448aff)
+    color: #00ABFF;
+    color: var(--accent-color-on-background, #00ABFF)
 }
 
 .md-empty-state.md-theme-default.md-accent .md-empty-state-icon.md-icon-image svg {
@@ -867,8 +871,8 @@ html.md-theme-default {
 }
 
 .md-field.md-theme-default:before {
-    background-color: #448aff;
-    background-color: var(--accent-color, #448aff)
+    background-color: #00ABFF;
+    background-color: var(--accent-color, #00ABFF)
 }
 
 .md-field.md-theme-default .md-helper-text,
@@ -899,8 +903,8 @@ html.md-theme-default {
 }
 
 .md-field.md-theme-default.md-has-textarea:not(.md-autogrow):before {
-    border-color: #448aff;
-    border-color: var(--accent-color, #448aff)
+    border-color: #00ABFF;
+    border-color: var(--accent-color, #00ABFF)
 }
 
 .md-field.md-theme-default.md-disabled:after {
@@ -950,21 +954,21 @@ html.md-theme-default {
 .md-field.md-theme-default.md-focused .md-textarea,
 .md-field.md-theme-default.md-highlight .md-input,
 .md-field.md-theme-default.md-highlight .md-textarea {
-    color: #448aff;
-    color: var(--accent-color-on-background, #448aff)
+    color: #00ABFF;
+    color: var(--accent-color-on-background, #00ABFF)
 }
 
 .md-field.md-theme-default.md-focused>.md-icon,
 .md-field.md-theme-default.md-highlight>.md-icon {
-    color: #448aff;
-    color: var(--accent-color-on-background, #448aff);
-    fill: #448aff;
-    fill: var(--accent-color-on-background, #448aff)
+    color: #00ABFF;
+    color: var(--accent-color-on-background, #00ABFF);
+    fill: #00ABFF;
+    fill: var(--accent-color-on-background, #00ABFF)
 }
 
 .md-field.md-theme-default.md-focused label {
-    color: #448aff;
-    color: var(--accent-color-on-background, #448aff)
+    color: #00ABFF;
+    color: var(--accent-color-on-background, #00ABFF)
 }
 
 .md-field.md-theme-default.md-disabled .md-icon svg {
@@ -978,8 +982,8 @@ html.md-theme-default {
 }
 
 .md-icon.md-theme-default.md-icon-image svg.md-primary {
-    fill: #448aff;
-    fill: var(--accent-color-on-background, #448aff)
+    fill: #00ABFF;
+    fill: var(--accent-color-on-background, #00ABFF)
 }
 
 .md-icon.md-theme-default.md-icon-image svg.md-accent {
@@ -993,8 +997,8 @@ html.md-theme-default {
 }
 
 .md-icon.md-theme-default.md-icon-font.md-primary {
-    color: #448aff;
-    color: var(--accent-color-on-background, #448aff)
+    color: #00ABFF;
+    color: var(--accent-color-on-background, #00ABFF)
 }
 
 .md-icon.md-theme-default.md-icon-font.md-accent {
@@ -1043,8 +1047,8 @@ html.md-theme-default {
 
 .md-list.md-theme-default .md-selected .md-list-item-content,
 .md-list.md-theme-default .router-link-active .md-list-item-content {
-    color: #448aff;
-    color: var(--accent-color-on-background, #448aff)
+    color: #00ABFF;
+    color: var(--accent-color-on-background, #00ABFF)
 }
 
 .md-list.md-theme-default .md-list-item-expand.md-active {
@@ -1062,8 +1066,8 @@ html.md-theme-default {
 .md-menu-item.md-theme-default.md-primary .md-list-item-link,
 .md-menu-item.md-theme-default.md-primary .md-list-item-router,
 .md-menu-item.md-theme-default.md-primary .md-list-item-button {
-    color: #448aff;
-    color: var(--accent-color-on-background, #448aff)
+    color: #00ABFF;
+    color: var(--accent-color-on-background, #00ABFF)
 }
 
 .md-menu-item.md-theme-default.md-accent .md-list-item-link,
@@ -1083,8 +1087,8 @@ html.md-theme-default {
 .md-progress-bar.md-theme-default.md-indeterminate .md-progress-bar-fill:after,
 .md-progress-bar.md-theme-default.md-query .md-progress-bar-track:after,
 .md-progress-bar.md-theme-default.md-query .md-progress-bar-fill:after {
-    background-color: #448aff;
-    background-color: var(--accent-color, #448aff)
+    background-color: #00ABFF;
+    background-color: var(--accent-color, #00ABFF)
 }
 
 .md-progress-bar.md-theme-default.md-indeterminate.md-accent,
@@ -1107,8 +1111,8 @@ html.md-theme-default {
 }
 
 .md-progress-bar.md-theme-default.md-determinate .md-progress-bar-fill {
-    background-color: #448aff;
-    background-color: var(--accent-color, #448aff)
+    background-color: #00ABFF;
+    background-color: var(--accent-color, #00ABFF)
 }
 
 .md-progress-bar.md-theme-default.md-determinate.md-accent {
@@ -1122,8 +1126,8 @@ html.md-theme-default {
 }
 
 .md-progress-bar.md-theme-default.md-buffer .md-progress-bar-fill {
-    background-color: #448aff;
-    background-color: var(--accent-color, #448aff)
+    background-color: #00ABFF;
+    background-color: var(--accent-color, #00ABFF)
 }
 
 .md-progress-bar.md-theme-default.md-buffer .md-progress-bar-track {
@@ -1152,8 +1156,8 @@ html.md-theme-default {
 }
 
 .md-progress-spinner.md-theme-default .md-progress-spinner-circle {
-    stroke: #448aff;
-    stroke: var(--accent-color, #448aff)
+    stroke: #00ABFF;
+    stroke: var(--accent-color, #00ABFF)
 }
 
 .md-progress-spinner.md-theme-default.md-accent .md-progress-spinner-circle {
@@ -1177,18 +1181,18 @@ html.md-theme-default {
 }
 
 .md-radio.md-theme-default.md-checked.md-primary .md-radio-container {
-    border-color: #448aff;
-    border-color: var(--accent-color, #448aff)
+    border-color: #00ABFF;
+    border-color: var(--accent-color, #00ABFF)
 }
 
 .md-radio.md-theme-default.md-checked.md-primary .md-radio-container:after {
-    background-color: #448aff;
-    background-color: var(--accent-color, #448aff)
+    background-color: #00ABFF;
+    background-color: var(--accent-color, #00ABFF)
 }
 
 .md-radio.md-theme-default.md-checked.md-primary .md-ripple {
-    color: #448aff;
-    color: var(--accent-color, #448aff)
+    color: #00ABFF;
+    color: var(--accent-color, #00ABFF)
 }
 
 .md-radio.md-theme-default .md-radio-container {
@@ -1263,8 +1267,8 @@ html.md-theme-default {
 
 .md-steppers.md-theme-default .md-stepper-header.md-active .md-stepper-number,
 .md-steppers.md-theme-default .md-stepper-header.md-done .md-stepper-number {
-    background-color: #448aff;
-    background-color: var(--accent-color-on-background, #448aff);
+    background-color: #00ABFF;
+    background-color: var(--accent-color-on-background, #00ABFF);
     color: #fff;
     color: var(--md-theme-default-text-primary-on-primary, #fff)
 }
@@ -1295,8 +1299,8 @@ html.md-theme-default {
 }
 
 .md-subheader.md-theme-default.md-primary {
-    color: #448aff;
-    color: var(--accent-color-on-background, #448aff)
+    color: #00ABFF;
+    color: var(--accent-color-on-background, #00ABFF)
 }
 
 .md-switch.md-theme-default.md-checked .md-switch-container {
@@ -1320,13 +1324,13 @@ html.md-theme-default {
 }
 
 .md-switch.md-theme-default.md-checked.md-primary .md-switch-thumb {
-    background-color: #448aff;
-    background-color: var(--accent-color, #448aff)
+    background-color: #00ABFF;
+    background-color: var(--accent-color, #00ABFF)
 }
 
 .md-switch.md-theme-default.md-checked.md-primary .md-ripple {
-    color: #448aff;
-    color: var(--accent-color, #448aff)
+    color: #00ABFF;
+    color: var(--accent-color, #00ABFF)
 }
 
 .md-switch.md-theme-default .md-switch-container {
@@ -1373,15 +1377,15 @@ html.md-theme-default {
 
 .md-table.md-theme-default .md-table-row.md-selected.md-primary,
 .md-table.md-theme-default .md-table-row.md-selected-single.md-primary {
-    background-color: #448aff;
-    background-color: var(--accent-color-on-background, #448aff);
+    background-color: #00ABFF;
+    background-color: var(--accent-color-on-background, #00ABFF);
     color: #fff;
     color: var(--md-theme-default-text-primary-on-primary, #fff)
 }
 
 .md-table.md-theme-default .md-table-row.md-selected.md-primary .md-ripple,
 .md-table.md-theme-default .md-table-row.md-selected-single.md-primary .md-ripple {
-    color: #fff
+    color: #fff;
 }
 
 .md-table.md-theme-default .md-table-row.md-selected.md-primary .md-checkbox-container,
@@ -1392,8 +1396,8 @@ html.md-theme-default {
 
 .md-table.md-theme-default .md-table-row.md-selected.md-primary .md-checkbox-container:after,
 .md-table.md-theme-default .md-table-row.md-selected-single.md-primary .md-checkbox-container:after {
-    border-color: #448aff;
-    border-color: var(--accent-color, #448aff)
+    border-color: #00ABFF;
+    border-color: var(--accent-color, #00ABFF)
 }
 
 .md-table.md-theme-default .md-table-row.md-selected.md-accent,
@@ -1481,28 +1485,28 @@ html.md-theme-default {
 }
 
 .md-tabs.md-theme-default .md-tabs-navigation .md-button.md-active {
-    color: #448aff;
-    color: var(--accent-color-on-background, #448aff)
+    color: #00ABFF;
+    color: var(--accent-color-on-background, #00ABFF)
 }
 
 .md-tabs.md-theme-default .md-tabs-navigation .md-button.md-active .md-icon {
-    color: #448aff;
-    color: var(--accent-color-on-background, #448aff)
+    color: #00ABFF;
+    color: var(--accent-color-on-background, #00ABFF)
 }
 
 .md-tabs.md-theme-default .md-tabs-navigation .md-button.md-active .md-icon svg {
-    fill: #448aff;
-    fill: var(--accent-color-on-background, #448aff)
+    fill: #00ABFF;
+    fill: var(--accent-color-on-background, #00ABFF)
 }
 
 .md-tabs.md-theme-default .md-tabs-indicator {
-    background-color: #448aff;
-    background-color: var(--accent-color-on-background, #448aff)
+    background-color: #00ABFF;
+    background-color: var(--accent-color-on-background, #00ABFF)
 }
 
 .md-tabs.md-theme-default.md-primary .md-tabs-navigation {
-    background-color: #448aff;
-    background-color: var(--accent-color-on-background, #448aff)
+    background-color: #00ABFF;
+    background-color: var(--accent-color-on-background, #00ABFF)
 }
 
 .md-tabs.md-theme-default.md-primary .md-tabs-navigation .md-button {
@@ -1615,8 +1619,8 @@ html.md-theme-default {
 }
 
 .md-toolbar.md-theme-default.md-primary {
-    background-color: #448aff;
-    background-color: var(--accent-color, #448aff);
+    background-color: #00ABFF;
+    background-color: var(--accent-color, #00ABFF);
     color: #fff;
     color: var(--md-theme-default-text-primary-on-primary, #fff)
 }
@@ -1715,6 +1719,6 @@ html.md-theme-default {
 .md-badge.md-theme-default.md-primary {
     color: #fff;
     color: var(--md-theme-default-text-primary-on-primary, #fff);
-    background-color: #448aff;
-    background-color: var(--accent-color, #448aff)
+    background-color: #00ABFF;
+    background-color: var(--accent-color, #00ABFF)
 }

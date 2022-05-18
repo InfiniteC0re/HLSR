@@ -163,7 +163,34 @@ export default {
   "#UI_BLOBS_THEME": "Animated Background",
   "#UI_NO_LICENSE": "No licence found in Steam",
   "#UI_NO_STEAM": "Start Steam to play this game",
-  "#UI_CHANGELOG_CONTENT": `<h4>Update from 05/15/2022 [v. 0.2.5]</h4>
+  "#UI_LIVESPLIT_SPLITS": "LiveSplit Splits",
+  "#UI_LIVESPLIT_SELECT_FILE": "Select splits file",
+  "#UI_LIVESPLIT_UPDATE": "Refresh",
+  "#UI_LIVESPLIT_REALTIME": "Real Time",
+  "#UI_LIVESPLIT_GAMETIME": "Game Time",
+  "#UI_LIVESPLIT_LOADING": "Loading...",
+  "#UI_LIVESPLIT_ERROR": "Unable to open the splits file",
+  "#UI_SEGMENT_NAME": "Segment",
+  "#UI_TIME": "Time",
+  "#UI_BEST_SEGMENT": "Best Segment",
+  "#UI_LEADERBOARD": "Leaderboard",
+  "#UI_MANAGEMENT": "Management",
+  "#UI_CHANGELOG_CONTENT": `<h4>Update from 05/18/2022 [v. 0.2.6]</h4>
+<ul>
+<li>Updated UI of the game's screen</li>
+<li>Added an ability to switch LiveSplit splits</li>
+<li>Added a feature to preview LiveSplit splits in the launcher</li>
+<li>Added a feature to cancel game downloading</li>
+<li>Added links to speedrun.com leaderboards</li>
+<li>Added downloading speed counter</li>
+<li>Fixed graphics bug with checkboxes that was caused by Electron update</li>
+<li>Fixed Ghosting could be opened without Steam from home screen</li>
+<li>Fixed the bug with "jumping" progress bar</li>
+<li>Optimized Steam friends list's performance</li>
+<li>Reworked download manager module</li>
+<li>Refactored and optimized some of the code parts</li>
+</ul><br/>
+<h4>Update from 05/15/2022 [v. 0.2.5]</h4>
 <ul>
 <li>Updated Half-Life 2: Ghosting</li>
 <li>Now the launcher will check updates only when starts</li>

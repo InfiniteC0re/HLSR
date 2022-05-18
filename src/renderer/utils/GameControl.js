@@ -15,6 +15,60 @@ export default {
     let installed = store.get("installed");
     return Object.keys(installed).length;
   },
+  setLiveSplitSplitsFile(store, gameID, file) {
+    let config = store.get("config");
+    let params = config[gameID];
+
+    params.splitsFile = file;
+    store.set("config", config);
+  },
+  getLiveSplitSplitsFile(store, gameID) {
+    let config = store.get("config");
+    let params = config[gameID];
+
+    // check if the file is valid and it exists
+    if (params.splitsFile) {
+      if (
+        !params.splitsFile.endsWith(".lss") ||
+        !fs.existsSync(params.splitsFile)
+      )
+        params.splitsFile = null;
+    }
+
+    if (!params.splitsFile) {
+      let library = this.getLibraryPath(store);
+      let fileName = "";
+
+      switch (gameID) {
+        case "50":
+          fileName = "Half-Life Opposing Force.lss";
+          break;
+        case "130":
+          fileName = "Half-Life Blue Shift.lss";
+          break;
+        case "218":
+          fileName = "Half-Life 2 - HL1Movement.lss";
+          break;
+        case "220":
+          fileName = "Half-Life 2.lss";
+          break;
+        default:
+          fileName = "Half-Life.lss";
+          break;
+      }
+
+      params.splitsFile = path.join(library, "LiveSplit", "splits", fileName);
+
+      if (!fs.existsSync(params.splitsFile)) {
+        // splits file doesn't exist, so just leaving the function
+        return null;
+      }
+
+      store.set("config", config);
+    }
+
+    return params.splitsFile;
+  },
   startGame(hlsrConsole, store, gameID, globalstore, navbar) {
     let config = store.get("config");
     let params = config[gameID];
@@ -26,41 +80,46 @@ export default {
       4: "-fourcores",
     };
 
-    hlsrConsole.execute(
-      [
-        "game", // action
-        this.getLibraryPath(store), // path of the library
-        gameID,
-        params.edited_dll ? "-dll" : "",
-        params.bxt ? "-bxt" : "",
-        params.rinput ? "-ri" : "",
-        params.livesplit ? "-livesplit" : "",
-        params.steam ? "-steam" : "",
-        params.allcores ? "-allcores" : coresParams[params.corescount],
-        "-" + params.priority,
-        gameID == "218" && params.hl1movement
-          ? "-game ghosting " + params.args
-          : gameID == "218"
-          ? "-game ghostingmod " + params.args
-          : params.args,
-      ],
-      () => {
-        // Завершение работы hlsr-console
-        config = store.get("config");
-        params = config[gameID];
-
-        if (!params.inGameTime || typeof params.inGameTime != "number")
-          params.inGameTime = 0;
-
-        params.inGameTime += Date.now() - globalstore.state.game.startDate;
-        store.set("config", config);
-
-        if (globalstore) globalstore.commit("setCurrentGame", null);
-        if (navbar) navbar.$forceUpdate();
-
-        ipcRenderer.sendSync("setRichPresence", "HLSR");
-      }
+    let startArgs = [
+      "game",
+      this.getLibraryPath(store),
+      gameID,
+      `-${params.priority || "normal"}`,
+    ];
+    if (params.edited_dll) startArgs.push("-dll");
+    if (params.bxt) startArgs.push("-bxt");
+    if (params.rinput) startArgs.push("-ri");
+    if (params.livesplit) {
+      startArgs.push("-livesplit");
+      startArgs.push(this.getLiveSplitSplitsFile(store, gameID));
+    }
+    if (params.steam) startArgs.push("-steam");
+    if (params.allcores) startArgs.push("-allcores");
+    else startArgs.push(coresParams[params.corescount || 1]);
+    startArgs.push(
+      gameID == "218" && params.hl1movement
+        ? "-game ghosting " + params.args
+        : gameID == "218"
+        ? "-game ghostingmod " + params.args
+        : params.args
     );
+
+    hlsrConsole.execute(startArgs, () => {
+      // Завершение работы hlsr-console
+      config = store.get("config");
+      params = config[gameID];
+
+      if (!params.inGameTime || typeof params.inGameTime != "number")
+        params.inGameTime = 0;
+
+      params.inGameTime += Date.now() - globalstore.state.game.startDate;
+      store.set("config", config);
+
+      if (globalstore) globalstore.commit("setCurrentGame", null);
+      if (navbar) navbar.$forceUpdate();
+
+      ipcRenderer.sendSync("setRichPresence", "HLSR");
+    });
 
     let gameTitle = this.getTitle(gameID);
     ipcRenderer.sendSync("setRichPresence", `HLSR [${gameTitle}]`);
@@ -85,28 +144,25 @@ export default {
     const game = this.getGame(id);
     if (!game) return;
 
-    let installed = store.get("installed");
+    let installedGames = store.get("installed");
 
     game.info.uninstallPaths.forEach((fn) => {
-      if (typeof fn === "string") {
-        let gamePath = path.join(libraryPath, fn);
+      let gamePath = path.join(libraryPath, fn);
 
-        try {
-          fs.rmSync(gamePath, {
-            recursive: true,
-          });
-        } catch (e) {}
-      }
+      try {
+        fs.rmSync(gamePath, {
+          recursive: true,
+        });
+      } catch (e) {}
     });
 
     GameList.forEach((g) => {
       if (g.info.isStandalone == false && g.info.requiredGame == game.id)
-        delete installed[g.id];
+        delete installedGames[g.id];
     });
 
-    delete installed[game.id];
-
-    store.set("installed", installed);
+    delete installedGames[game.id];
+    store.set("installed", installedGames);
   },
   openGameDir(id, store) {
     const libraryPath = this.getLibraryPath(store);
@@ -159,5 +215,9 @@ export default {
   getSourceRunsLink(id) {
     let game = this.getGame(id);
     return game ? game.info.sourceruns : null;
+  },
+  getLeaderboardLink(id) {
+    let game = this.getGame(id);
+    return game ? game.info.leaderboard : null;
   },
 };

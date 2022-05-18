@@ -1,6 +1,6 @@
 {
   "name": "hlsr",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "author": "",
   "description": "Change the way you feel speedruns",
   "main": "./dist/electron/main.js",
@@ -54,23 +54,18 @@
   "dependencies": {
     "7zip-bin": "^5.1.1",
     "@electron/remote": "^2.0.1",
-    "@vue/runtime-dom": "^3.2.33",
     "axios": "^0.19.2",
     "discord-rpc": "3.2.0",
-    "electron-unhandled": "^3.0.2",
     "electron-updater": "^4.3.4",
-    "hlsr-console": "^1.1.0",
-    "hlsr-hlsd": "^1.0.1",
-    "hlsr-native": "^1.0.5",
+    "hlsr-console": "^1.2.0",
+    "hlsr-native": "1.0.8",
     "jquery": "^3.5.1",
     "node-7z": "^3.0.0",
     "vue": "^2.5.16",
     "vue-codemirror": "^4.0.6",
-    "vue-electron": "^1.0.6",
     "vue-material": "https://github.com/InfiniteC0re/vue-material-dart",
     "vue-router": "^3.0.1",
-    "vuex": "^3.0.1",
-    "vuex-electron": "^1.0.0"
+    "vuex": "^3.0.1"
   },
   "devDependencies": {
     "ajv": "^6.5.0",

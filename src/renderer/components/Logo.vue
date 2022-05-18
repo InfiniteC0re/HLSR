@@ -1,7 +1,7 @@
 <template>
   <div id="header" :style="positionStyle">
-    <div class="logo" :style="{ color }" @dblclick="changeColor">
-      <div class="inner" :style="{ backgroundColor: color }"></div>
+    <div class="logo">
+      <div class="inner"></div>
     </div>
     <div class="title">
       HLSR
@@ -13,50 +13,14 @@
 </template>
 
 <script>
-import Store from "@/utils/Store";
-import StoreDefaults from "@/utils/StoreDefaults";
-
-const store = new Store({
-  configName: "settings",
-  defaults: StoreDefaults.settings,
-});
-
 export default {
   name: "NavBarHeader",
   props: ["absolute"],
   computed: {
     positionStyle() {
       return "position: " + (this.absolute ? "absolute" : "inherit");
-    }
-  },
-  methods: {
-    changeColor() {
-      let config = store.get("config");
-
-      if (this.c >= 2 && !config.mlpMode) {
-        config.mlpMode = true;
-        store.set("config", config);
-        this.$store.commit("createNotification", {
-          text: "My Little Pony!",
-        });
-      }
-
-      this.color = `rgb(${Math.floor(Math.random() * 250)}, ${Math.floor(
-        Math.random() * 250
-      )}, ${Math.floor(Math.random() * 250)})`;
-
-      clearTimeout(this.timeout);
-      this.timeout = setTimeout(() => {
-        this.color = "white";
-        this.c += 1;
-      }, 1500);
     },
   },
-  data: () => ({
-    color: "white",
-    timeout: null,
-    c: 0,
-  }),
 };
 </script>
 

@@ -52,6 +52,14 @@ class AppManager {
       }
     });
 
+    // LiveSplit
+    const liveSplit = hlsrNative.LiveSplit;
+    
+    ipcMain.on("LiveSplitReadFile", (e, filePath) => {
+      const splitFile = liveSplit.ReadSplitsFile(filePath);
+      e.sender.send("LiveSplitReadFile_reply", splitFile);
+    });
+
     // WinApi
     const winapi = hlsrNative.WinApi;
 

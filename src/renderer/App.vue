@@ -23,7 +23,8 @@
           id="router"
           :key="$route.fullPath"
           :class="{ overflow: overflow ? 'hidden' : 'unset' }"
-        ></router-view>
+        >
+        </router-view>
       </transition>
     </div>
     <Notification />
@@ -50,11 +51,6 @@ import "@/css/codemirror-dracula-custom.css";
 import "codemirror/addon/selection/active-line.js";
 import "codemirror/addon/hint/show-hint.js";
 import "codemirror/addon/hint/javascript-hint.js";
-import "codemirror/addon/selection/active-line.js";
-import "codemirror/addon/scroll/annotatescrollbar.js";
-import "codemirror/addon/search/matchesonscrollbar.js";
-import "codemirror/addon/search/searchcursor.js";
-import "codemirror/addon/search/match-highlighter.js";
 import GameControl from "./utils/GameControl";
 import GameList from "../games.config";
 
@@ -96,7 +92,7 @@ export default {
         started: false,
       },
       window: null,
-    }
+    };
   },
   computed: {
     isPaused() {
@@ -209,7 +205,7 @@ export default {
       if (steamName) rpc.smallImageText = steamName;
 
       let gameState = this.$store.state.game;
-      
+
       if (gameState.started) {
         rpc.details = this.$t("#RPC_PLAYING", gameState.name);
         rpc.startTimestamp = gameState.startDate;
@@ -238,7 +234,6 @@ export default {
     },
   },
   mounted() {
-    // Updates
     ipcRenderer.on("updatemanager-status", (e, status) => {
       this.updateAvailable = status;
     });
@@ -266,7 +261,7 @@ export default {
           this.$store.state.window.focused
         )
           this.updateSteamFriends();
-      }, 5000);
+      }, 10000);
 
       this.updateSteamStatus();
     }, 500);
@@ -350,17 +345,13 @@ export default {
       this.launchInfo.started = false;
 
       this.$store.commit("setExtraNotification", {
-        text: this.$t(
-          this.$t("#WAITING_FOR_STEAM")
-        ),
+        text: this.$t(this.$t("#WAITING_FOR_STEAM")),
       });
 
       setTimeout(() => {
         if (this.launchInfo.appid != null && !this.launchInfo.started) {
           this.$store.commit("createNotification", {
-            text: this.$t(
-              this.$t("#CANT_START_GAME_NOSTEAM")
-            ),
+            text: this.$t(this.$t("#CANT_START_GAME_NOSTEAM")),
             type: 1,
             lifetime: 0,
           });
@@ -378,7 +369,7 @@ export default {
     let lastVersion = localStorage.getItem("lastVersion");
 
     if (lastVersion != currentVersion) {
-      this.$store.state.shouldOpenChangelog = true;
+      this.$store.state.launchedNewVersion = true;
       localStorage.setItem("lastVersion", currentVersion);
     }
 

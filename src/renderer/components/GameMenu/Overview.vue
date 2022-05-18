@@ -17,7 +17,7 @@
 </template>
 
 <script type="text/javascript">
-const remote = require("@electron/remote")
+const remote = require("@electron/remote");
 
 export default {
   name: "gamemenu-overview",
@@ -27,32 +27,15 @@ export default {
       type: String,
       default: "no id specified",
     },
-  },
-  data() {
-    return {
-      posts: [],
-    };
+    posts: {
+      type: Array,
+      default: () => [],
+    },
   },
   methods: {
     openLink(url) {
       remote.shell.openExternal(url);
     },
-  },
-  mounted() {
-    if (!navigator.onLine) return;
-
-    fetch(
-      `https://api.steampowered.com/ISteamNews/GetNewsForApp/v2/?appid=${
-        this.id == "218" ? "220" : this.id
-      }&count=15`
-    )
-      .then((a) => {
-        return a.json();
-      })
-      .then((data) => {
-        if (!data.appnews) return;
-        this.posts = data.appnews.newsitems;
-      });
   },
 };
 </script>
@@ -85,7 +68,6 @@ export default {
 }
 
 .post-title {
-  margin: 0 4px;
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 2;

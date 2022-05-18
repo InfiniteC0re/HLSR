@@ -22,6 +22,7 @@ export default [
       ],
       archives: ["https://hlsr.pro/downloadable/Half-Life.zip"],
       sourceruns: "https://wiki.sourceruns.org/wiki/Category:Half-Life_1",
+      leaderboard: "https://www.speedrun.com/hl1",
     },
   },
   {
@@ -46,6 +47,7 @@ export default [
       ],
       archives: ["https://hlsr.pro/downloadable/Opposing-Force.zip"],
       sourceruns: "https://wiki.sourceruns.org/wiki/Category:Opposing_Force",
+      leaderboard: "https://www.speedrun.com/op4",
     },
   },
   {
@@ -64,6 +66,7 @@ export default [
       features: ["#UI_STEAM", "Bunnymod XT", "#UI_LIVESPLIT", "RInput"],
       archives: ["https://hlsr.pro/downloadable/Blue-Shift.zip"],
       sourceruns: "https://wiki.sourceruns.org/wiki/Category:Blue_Shift",
+      leaderboard: "https://www.speedrun.com/bshift",
     },
   },
   {
@@ -89,6 +92,7 @@ export default [
         "https://github.com/InfiniteC0re/HLSR/releases/download/HL2/Half-Life.2.zip",
       ],
       sourceruns: "https://wiki.sourceruns.org/wiki/Category:Half-Life_2",
+      leaderboard: "https://www.speedrun.com/hl2",
     },
   },
   {
@@ -97,12 +101,6 @@ export default [
     iconFile: "hl2.ico",
     background: "half-life-2-ghosting-background.jpg",
     needSteam: true,
-    // patches: {
-    //   "noEmulators": {
-    //     name: "No Steam Emulators",
-    //     description: "Install this patch if you have any issues with the game"
-    //   }
-    // },
     info: {
       isStandalone: true,
       requiredGame: null,
@@ -121,6 +119,7 @@ export default [
         "https://github.com/InfiniteC0re/HLSR/releases/download/Ghosting/Ghosting_noEmu.7z",
       ],
       sourceruns: "https://wiki.sourceruns.org/wiki/Ghosting_mod",
+      leaderboard: "https://www.speedrun.com/hl2ce",
     },
   },
 ];

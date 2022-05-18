@@ -1,12 +1,9 @@
 import vuex from "vuex";
 import vue from "vue";
-import axios from "axios";
 import crypto from "crypto";
+import steamFriends from "./steamFriends";
 
-import sortFriends from "./sortFriends";
 vue.use(vuex);
-
-let parser = new DOMParser();
 
 class Notification {
   constructor(
@@ -53,7 +50,7 @@ export default new vuex.Store({
       "https://api.soundcloud.com/playlists/1024488982%3Fsecret_token%3Ds-t3rIoE0luqj&color=%23e81387&auto_play=false&hide_related=false&show_comments=false&show_user=false&show_reposts=false&show_teaser=false",
     noParticles: false,
     debugMenu: false,
-    shouldOpenChangelog: false,
+    launchedNewVersion: false,
     sidebarBlocked: false,
     notifications: [],
     extraNotification: null,
@@ -92,62 +89,29 @@ export default new vuex.Store({
       state.steamworks.started = status;
     },
     steamworks_setFriends(state, friends) {
-      friends = sortFriends(friends, true);
-
-      let needToUpdate = [];
+      let list = state.steamworks.friends;
       let newFriends = [];
 
-      friends.map((friend, i) => {
-        let result = state.steamworks.friends.find(
-          (f) => f.friendID == friend.friendID
-        );
+      friends.forEach((friend, i) => {
+        let old = list.find((x) => x.friendID == friend.friendID);
 
-        if (!result) needToUpdate.push(friend);
-        else {
-          result.appID = friend.appID;
-          result.friendRPC = friend.friendRPC;
-          result.gamePlayed = friend.gamePlayed;
-          result.personaName = friend.personaName;
-          result.personaState = friend.personaState;
-          result.priority = friend.priority;
-        }
-
-        if (i == friends.length - 1) {
-          state.steamworks.friends = sortFriends(
-            state.steamworks.friends,
-            false,
-            true
-          );
+        if (old) {
+          // update old values
+          old.appID = friend.appID;
+          old.friendRPC = friend.friendRPC;
+          old.gamePlayed = friend.gamePlayed;
+          old.personaName = friend.personaName;
+          old.personaState = friend.personaState;
+        } else {
+          newFriends.push(friend);
         }
       });
 
-      if (state.steamworks.friends.length == 0) needToUpdate = friends;
-
-      let c = 0;
-      needToUpdate.map((friend, i) => {
-        let id = friend.friendID;
-        setTimeout(() => {
-          axios
-            .get(`https://steamcommunity.com/profiles/${id}?xml=1`)
-            .then((res) => {
-              c++;
-              let doc = parser.parseFromString(res.data, "text/xml");
-
-              try {
-                friend.url = doc.querySelector("avatarMedium").textContent;
-              } catch (e) {}
-
-              newFriends.push(friend);
-
-              if (c == needToUpdate.length) {
-                newFriends = sortFriends(newFriends, false, true);
-
-                state.steamworks.friends = state.steamworks.friends.concat(
-                  newFriends
-                );
-              }
-            });
-        }, i * 50);
+      newFriends = newFriends.filter((x) => x.personaState > 0);
+      steamFriends.getAvatars(newFriends).then(() => {
+        state.steamworks.friends = steamFriends.sort(
+          state.steamworks.friends.concat(newFriends)
+        );
       });
     },
     steamworks_setName(state, name) {

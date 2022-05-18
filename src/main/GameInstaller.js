@@ -1,47 +1,73 @@
-import Axios from "axios";
 import sevenBin from "7zip-bin";
 import Seven from "node-7z";
 import fs from "fs";
+import path from "path";
+import DownloadManager from "./download-manager";
 
-const timeoutTime = 10000;
+DownloadManager.register();
 
-const downloadFile = (url, archive, progressCb) => {
+const downloadFile = (url, archive, progressCb, updateCb) => {
   return new Promise(async (resolve, reject) => {
-    const timeoutCallback = (e) => reject(e);
-    let timeoutId = null;
+    let parsedPath = path.parse(archive);
 
-    Axios({
-      url: url,
-      method: "GET",
-      responseType: "stream",
-      headers: {
-        "user-agent":
-          "Mozilla/5.0 (X11; Linux armv7l) AppleWebKit/537.36 (KHTML, like Gecko) Raspbian Chromium/74.0.3729.157 Chrome/74.0.3729.157 Safari/537.36",
+    DownloadManager.download(
+      {
+        url: url,
+        path: parsedPath.dir,
+        filename: parsedPath.base,
+        onProgress: (progress, item) => {
+          if (progress.state == "interrupted") {
+            // retry timeout
+            setTimeout(() => {
+              item.resume();
+            }, 3000);
+          }
+
+          updateCb(progress, item);
+          progressCb(progress.progress);
+        },
       },
-    })
-      .then(({ data, headers }) => {
-        const contentLength = headers["content-length"];
-        const writeStream = fs.createWriteStream(archive);
-        let downloadedCount = 0;
+      (error, info) => {
+        if (!error) resolve(info.filePath);
+        else reject(error);
+      }
+    );
 
-        data.on("data", (chunk) => {
-          downloadedCount += chunk.length;
+    // const timeoutCallback = (e) => reject(e);
+    // let timeoutId = null;
 
-          let progress = downloadedCount / contentLength;
-          if (progressCb != null) progressCb(progress);
+    // Axios({
+    //   url: url,
+    //   method: "GET",
+    //   responseType: "stream",
+    //   headers: {
+    //     "user-agent":
+    //       "Mozilla/5.0 (X11; Linux armv7l) AppleWebKit/537.36 (KHTML, like Gecko) Raspbian Chromium/74.0.3729.157 Chrome/74.0.3729.157 Safari/537.36",
+    //   },
+    // })
+    //   .then(({ data, headers }) => {
+    //     const contentLength = headers["content-length"];
+    //     const writeStream = fs.createWriteStream(archive);
+    //     let downloadedCount = 0;
 
-          if (timeoutId) clearTimeout(timeoutId);
-          timeoutId = setTimeout(timeoutCallback, timeoutTime);
-        });
+    //     data.on("data", (chunk) => {
+    //       downloadedCount += chunk.length;
 
-        data.pipe(writeStream);
+    //       let progress = downloadedCount / contentLength;
+    //       if (progressCb != null) progressCb(progress);
 
-        writeStream.on("finish", () => {
-          if (timeoutId) clearTimeout(timeoutId);
-          writeStream.close(() => resolve(archive));
-        });
-      })
-      .catch(timeoutCallback);
+    //       if (timeoutId) clearTimeout(timeoutId);
+    //       timeoutId = setTimeout(timeoutCallback, timeoutTime);
+    //     });
+
+    //     data.pipe(writeStream);
+
+    //     writeStream.on("finish", () => {
+    //       if (timeoutId) clearTimeout(timeoutId);
+    //       writeStream.close(() => resolve(archive));
+    //     });
+    //   })
+    //   .catch(timeoutCallback);
   });
 };
 

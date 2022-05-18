@@ -1,8 +1,6 @@
 <template>
   <div class="install-menu">
-    <h1 v-if="game">
-      {{ $t("#UI_INSTALLING_GAME") }}{{ game.name }}
-    </h1>
+    <h1 v-if="game">{{ $t("#UI_INSTALLING_GAME") }}{{ game.name }}</h1>
     <div class="content">
       <div class="path">
         <p>{{ $t("#UI_HLSR_LIB_WILL_BE_PLACED") }}</p>
@@ -46,6 +44,7 @@
         <div class="status">
           <div class="left">
             {{ $t("#UI_PROGRESS") }} {{ progress }}%
+            <span v-if="downloading">({{ speed }})</span>
           </div>
           <div class="right">
             {{ status }}
@@ -55,17 +54,16 @@
           <div class="bar" :style="{ flex: progress / 100 }"></div>
         </div>
       </div>
-      <div class="buttons" v-if="!installing">
-        <AltButton :red="true" @click="cancel" :disabled="installed">
+      <div class="buttons">
+        <AltButton :red="true" @click="cancel" :disabled="(installing && !downloading) || installed">
           <span>{{ $t("#UI_CANCEL") }}</span>
           <i class="far fa-ban"></i>
         </AltButton>
-        <AltButton @click="startInstall" :disabled="installDisabled">
-          <span>{{
-            !installed
-              ? $t("#UI_INSTALL")
-              : $t("#UI_DONE")
-          }}</span>
+        <AltButton
+          @click="startInstall"
+          :disabled="installDisabled || installing"
+        >
+          <span>{{ !installed ? $t("#UI_INSTALL") : $t("#UI_DONE") }}</span>
           <i class="fal fa-arrow-right"></i>
         </AltButton>
       </div>
@@ -80,6 +78,7 @@ import AltButton from "@/components/Elements/Button";
 import Store from "@/utils/Store.js";
 import StoreDefaults from "@/utils/StoreDefaults.js";
 import GameControl from "@/utils/GameControl";
+import path from "path";
 
 const store = new Store({
   configName: "library",
@@ -102,6 +101,8 @@ export default {
       selectedPath: "",
       status: "",
       progress: 0,
+      downloading: false,
+      speed: "",
       installDisabled: true,
     };
   },
@@ -127,23 +128,22 @@ export default {
   },
   methods: {
     cancel() {
-      this.$emit("cancel");
+      if (!this.downloading) this.$emit("cancel");
+      else ipcRenderer.send("cancel-download");
     },
     checkFreeSpace() {
       return new Promise((resolve, reject) => {
+        let parsedPath = path.parse(this.selectedPath);
         let diskSpaceInfo = ipcRenderer.sendSync(
           "GetDiskFreeSpaceMbytes",
-          this.selectedPath
+          parsedPath.root
         );
 
-        this.freeSpace = diskSpaceInfo.TotalNumberOfFreeBytes;
+        this.freeSpace = diskSpaceInfo.TotalNumberOfFreeMBytes;
+        let requiredSpace =
+          this.game.info.totalSize + this.game.info.archiveSize;
 
-        if (
-          diskSpaceInfo.Result == 1 &&
-          this.freeSpace -
-            (this.game.info.totalSize + this.game.info.archiveSize) >=
-            100
-        ) {
+        if (diskSpaceInfo.Result && this.freeSpace - requiredSpace >= 100) {
           resolve();
         } else {
           reject(diskSpaceInfo.Result);
@@ -157,14 +157,6 @@ export default {
         case 2: // No Free Space
           break;
         case 3: // WinApi Error
-          break;
-        case 4: // Not Empty Folder
-          this.$store.commit("createNotification", {
-            text: this.$t(
-              this.$t("#FOLDER_NOT_EMPTY")
-            ),
-            type: 1,
-          });
           break;
         case 5: // Cyrillic Symbols
           this.$store.commit("createNotification", {
@@ -186,13 +178,6 @@ export default {
           .then(() => {
             this.checkFreeSpace()
               .then(() => {
-                // if (
-                //   require("fs").readdirSync(this.selectedPath).length != 0 &&
-                //   GameControl.getInstalledCount(store) == 0
-                // ) {
-                //   return rej({ status: 4 }); // Folder is not Empty
-                // }
-
                 this.installDisabled = false;
                 return res();
               })
@@ -210,6 +195,7 @@ export default {
       ipcRenderer.removeAllListeners("progress-update");
       ipcRenderer.removeAllListeners("download-game-reply");
       ipcRenderer.removeAllListeners("unpack-game-reply");
+      ipcRenderer.removeAllListeners("speed-update");
     },
     startInstall() {
       if (this.installed) {
@@ -219,6 +205,7 @@ export default {
       }
 
       ipcRenderer.on("progress-update", this.progressUpdate);
+      ipcRenderer.on("speed-update", this.speedUpdate);
 
       this.checkInstallAvailability()
         .then(() => {
@@ -232,6 +219,7 @@ export default {
 
           ipcRenderer.once("download-game-reply", (e, reply) => {
             if (reply.status == 0) {
+              this.downloading = false;
               this.status = this.$t("#UI_EXTRACTING");
               this.progress = 0;
 
@@ -252,27 +240,24 @@ export default {
                   store.set("installed", installed);
 
                   new Notification("HLSR", {
-                    body: this.$t(
-                      "#UI_NOTIFICATION_INSTALLED",
-                      this.game
-                    ),
+                    body: this.$t("#UI_NOTIFICATION_INSTALLED", this.game),
                   });
                 }
               });
-            } else if (reply.status == 1) {
+            } else {
               this.unbindEvents();
               this.installed = true;
               this.installing = false;
               this.canceled = true;
               this.$store.state.sidebarBlocked = false;
 
-              this.$store.commit("createNotification", {
-                text: this.$t(
-                  this.$t("#UNABLE_TO_DOWNLOAD", this.game.name)
-                ),
-                type: 1,
-                lifetime: 0,
-              });
+              if (reply.status != 2) {
+                this.$store.commit("createNotification", {
+                  text: this.$t(this.$t("#UNABLE_TO_DOWNLOAD", this.game.name)),
+                  type: 1,
+                  lifetime: 0,
+                });
+              }
             }
           });
         })
@@ -280,6 +265,10 @@ export default {
     },
     progressUpdate(e, percent) {
       this.progress = Math.round(percent);
+    },
+    speedUpdate(e, speed) {
+      this.speed = speed;
+      this.downloading = true;
     },
     testPermissions(dir) {
       return new Promise((resolve, reject) => {
@@ -291,9 +280,7 @@ export default {
             );
           } catch (e) {
             this.$store.commit("createNotification", {
-              text: this.$t(
-                this.$t("#ERROR_NO_WRITE_PERMISSIONS")
-              ),
+              text: this.$t(this.$t("#ERROR_NO_WRITE_PERMISSIONS")),
               type: 1,
             });
 
@@ -302,9 +289,7 @@ export default {
           }
         } else {
           this.$store.commit("createNotification", {
-            text: this.$t(
-              this.$t("#PATH_NOT_EXISTS")
-            ),
+            text: this.$t(this.$t("#PATH_NOT_EXISTS")),
             type: 1,
           });
 
@@ -331,9 +316,7 @@ export default {
 
             if (!require("fs").existsSync(newLibDir)) {
               this.$store.commit("createNotification", {
-                text: this.$t(
-                  this.$t("#PATH_NOT_EXISTS")
-                ),
+                text: this.$t(this.$t("#PATH_NOT_EXISTS")),
                 type: 1,
               });
 
@@ -449,6 +432,7 @@ export default {
     }
 
     .progress-wrap {
+      margin-bottom: 8px;
       margin-top: 4px;
 
       .status {

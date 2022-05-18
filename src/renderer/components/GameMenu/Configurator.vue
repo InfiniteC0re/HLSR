@@ -3,7 +3,7 @@
     <div class="title">
       {{ $t("#UI_CONFIGURATOR") }}
     </div>
-    <div class="settings-panel" v-if="id != 220">
+    <div class="settings-panel" v-if="id != 220 && id != 130">
       <div class="section">
         {{ $t("#UI_GAME_VERSION") }}
       </div>
@@ -16,14 +16,14 @@
             >WON</md-radio
           >
         </div>
-        <md-switch
+        <!-- <md-switch
           v-model="edited_dll"
           @change="saveChoice"
           class="md-primary"
           :disabled="version == 'Steam'"
           v-if="id == '70'"
           >{{ $t("#UI_EDITED_DLL") }}
-        </md-switch>
+        </md-switch> -->
         <md-switch
           v-model="hl1movement"
           @change="saveChoice"
@@ -170,7 +170,7 @@ export default {
     if (config.steam) this.version = "Steam";
     else if (this.id != "130") this.version = "WON";
     if (!config.steam && config.edited_dll && this.id == "70")
-      this.edited_dll = true;
+      this.edited_dll = !config.edited_dll;
     this.args = config.args;
     this.priority = config.priority || "normal";
     this.corescount = config.corescount || "1";
@@ -223,7 +223,7 @@ export default {
 }
 .section {
   margin-left: 16px;
-  opacity: 0.2;
+  color: rgb(150, 150, 150);
 }
 .container {
   margin-bottom: 0px;

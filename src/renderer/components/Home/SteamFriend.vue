@@ -1,11 +1,16 @@
 <template>
   <div class="steam-friend" :key="friend.SteamID">
-    <img :src="friend.url" @error="imgErr" class="steam-friend-avatar" draggable="false" />
+    <img
+      :src="friend.avatarUrl"
+      @error="imgErr"
+      class="steam-friend-avatar"
+      draggable="false"
+    />
     <div class="steam-friend-info">
       <div class="steam-friend-name">{{ friend.personaName }}</div>
       <div :class="['steam-friend-status', statusColor]">{{ statusText }}</div>
     </div>
-    <div class="steam-friend-right" @click="() => openFriend(friend.friendID)">
+    <div class="steam-friend-right" @click="() => openChat()">
       <i class="fas fa-envelope"></i>
       <md-tooltip>{{ $t("#UI_SEND_MESSAGE") }}</md-tooltip>
     </div>
@@ -17,36 +22,48 @@ import { shell } from "electron";
 
 export default {
   name: "steam-friend",
-  props: ["friend"],
-  data() {
-    return {
-      url: "",
-    };
+  props: {
+    friend: {
+      type: Object,
+      default: () => {},
+    },
   },
   methods: {
-    openFriend(id) {
-      shell.openExternal(`steam://friends/message/${id}`);
+    openChat() {
+      shell.openExternal(`steam://friends/message/${this.friend.friendID.id}`);
     },
     imgErr(e) {
       e.target.src = require("@/assets/noavatar.png");
-    }
+    },
   },
   computed: {
     statusText() {
-      var state = this.friend.priority;
-      if (state == -1) return this.$t("#UI_IN_LAUNCHER", this.friend.friendRPC);
-      if (state == 0) return this.$t("#UI_IN_HL");
-      if (state == 1) return this.$t("#UI_IN_OTHER_GAME");
-      if (state == 2) return this.$t("#UI_ONLINE");
-      if (state == 3) return this.$t("#UI_OFFLINE");
+      switch (this.friend.priority) {
+        case -1:
+          return this.$t("#UI_IN_LAUNCHER", this.friend.friendRPC);
+        case 0:
+          return this.$t("#UI_IN_HL");
+        case 1:
+          return this.$t("#UI_IN_OTHER_GAME");
+        case 2:
+          return this.$t("#UI_ONLINE");
+        case 3:
+          return this.$t("#UI_OFFLINE");
+      }
     },
     statusColor() {
-      var state = this.friend.priority;
-      if (state == -1) return "steam-yellow";
-      if (state == 0) return "steam-orange";
-      if (state == 1) return "steam-blue";
-      if (state == 2) return "steam-green";
-      if (state == 3) return "steam-white";
+      switch (this.friend.priority) {
+        case -1:
+          return "steam-yellow";
+        case 0:
+          return "steam-orange";
+        case 1:
+          return "steam-blue";
+        case 2:
+          return "steam-green";
+        case 3:
+          return "steam-white";
+      }
     },
   },
 };

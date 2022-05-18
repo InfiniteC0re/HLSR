@@ -39,10 +39,5 @@ export default new Router({
             name: 'customization',
             component: require('@/views/Customization').default
         },
-        {
-            path: '/debug/hlsd',
-            name: 'hlsd',
-            component: require('@/views/Alternative/HLSDTEST.vue').default
-        }
     ]
 })

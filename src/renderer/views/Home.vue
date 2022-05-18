@@ -24,7 +24,7 @@
             <div class="quick-play-game" @click.self="lastLaunchedGameStart">
               <span
                 class="quick-play-game-name"
-                :class="{ gray: isQuickGameButtonActive }"
+                :class="{ gray: cantQuickLaunch }"
                 >{{ lastLaunchedGameName }}</span
               >
               <md-button
@@ -71,18 +71,14 @@
       </div>
     </div>
     <md-dialog :md-active.sync="changelog">
-      <md-dialog-title
-        v-html="$t('#UI_CHANGELOG')"
-      ></md-dialog-title>
+      <md-dialog-title v-html="$t('#UI_CHANGELOG')"></md-dialog-title>
       <md-dialog-content
         style="opacity: 0.4"
         v-html="$t('#UI_CHANGELOG_CONTENT')"
       ></md-dialog-content>
     </md-dialog>
     <md-dialog :md-active.sync="soundCloudSettings">
-      <md-dialog-title
-        v-html="$t('#UI_SOUNDCLOUD_SETTINGS')"
-      ></md-dialog-title>
+      <md-dialog-title v-html="$t('#UI_SOUNDCLOUD_SETTINGS')"></md-dialog-title>
       <md-dialog-content>
         <span
           style="opacity: 0.4"
@@ -145,18 +141,21 @@ export default {
         this.$store.state.game.started || this.$store.state.extraNotification
       );
     },
-    isQuickGameButtonActive() {
+    isSteamStarted() {
+      return this.$store.state.steamworks.started;
+    },
+    cantQuickLaunch() {
       let id = store.get("lastLaunched");
-
       let game = GameControl.getGame(id);
       if (!game) return false;
 
       let licenses = this.$store.state.steamworks.licenses;
+      let hasGame = GameControl.checkInstalled(store, game.id);
 
       return (
-        (navigator.onLine == false && this.checkLastLaunchedGameInstalled) ||
+        (navigator.onLine == false && !hasGame) ||
         this.isGameStarted ||
-        (!licenses[id] && game.needSteam)
+        (game.needSteam && (!licenses[id] || !this.isSteamStarted))
       );
     },
     checkLastLaunchedGameInstalled() {
@@ -221,9 +220,9 @@ export default {
     let config = settingsStore.get("config");
     this.playlistInput = config.soundcloudPlaylist || "";
 
-    if (this.$store.state.shouldOpenChangelog == true) {
+    if (this.$store.state.launchedNewVersion) {
       this.changelog = true;
-      this.$store.state.shouldOpenChangelog = false;
+      this.$store.state.launchedNewVersion = false;
 
       this.$store.commit("createNotification", {
         text: this.$t("#NEW_UPDATE_INSTALLED"),
@@ -339,15 +338,20 @@ iframe {
   color: rgba(255, 255, 255, 0.4);
 }
 
+.quick-play-game:hover .quick-play-game-name {
+  color: #fff;
+}
+
 .quick-play-game-name {
   font-size: 18px;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.6);
   margin-left: 16px;
   pointer-events: none;
+  transition: 0.1s ease;
 }
 
 .gray {
-  color: rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.4);
 }
 
 .clickable {
