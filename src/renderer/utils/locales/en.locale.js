@@ -175,7 +175,17 @@ export default {
   "#UI_BEST_SEGMENT": "Best Segment",
   "#UI_LEADERBOARD": "Leaderboard",
   "#UI_MANAGEMENT": "Management",
-  "#UI_CHANGELOG_CONTENT": `<h4>Update from 05/18/2022 [v. 0.2.6]</h4>
+  "#UI_WEBSITE": "Website",
+  "#UI_CHANGELOG_CONTENT": `<h4>Update from 08/05/2022 [v. 0.2.7]</h4>
+<ul>
+<li>Replaced default SoundCloud playlist with https://soundcloud.com/nicklas-hee-zhi-en-moe/sets/gaming-music</li>
+<li>Fixed displaying covers of songs without them</li>
+<li>Reuploaded HL, HLBS and HLOF files to GitHub</li>
+<li>Moved to a new domain: hlsr.tk</li>
+<li>Updated icons in the settings</li>
+<li>Added website shortcut</li>
+</ul><br/>
+<h4>Update from 05/18/2022 [v. 0.2.6]</h4>
 <ul>
 <li>Updated UI of the game's screen</li>
 <li>Added an ability to switch LiveSplit splits</li>

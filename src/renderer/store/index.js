@@ -46,11 +46,10 @@ class Notification {
 
 export default new vuex.Store({
   state: {
-    defaultSoundCloudPlaylist:
-      "https://api.soundcloud.com/playlists/1024488982%3Fsecret_token%3Ds-t3rIoE0luqj&color=%23e81387&auto_play=false&hide_related=false&show_comments=false&show_user=false&show_reposts=false&show_teaser=false",
+    defaultSoundCloudPlaylist: "https://api.soundcloud.com/playlists/1319038876&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true",
     noParticles: false,
     debugMenu: false,
-    launchedNewVersion: false,
+    isNewVersion: false,
     sidebarBlocked: false,
     notifications: [],
     extraNotification: null,

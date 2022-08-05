@@ -20,7 +20,9 @@ export default [
         "#UI_LIVESPLIT",
         "RInput",
       ],
-      archives: ["https://hlsr.pro/downloadable/Half-Life.zip"],
+      archives: [
+        "https://github.com/InfiniteC0re/HLSR/releases/download/HL/Half-Life.zip",
+      ],
       sourceruns: "https://wiki.sourceruns.org/wiki/Category:Half-Life_1",
       leaderboard: "https://www.speedrun.com/hl1",
     },
@@ -45,7 +47,9 @@ export default [
         "#UI_LIVESPLIT",
         "RInput",
       ],
-      archives: ["https://hlsr.pro/downloadable/Opposing-Force.zip"],
+      archives: [
+        "https://github.com/InfiniteC0re/HLSR/releases/download/HL/Opposing-Force.zip",
+      ],
       sourceruns: "https://wiki.sourceruns.org/wiki/Category:Opposing_Force",
       leaderboard: "https://www.speedrun.com/op4",
     },
@@ -64,7 +68,9 @@ export default [
       totalSize: 285,
       archiveSize: 168,
       features: ["#UI_STEAM", "Bunnymod XT", "#UI_LIVESPLIT", "RInput"],
-      archives: ["https://hlsr.pro/downloadable/Blue-Shift.zip"],
+      archives: [
+        "https://github.com/InfiniteC0re/HLSR/releases/download/HL/Blue-Shift.zip",
+      ],
       sourceruns: "https://wiki.sourceruns.org/wiki/Category:Blue_Shift",
       leaderboard: "https://www.speedrun.com/bshift",
     },

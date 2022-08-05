@@ -229,6 +229,7 @@ export default {
     .artwork {
       min-width: 40px;
       height: 40px;
+      background-image: url("~@/assets/nocover.jpg");
       background-position: center;
       background-size: cover;
       background-color: rgba(0, 0, 0, 0.3);
@@ -368,7 +369,7 @@ export default {
     min-width: 80px;
     min-height: 80px;
     position: relative;
-    background-image: url(../../assets/nocover.jpg);
+    background-image: url("~@/assets/nocover.jpg");
     background-size: cover !important;
     background-position: center !important;
     border-radius: 4px;

@@ -33,13 +33,17 @@
         />
       </div>
       <div id="bottom">
-        <div class="social">
-          <div class="social-button" @click="openDiscord">
+        <div class="tool">
+          <div class="tool-button" @click="openDiscord">
             <i class="fab fa-discord"></i>
             <md-tooltip>{{ $t("#UI_DISCORD") }}</md-tooltip>
           </div>
-          <div class="social-button" @click="dialogOpen = true">
-            <i class="fal fa-info-circle"></i>
+          <div class="tool-button" @click="openWebsite">
+            <i class="fas fa-globe-asia"></i>
+            <md-tooltip>{{ $t("#UI_WEBSITE") }}</md-tooltip>
+          </div>
+          <div class="tool-button" @click="dialogOpen = true">
+            <i class="fas fa-question-circle"></i>
             <md-tooltip>{{ $t("#UI_ABOUT_PROGRAM") }}</md-tooltip>
           </div>
         </div>
@@ -49,14 +53,9 @@
 
       <!-- Диалоговое окно  -->
       <md-dialog :md-active.sync="dialogOpen" :mdClickOutsideToClose="true">
-        <md-dialog-title
-          v-html="$t('#UI_ABOUT_TITLE')"
-        ></md-dialog-title>
+        <md-dialog-title v-html="$t('#UI_ABOUT_TITLE')"></md-dialog-title>
         <md-dialog-content style="display: flex; user-select: text">
-          <div
-            class="left-block"
-            v-html="$t('#UI_ABOUT_CONTENT')"
-          ></div>
+          <div class="left-block" v-html="$t('#UI_ABOUT_CONTENT')"></div>
           <div class="right-block">
             <img
               :src="require('@/assets/logo.png')"
@@ -109,6 +108,9 @@ export default {
   methods: {
     openDiscord() {
       remote.shell.openExternal("https://discord.gg/3TN2yyJKE2");
+    },
+    openWebsite() {
+      remote.shell.openExternal("https://hlsr.tk");
     },
     updateLocale() {
       this.languages = [
@@ -208,13 +210,13 @@ export default {
   align-items: center;
 }
 
-.social {
+.tool {
   color: rgba(255, 255, 255, 0.3);
   display: flex;
   font-size: 24px;
 }
 
-.social .social-button {
+.tool .tool-button {
   width: 50px;
   height: 50px;
   margin-left: 8px;
@@ -227,7 +229,7 @@ export default {
   cursor: pointer;
 }
 
-.social .social-button:hover {
+.tool .tool-button:hover {
   background: rgba(0, 0, 0, 0.3);
   color: rgba(255, 255, 255, 0.4);
 }

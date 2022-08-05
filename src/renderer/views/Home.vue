@@ -70,13 +70,17 @@
         </div>
       </div>
     </div>
-    <md-dialog :md-active.sync="changelog">
+
+    <!-- Changelog -->
+    <md-dialog :md-active.sync="changelog" style="user-select: text">
       <md-dialog-title v-html="$t('#UI_CHANGELOG')"></md-dialog-title>
       <md-dialog-content
         style="opacity: 0.4"
         v-html="$t('#UI_CHANGELOG_CONTENT')"
       ></md-dialog-content>
     </md-dialog>
+    
+    <!-- SoundCloud settings -->
     <md-dialog :md-active.sync="soundCloudSettings">
       <md-dialog-title v-html="$t('#UI_SOUNDCLOUD_SETTINGS')"></md-dialog-title>
       <md-dialog-content>
@@ -98,6 +102,7 @@
         }}</md-button>
       </md-dialog-actions>
     </md-dialog>
+
   </div>
 </template>
 
@@ -220,9 +225,9 @@ export default {
     let config = settingsStore.get("config");
     this.playlistInput = config.soundcloudPlaylist || "";
 
-    if (this.$store.state.launchedNewVersion) {
+    if (this.$store.state.isNewVersion) {
       this.changelog = true;
-      this.$store.state.launchedNewVersion = false;
+      this.$store.state.isNewVersion = false;
 
       this.$store.commit("createNotification", {
         text: this.$t("#NEW_UPDATE_INSTALLED"),

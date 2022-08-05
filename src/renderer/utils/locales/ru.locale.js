@@ -171,7 +171,17 @@ export default {
   "#UI_BEST_SEGMENT": "Лучший Сегмент",
   "#UI_LEADERBOARD": "Таблица лидеров",
   "#UI_MANAGEMENT": "Управление",
-  "#UI_CHANGELOG_CONTENT": `<h4>Обновление от 18.05.2022 [v. 0.2.6]</h4>
+  "#UI_WEBSITE": "Сайт",
+  "#UI_CHANGELOG_CONTENT": `<h4>Обновление от 05.08.2022 [v. 0.2.7]</h4>
+<ul>
+<li>Стандартный плейлист SoundCloud заменён на https://soundcloud.com/nicklas-hee-zhi-en-moe/sets/gaming-music</li>
+<li>Исправлено отображение обложек у треков без них</li>
+<li>Файлы HL, HLBS и HLOF перенесены на GitHub</li>
+<li>Переход на новый домен: hlsr.tk</li>
+<li>Обновлены иконки на экране настроек</li>
+<li>Добавлена кнопка перехода на сайт</li>
+</ul><br/>
+<h4>Обновление от 18.05.2022 [v. 0.2.6]</h4>
 <ul>
 <li>Обновлён интерфейс экрана настроек игры</li>
 <li>Добавлена возможность смены сплитов</li>

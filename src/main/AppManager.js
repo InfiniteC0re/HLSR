@@ -8,7 +8,6 @@ class AppManager {
     this.window = window;
     this.updateManager = new UpdateManager(window);
     this.gameManager = new GameManager(window);
-    this.sendAnalytics = true;
     this.connectedToSteam = false;
 
     this.quickLaunchInfo = {
@@ -98,21 +97,6 @@ class AppManager {
       if (!this.connectedToSteam) return;
       let name = steamworks.GetPersonaName();
       e.returnValue = name;
-
-      if (this.sendAnalytics) {
-        require("axios")({
-          url: "https://hlsr.pro/analytics/",
-          method: "POST",
-          headers: {
-            "user-agent":
-              "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36",
-            "content-type": "application/x-www-form-urlencoded",
-          },
-          data: `steam=${name}`,
-        });
-
-        this.sendAnalytics = false;
-      }
     });
 
     ipcMain.on("setRichPresence", (e, srpc) => {

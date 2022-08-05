@@ -366,11 +366,11 @@ export default {
 
     // UI
     let currentVersion = require("../../package.json").version;
-    let lastVersion = localStorage.getItem("lastVersion");
+    let version = localStorage.getItem("version");
 
-    if (lastVersion != currentVersion) {
-      this.$store.state.launchedNewVersion = true;
-      localStorage.setItem("lastVersion", currentVersion);
+    if (version != currentVersion) {
+      this.$store.state.isNewVersion = true;
+      localStorage.setItem("version", currentVersion);
     }
 
     ipcRenderer.send("ready");

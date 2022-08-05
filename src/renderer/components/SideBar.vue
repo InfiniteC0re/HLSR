@@ -446,7 +446,7 @@ export default {
               margin-right: 12px;
 
               .lambda {
-                background: url(../assets/lambda.svg);
+                background: url("~@/assets/lambda.svg");
                 background-size: cover;
                 background-position: center;
                 width: 14px;
