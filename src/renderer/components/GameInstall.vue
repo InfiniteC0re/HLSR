@@ -6,13 +6,9 @@
         <p>{{ $t("#UI_HLSR_LIB_WILL_BE_PLACED") }}</p>
         <div class="path-button">
           <p>{{ selectedPath }}</p>
-          <div
-            class="button"
-            @click="selectFolder"
-            :class="{
-              disabled: disallowedToChangePath,
-            }"
-          >
+          <div class="button" @click="selectFolder" :class="{
+            disabled: disallowedToChangePath,
+          }">
             <i class="far fa-folder"></i>
             <md-tooltip md-direction="left" v-if="disallowedToChangePath">{{
               $t("#REMOVE_GAMES_TO_CHANGE")
@@ -28,15 +24,15 @@
       </ul>
       <div class="space-info" v-if="game">
         <p :class="{ red: noSpace }">
-          {{ $t("#UI_FREE_SPACE") }} {{ freeSpace }} MB
+          {{ $t("#UI_FREE_SPACE") }} {{ freeSpace.toLocaleString() }} MB
         </p>
         <p>
           {{ $t("#UI_SPACE_REQUIRED_AFTER") }}
-          {{ game.info.totalSize }} MB
+          {{ game.info.totalSize.toLocaleString() }} MB
         </p>
         <p>
           {{ $t("#UI_SPACE_REQUIRED_TO") }}
-          {{ game.info.totalSize + game.info.archiveSize }} MB
+          {{ (game.info.totalSize + game.info.archiveSize).toLocaleString() }} MB
         </p>
       </div>
 
@@ -59,10 +55,7 @@
           <span>{{ $t("#UI_CANCEL") }}</span>
           <i class="far fa-ban"></i>
         </AltButton>
-        <AltButton
-          @click="startInstall"
-          :disabled="installDisabled || installing"
-        >
+        <AltButton @click="startInstall" :disabled="installDisabled || installing">
           <span>{{ !installed ? $t("#UI_INSTALL") : $t("#UI_DONE") }}</span>
           <i class="fal fa-arrow-right"></i>
         </AltButton>

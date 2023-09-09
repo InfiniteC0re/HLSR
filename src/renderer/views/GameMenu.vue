@@ -1,30 +1,18 @@
 <template>
   <div id="wrap">
     <div id="form" :class="{ overlay: installationWindow }">
-      <div
-        id="mainview"
-        :style="{
-          backgroundImage: `linear-gradient(0deg, #070707 10%, transparent 200%), ${background}`,
-        }"
-      >
+      <div id="mainview" :style="{
+        backgroundImage: `linear-gradient(0deg, #070707 10%, transparent 200%), ${background}`,
+      }">
         <div class="main">
           <div class="game-title">{{ game.name }}</div>
           <div class="game-top">
-            <md-button
-              :class="{ 'md-raised': true, installedGame: installed }"
-              @click="gameButton"
-              style="margin: 0"
-              :disabled="isButtonDisabled"
-            >
+            <md-button :class="{ 'md-raised': true, installedGame: installed }" @click="gameButton" style="margin: 0"
+              :disabled="isButtonDisabled">
               <div class="icon">{{ buttonIcon() }}</div>
               <div class="text">{{ buttonText() }}</div>
             </md-button>
-            <md-menu
-              md-size="big"
-              md-direction="bottom-start"
-              class="menu-button"
-              v-if="installed"
-            >
+            <md-menu md-size="big" md-direction="bottom-start" class="menu-button" v-if="installed">
               <md-button class="md-icon-button" md-menu-trigger>
                 <md-icon class="fas fa-cog"></md-icon>
               </md-button>
@@ -32,23 +20,13 @@
               <md-menu-content style="margin-top: 3px; width: 280px">
                 <md-menu-item @click="gameFolder">
                   <span>{{ $t("#UI_GAME_FOLDER") }}</span>
-                  <md-icon
-                    class="fas fa-folder"
-                    style="margin-right: 2px"
-                  ></md-icon>
+                  <md-icon class="fas fa-folder" style="margin-right: 2px"></md-icon>
                 </md-menu-item>
                 <md-menu-item @click="makeShortcut">
                   <span>{{ $t("#UI_MAKE_SHORTCUT") }}</span>
-                  <md-icon
-                    class="fas fa-star"
-                    style="margin-right: 3.3px"
-                  ></md-icon>
+                  <md-icon class="fas fa-star" style="margin-right: 3.3px"></md-icon>
                 </md-menu-item>
-                <md-menu-item
-                  @click="uninstallGameHandle"
-                  class="gamemenu_uninstallButton"
-                  :disabled="isGameStarted"
-                >
+                <md-menu-item @click="uninstallGameHandle" class="gamemenu_uninstallButton" :disabled="isGameStarted">
                   <span>{{ $t("#UI_UNINSTALL") }}</span>
                   <md-icon class="fas fa-trash"></md-icon>
                 </md-menu-item>
@@ -59,20 +37,14 @@
         <div class="panels">
           <div class="navpanel">
             <span class="name">{{ $t("#UI_MANAGEMENT") }}</span>
-            <div
-              v-for="section in sections"
-              v-bind:key="section._id"
-              :class="{
-                navbutton: true,
-                active: selectedSection == section.id,
-                border: section.border,
-                disabled: !installed && section.requiresInstalledGame,
-              }"
-              @click="section.cb"
-            >
+            <div v-for="section in sections" v-bind:key="section._id" :class="{
+              navbutton: true,
+              active: selectedSection == section.id,
+              border: section.border,
+              disabled: !installed && section.requiresInstalledGame,
+            }" @click="section.cb">
               <div class="text">
-                <i v-if="section.icon" :class="section.icon"></i
-                >{{ $t(section.name) }}
+                <i v-if="section.icon" :class="section.icon"></i>{{ $t(section.name) }}
               </div>
             </div>
             <div class="warning" v-if="shouldShowWarning">
@@ -83,25 +55,15 @@
             </div>
           </div>
           <div class="mainpanel">
-            <Overview
-              v-if="selectedSection == 0"
-              :posts="posts"
-              :id="$route.query.id"
-            />
+            <Overview v-if="selectedSection == 0" :posts="posts" :id="$route.query.id" />
             <Configurator v-if="selectedSection == 1" :id="$route.query.id" />
-            <LiveSplitSplits
-              v-if="selectedSection == 2"
-              :id="$route.query.id"
-            />
+            <LiveSplitSplits v-if="selectedSection == 2" :id="$route.query.id" />
           </div>
         </div>
       </div>
     </div>
 
-    <GameInstall
-      v-if="installationWindow"
-      @cancel="installationWindow = false"
-    />
+    <GameInstall v-if="installationWindow" @cancel="installationWindow = false" />
   </div>
 </template>
 
@@ -332,8 +294,7 @@ export default {
     if (navigator.onLine) {
       axios
         .get(
-          `https://api.steampowered.com/ISteamNews/GetNewsForApp/v2/?appid=${
-            this.game.id == "218" ? "220" : this.game.id
+          `https://api.steampowered.com/ISteamNews/GetNewsForApp/v2/?appid=${this.game.id == "218" ? "220" : this.game.id
           }&count=15`
         )
         .then((res) => {
@@ -393,7 +354,7 @@ export default {
   flex-direction: column;
 }
 
-#mainview > .main {
+#mainview>.main {
   margin-top: 112px;
   display: flex;
   flex-direction: column;
@@ -436,7 +397,7 @@ export default {
   background: rgba(255, 255, 255, 0.33);
 }
 
-#mainview > .panels {
+#mainview>.panels {
   display: flex;
   flex: 1;
   width: 100%;

@@ -148,13 +148,10 @@ export default {
   "#UI_MAKE_SHORTCUT": "Создать ярлык",
   "#CANT_START_GAME_NOSTEAM": "HLSR не может запустить игру без связи со Steam",
   "#WAITING_FOR_STEAM": "Ожидание подключения Steam для запуска игры...",
-  "#REMOVE_GAMES_TO_CHANGE":
-    "Путь можно изменить только когда в лаунчере не установлена ни одна игра",
+  "#REMOVE_GAMES_TO_CHANGE": "Путь можно изменить только когда в лаунчере не установлена ни одна игра",
   "#SHORTCUT_LAUNCH": "Запустить",
-  "#UI_FOUND_CYRILLIC":
-    "По пути к игре найдена кириллица. Работа не гарантируется",
-  "#UI_FOUND_CYRILLIC_HINT":
-    "Рекоммендуется переустановить игру по другому пути",
+  "#UI_FOUND_CYRILLIC": "По пути к игре найдена кириллица. Работа не гарантируется",
+  "#UI_FOUND_CYRILLIC_HINT": "Рекоммендуется переустановить игру по другому пути",
   "#UI_ACRYLLIC_THEME": "Акрилловый фон",
   "#UI_BLOBS_THEME": "Анимированный фон",
   "#UI_NO_LICENSE": "Не найдена лицензия игры в Steam",
@@ -172,7 +169,13 @@ export default {
   "#UI_LEADERBOARD": "Таблица лидеров",
   "#UI_MANAGEMENT": "Управление",
   "#UI_WEBSITE": "Сайт",
-  "#UI_CHANGELOG_CONTENT": `<h4>Обновление от 05.08.2022 [v. 0.2.7]</h4>
+  "#UI_CHANGELOG_CONTENT": `<h4>Обновление от 09.09.2023 [v. 0.2.8]</h4>
+<ul>
+<li>Обновлен Bunnymod XT до версии от Jul 23 2023 (временно: переустановите HL1 для обновления)</li>
+<li>Заменена старая ссылка на сайт в Discord RPC</li>
+<li>Добавлено форматирование к числам в меню установки игр</li>
+</ul><br/>
+<h4>Обновление от 05.08.2022 [v. 0.2.7]</h4>
 <ul>
 <li>Стандартный плейлист SoundCloud заменён на https://soundcloud.com/nicklas-hee-zhi-en-moe/sets/gaming-music</li>
 <li>Исправлено отображение обложек у треков без них</li>
@@ -366,9 +369,8 @@ export default {
 <li>Появление ченджлога</li>
 </ul>
 `,
-  "#UI_ABOUT_TITLE": `<span style="color:var(--accent-color);font-weight:bold;font-size:18px">HLSR [v. ${
-    require("../../../../package.json").version
-  }]</span>`,
+  "#UI_ABOUT_TITLE": `<span style="color:var(--accent-color);font-weight:bold;font-size:18px">HLSR [v. ${require("../../../../package.json").version
+    }]</span>`,
   "#UI_ABOUT_CONTENT": `Разработчики: <span style="color:#ff492c">InfiniteC0re#7307</span><br/>
 Скрипты: <span style="color:#97d4ff">N4Rk0t1k#0302</span>, <span style="color:#c3a4ff">Parklez</span><br/>
 Помощь в UI дизайне: <span style="color:#ac6cff">Дизайнер [bmd.GG]#9384</span><br/>

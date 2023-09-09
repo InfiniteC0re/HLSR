@@ -81,7 +81,7 @@ export default {
         smallImageKey: "steam2",
         smallImageText: this.$t("#RPC_NOSTEAM"),
         instance: false,
-        buttons: [{ label: this.$t("#RPC_WEBSITE"), url: "https://hlsr.pro/" }],
+        buttons: [{ label: this.$t("#RPC_WEBSITE"), url: "https://hlsr.tk" }],
       },
       lastRPC: {},
       updateAvailable: 0,

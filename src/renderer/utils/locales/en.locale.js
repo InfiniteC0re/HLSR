@@ -77,7 +77,7 @@ export default {
   "#UI_NO_INTERNET": "No Internet connnection",
   "#UI_SCRIPT_UPDATE": "Update scripts DB",
   "#UI_CHANGELOG": "Changelog",
-  "#UI_GAME_FOLDER": "Open Game Folder",
+  "#UI_GAME_FOLDER": "Open game directory",
   "#UI_GRADIENT_THEME": "Gradient",
   "#UI_GOLDSRC": "GoldSrc Engine Games",
   "#UI_GAME_ALLCORES": "Use all CPU cores",
@@ -148,7 +148,7 @@ export default {
   "#UI_LIVESPLIT": "LiveSplit with splits",
   "#UNABLE_TO_DOWNLOAD": "Unable to install %0% due to network error!",
   "#UI_STEAM_RECONNECT": "Reconnect to Steam",
-  "#UI_MAKE_SHORTCUT": "Make a shortcut",
+  "#UI_MAKE_SHORTCUT": "Create desktop shortcut",
   "#CANT_START_GAME_NOSTEAM":
     "HLSR can't start a game without Steam connection",
   "#WAITING_FOR_STEAM": "Waiting for Steam connection to launch game...",
@@ -176,7 +176,13 @@ export default {
   "#UI_LEADERBOARD": "Leaderboard",
   "#UI_MANAGEMENT": "Management",
   "#UI_WEBSITE": "Website",
-  "#UI_CHANGELOG_CONTENT": `<h4>Update from 08/05/2022 [v. 0.2.7]</h4>
+  "#UI_CHANGELOG_CONTENT": `<h4>Update from 09/09/2023 [v. 0.2.8]</h4>
+<ul>
+<li>Updated Bunnymod XT to Jul 23 2023 version for new users (temp solution: reinstall HL1 to get it)</li>
+<li>Replaced old website URL with new one in Discord RPC</li>
+<li>Added formatting to numbers in game install menu</li>
+</ul><br/>
+<h4>Update from 08/05/2022 [v. 0.2.7]</h4>
 <ul>
 <li>Replaced default SoundCloud playlist with https://soundcloud.com/nicklas-hee-zhi-en-moe/sets/gaming-music</li>
 <li>Fixed displaying covers of songs without them</li>
