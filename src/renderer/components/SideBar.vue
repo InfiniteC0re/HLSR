@@ -11,9 +11,6 @@
           <router-link to="/home">
             <button :class="{ active: $route.name == 'home' }">
               <i class="fas fa-home-lg"></i>
-              <!-- <md-tooltip md-direction="right">{{
-                $t("#UI_HOME")
-              }}</md-tooltip> -->
             </button>
           </router-link>
         </div>
@@ -27,9 +24,6 @@
             @click="showGameList = !showGameList"
           >
             <i class="fas fa-play"></i>
-            <!-- <md-tooltip md-direction="right">{{
-                $t("#UI_LIBRARY")
-              }}</md-tooltip> -->
           </button>
           <div class="items" :class="{ opened: showGameList }">
             <div
@@ -114,9 +108,6 @@
             }"
           >
             <i class="fas fa-align-left"></i>
-            <!-- <md-tooltip md-direction="right">{{
-                $t("#UI_CONFIGS")
-              }}</md-tooltip> -->
           </button>
           <div class="items" :class="{ opened: configList }">
             <div
@@ -140,9 +131,6 @@
           <router-link to="/customization">
             <button :class="{ active: $route.name == 'customization' }">
               <i class="fas fa-sliders-h"></i>
-              <!-- <md-tooltip md-direction="right">{{
-                $t("#UI_CUSTOMIZATION")
-              }}</md-tooltip> -->
             </button>
           </router-link>
         </div>
@@ -300,6 +288,20 @@ export default {
   align-items: center;
   z-index: 9;
 
+  @keyframes button-became-active {
+    0% {
+      transform: scale(1);
+    }
+
+    50% {
+      transform: scale(0.95);
+    }
+
+    100% {
+      transform: scale(1);
+    }
+  }
+
   &.blocked {
     .middle,
     .bottom {
@@ -340,6 +342,10 @@ export default {
       margin-bottom: 16px;
       cursor: pointer;
       transition: 0.1s ease;
+
+      &:active {
+        transform: scale(0.95);
+      }
 
       &:hover {
         background: #1fb4ff;
@@ -538,8 +544,9 @@ export default {
             color: rgba(255, 255, 255, 0.3);
           }
 
-          &.preActive {
+          &:active, &.preActive {
             color: rgba(255, 255, 255, 0.5);
+            transform: scale(1.1);
           }
 
           &.active {
@@ -549,6 +556,11 @@ export default {
             height: 50px;
             border-radius: 8px;
             border: 2px solid var(--accent-color);
+            animation: button-became-active 0.3s;
+
+            &:active {
+              transform: unset;
+            }
           }
         }
       }

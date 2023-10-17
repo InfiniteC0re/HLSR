@@ -54,7 +54,7 @@ export default {
 }
 
 .checkbox:nth-last-child(1) {
-    margin-bottom: 0;
+  margin-bottom: 0;
 }
 
 .checkbox .icon.active::after {

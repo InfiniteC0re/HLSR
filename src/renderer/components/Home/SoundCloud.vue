@@ -1,14 +1,10 @@
 <template>
   <div id="widget-wrap">
     <div class="center" v-if="!song.id">
-      <md-empty-state
-        class="md-accent"
-        md-rounded
-        :md-description="$t('#UI_NO_TRACKS')"
-        :md-size="200"
-      ></md-empty-state>
+      <LoaderSpinner />
     </div>
-    <div class="player-info" v-if="song.id">
+    <template v-else>
+      <div class="player-info">
       <div
         class="artwork"
         :style="getSongArtwork(song)"
@@ -25,12 +21,12 @@
         <div class="progress-wrap">
           <div class="time">
             <div class="left">{{ songPos }}</div>
-            <div class="total">
+            <div class="song-duration">
               {{ song ? toHHMMSS(song.duration / 1000) : "00:00" }}
             </div>
           </div>
           <div class="progress" ref="progress" @mousedown="barMouseDown">
-            <div class="bar" :style="{ flex: `${barWidth}` }"></div>
+            <div class="bar" :style="{ width: `${barWidth * 100}%` }"></div>
           </div>
         </div>
       </div>
@@ -38,7 +34,7 @@
         <div class="bar" :style="{ height: `${volume}%` }"></div>
       </div>
     </div>
-    <div class="player-songs" v-if="song.id">
+    <div class="player-songs">
       <div
         v-for="val in songsList"
         class="song"
@@ -50,7 +46,7 @@
         <div class="wrap">
           <div class="top">
             <h5 :title="val.title">{{ val.title }}</h5>
-            <div class="total">{{ toHHMMSS(val.duration / 1000) }}</div>
+            <div class="song-duration">{{ toHHMMSS(val.duration / 1000) }}</div>
           </div>
           <div class="tags">
             <div class="tag">
@@ -60,11 +56,17 @@
         </div>
       </div>
     </div>
+    </template>
   </div>
 </template>
 
 <script>
+import LoaderSpinner from "@/components/Elements/Loader";
+
 export default {
+  components: {
+    LoaderSpinner
+  },
   data() {
     return {
       songPos: "00:00",
@@ -143,6 +145,7 @@ export default {
 
         this.bar.x = posX;
         this.barWidth = this.bar.x / this.$refs.progress.clientWidth;
+        console.log(this.barWidth)
       }
     },
     mouseUp() {
@@ -194,18 +197,30 @@ export default {
 
 .player-songs {
   overflow: auto;
+  padding-right: 4px;
 
   .song {
     width: 100%;
-    padding: 8px;
+    height: 48px;
     padding-left: 12px;
     position: relative;
     background: rgba(255, 255, 255, 0.03);
     display: flex;
+    align-items: center;
     cursor: pointer;
     transition: 0.05s ease;
+    overflow: hidden;
+
+    &:nth-child(1) {
+      border-radius: 4px 4px 0 0;
+    }
+
+    &:nth-last-child(1) {
+      border-radius: 0 0 4px 4px;
+    }
 
     &:hover {
+      transition: 0.1s background-color;
       background: rgba(255, 255, 255, 0.06);
     }
 
@@ -221,14 +236,20 @@ export default {
     }
 
     &.active {
+      .top {
+        h5 {
+          color: rgb(211, 211, 211);
+        }
+      }
+
       &::before {
         background: var(--accent-color);
       }
     }
 
     .artwork {
-      min-width: 40px;
-      height: 40px;
+      min-width: 38px;
+      height: 38px;
       background-image: url("~@/assets/nocover.jpg");
       background-position: center;
       background-size: cover;
@@ -238,7 +259,7 @@ export default {
 
     .wrap {
       overflow: hidden;
-      max-width: 78%;
+      width: 100%;
     }
 
     .top {
@@ -253,12 +274,14 @@ export default {
         display: block;
         text-overflow: ellipsis;
         font-weight: 500;
+        padding-right: 24px;
       }
 
-      .total {
-        color: rgba(255, 255, 255, 0.1);
+      .song-duration {
+        color: rgba(255, 255, 255, 0.12);
         font-size: 12px;
-        margin-left: 6px;
+        margin-left: auto;
+        margin-right: 6px;
       }
     }
 
@@ -267,11 +290,15 @@ export default {
       margin-left: 6px;
 
       .tag {
-        padding: 0px 8px;
+        padding: 0px 6px;
         background: rgba(255, 255, 255, 0.05);
         border-radius: 32px;
         color: rgba(255, 255, 255, 0.3);
-        font-size: 12px;
+        font-size: 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 18px;
       }
     }
   }
@@ -327,7 +354,6 @@ export default {
         border-radius: 8px;
         width: 100%;
         height: 4px;
-        display: flex;
 
         .bar {
           height: 100%;
@@ -341,7 +367,7 @@ export default {
         color: rgba(255, 255, 255, 0.5);
         display: flex;
 
-        .total {
+        .song-duration {
           margin-left: auto;
         }
       }

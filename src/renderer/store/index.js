@@ -56,6 +56,7 @@ export default new vuex.Store({
     blobs: null,
     steamworks: {
       started: false,
+      gotFriendList: false,
       friends: [],
       personaName: null,
       licenses: {},
@@ -108,6 +109,8 @@ export default new vuex.Store({
 
       newFriends = newFriends.filter((x) => x.personaState > 0);
       steamFriends.getAvatars(newFriends).then(() => {
+        state.steamworks.gotFriendList = true;
+        
         state.steamworks.friends = steamFriends.sort(
           state.steamworks.friends.concat(newFriends)
         );
@@ -132,6 +135,7 @@ export default new vuex.Store({
         if (!sounds.find((sound) => sound.title == undefined)) {
           sounds.forEach((sound, i) => {
             sound.realIndex = i;
+            sound.artwork_large_url = sound.artwork_url ? sound.artwork_url.replace("large", "t500x500") : undefined;
           });
 
           state.soundCloud.sounds = sounds;

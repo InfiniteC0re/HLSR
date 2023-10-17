@@ -107,7 +107,7 @@ export default {
   },
   methods: {
     openDiscord() {
-      remote.shell.openExternal("https://discord.gg/3TN2yyJKE2");
+      remote.shell.openExternal("https://discord.gg/allan");
     },
     openWebsite() {
       remote.shell.openExternal("https://hlsr.tk");
@@ -129,19 +129,6 @@ export default {
         this.themes.push({ name: "My Little Pony", id: 3 });
       else if (store.get("config").theme == 3)
         this.themes.push({ name: "Freelancer", id: 3 });
-
-      // let release = require("os").release().split(".");
-
-      // if (release[0] == "10") {
-      //   // 17134 - Windows 10 1803
-      //   let acryllicSupported = parseInt(release[2]) >= 17134;
-      //   if (acryllicSupported) {
-      //     this.themes.push({
-      //       name: this.$parent.$t("#UI_ACRYLLIC_THEME"),
-      //       id: 4,
-      //     });
-      //   }
-      // }
     },
     themeChange() {
       this.saveChoice();

@@ -102,7 +102,6 @@ export default {
   "#UI_CUSTOMIZATION_HUD_SETTINGS": "HUD",
   "#UI_CUSTOMIZATION_LQ": "Standard Version",
   "#UI_CUSTOMIZATION_HD": "HD Version",
-  "#UI_NO_TRACKS": "Updating songs",
   "#UI_CUSTOMIZATION_HUGE": "Bigger Version",
   "#UI_CUSTOMIZATION_SPRITES": "Item Sprites",
   "#UI_CUSTOMIZATION_Q3": "Q3 Styled",
@@ -176,7 +175,17 @@ export default {
   "#UI_LEADERBOARD": "Leaderboard",
   "#UI_MANAGEMENT": "Management",
   "#UI_WEBSITE": "Website",
-  "#UI_CHANGELOG_CONTENT": `<h4>Update from 09/09/2023 [v. 0.2.8]</h4>
+  "#UI_CHANGELOG_CONTENT": `<h4>Update from 10/17/2023 [v. 0.2.9]</h4>
+<ul>
+<li>Minor changes of the SoundCloud widget design</li>
+<li>Updated design of Steam friends list</li>
+<li>Removed button that used to open Steam chat</li>
+<li>Updated loading spinners</li>
+<li>Added warning to the friend list that appears when Steam is not launched</li>
+<li>Artwork of the playing song will show up in Discord game status</li>
+<li>Downloadable files of HL, HLBS and HLOF moved to Yandex Object Storage</li>
+</ul><br/>
+<h4>Update from 09/09/2023 [v. 0.2.8]</h4>
 <ul>
 <li>Updated Bunnymod XT to Jul 23 2023 version for new users (temp solution: reinstall HL1 to get it)</li>
 <li>Replaced old website URL with new one in Discord RPC</li>

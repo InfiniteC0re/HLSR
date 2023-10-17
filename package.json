@@ -1,6 +1,6 @@
 {
   "name": "hlsr",
-  "version": "0.2.8",
+  "version": "0.2.9",
   "author": "",
   "description": "Launcher that will help you to start speedrun Half-Life games.",
   "main": "./dist/electron/main.js",

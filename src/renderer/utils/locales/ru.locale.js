@@ -101,7 +101,6 @@ export default {
   "#UI_CUSTOMIZATION_HUD_SETTINGS": "HUD",
   "#UI_CUSTOMIZATION_LQ": "Стандартная версия",
   "#UI_CUSTOMIZATION_HD": "HD вариант",
-  "#UI_NO_TRACKS": "Обновление треков",
   "#UI_NO_TAG": "Нет тега",
   "#UI_CUSTOMIZATION_HUGE": "Увеличенная версия",
   "#UI_CUSTOMIZATION_SPRITES": "Спрайты",
@@ -120,7 +119,7 @@ export default {
   "#RPC_PLAYING": "Играет в %0%",
   "#RPC_DETAILS": "Подготавливается к спидрану",
   "#RPC_NOSTEAM": "Не подключён",
-  "#RPC_MUSIC": "Прослушивает треки",
+  "#RPC_MUSIC": "Слушает музыку",
   "#RPC_WEBSITE": "Вебсайт",
   "#RPC_GET_FRIENDS": "Завести друзей",
   "#MLP_URL": "https://www.youtube.com/channel/UCWaCaCyWgPk6uwKh66fl_0A",
@@ -169,7 +168,17 @@ export default {
   "#UI_LEADERBOARD": "Таблица лидеров",
   "#UI_MANAGEMENT": "Управление",
   "#UI_WEBSITE": "Сайт",
-  "#UI_CHANGELOG_CONTENT": `<h4>Обновление от 09.09.2023 [v. 0.2.8]</h4>
+  "#UI_CHANGELOG_CONTENT": `<h4>Обновление от 17.10.2023 [v. 0.2.9]</h4>
+<ul>
+<li>Незначительные изменения дизайна SoundCloud виджета</li>
+<li>Изменено оформление списка друзей Steam</li>
+<li>Удалена кнопка открытия чата в Steam</li>
+<li>Обновлены индикаторы загрузки</li>
+<li>Добавлено предупреждение об отключенном стиме в списке друзей</li>
+<li>Обложка проигрываемой песни теперь отображается в Discord статусе</li>
+<li>Установочные файлы HL, HLBS и HLOF перенесены в Yandex Object Storage</li>
+</ul><br/>
+<h4>Обновление от 09.09.2023 [v. 0.2.8]</h4>
 <ul>
 <li>Обновлен Bunnymod XT до версии от Jul 23 2023 (временно: переустановите HL1 для обновления)</li>
 <li>Заменена старая ссылка на сайт в Discord RPC</li>

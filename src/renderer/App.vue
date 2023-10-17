@@ -219,6 +219,10 @@ export default {
           rpc.details = this.$t("#RPC_MUSIC");
           rpc.state = this.song.title;
           rpc.endTimestamp = this.$store.state.soundCloud.endTimestamp;
+          
+          if (this.song.artwork_large_url) {
+            rpc.largeImageKey = this.song.artwork_large_url;
+          }
 
           this.setRPC(rpc);
         });
@@ -506,7 +510,8 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
 }
 
 ::-webkit-scrollbar-thumb {

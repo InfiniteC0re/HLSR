@@ -42,13 +42,14 @@
           <div class="mini-title">
             {{ $t("#UI_STEAM_FRIENDS") }}
           </div>
-          <div class="center" v-if="steamFriends.length == 0">
-            <md-empty-state
-              class="md-accent"
-              md-rounded
-              :md-description="$t('#UI_NO_FRIENDS')"
-              :md-size="200"
-            ></md-empty-state>
+          <div class="center" v-if="!gotSteamFriendList">
+            <LoaderSpinner v-if="isSteamStarted" />
+            <div class="warning" v-else>
+              <i class="fad fa-exclamation-triangle"></i>
+              <p>
+                {{ warningMessage }}
+              </p>
+            </div>
           </div>
           <div id="friends_list" v-else>
             <SteamFriend
@@ -109,6 +110,7 @@
 <script>
 import Store from "@/utils/Store";
 import StoreDefaults from "@/utils/StoreDefaults";
+import LoaderSpinner from "@/components/Elements/Loader";
 import SteamFriend from "@/components/Home/SteamFriend";
 import SoundCloudWidget from "@/components/Home/SoundCloud";
 import GameControl from "@/utils/GameControl";
@@ -125,7 +127,7 @@ const settingsStore = new Store({
 
 export default {
   name: "home-page",
-  components: { SteamFriend, SoundCloudWidget },
+  components: { SteamFriend, SoundCloudWidget, LoaderSpinner },
   data() {
     return {
       soundCloudSettings: false,
@@ -148,6 +150,12 @@ export default {
     },
     isSteamStarted() {
       return this.$store.state.steamworks.started;
+    },
+    gotSteamFriendList() {
+      return this.$store.state.steamworks.gotFriendList;
+    },
+    warningMessage() {
+      return this.$t("#UI_NO_STEAM");
     },
     cantQuickLaunch() {
       let id = store.get("lastLaunched");
@@ -247,6 +255,7 @@ export default {
   min-height: 0;
   height: 100%;
 }
+
 .box {
   overflow: hidden;
   border-radius: 2px;
@@ -254,6 +263,7 @@ export default {
   display: flex;
   flex-direction: column;
   border-radius: 8px;
+  padding: 16px;
 
   .box-icon {
     font-size: 16px !important;
@@ -261,8 +271,8 @@ export default {
     line-height: 21px;
   }
 }
+
 .quick-play {
-  padding: 16px 0;
   grid-column: 1;
   grid-row: 1;
 }
@@ -274,7 +284,6 @@ export default {
   align-items: center;
   justify-items: center;
   margin-top: 16px;
-  padding: 0 16px;
 }
 
 .quick-play-game {
@@ -297,24 +306,30 @@ export default {
 .box1 {
   grid-row-start: 2;
   grid-row-end: 5;
-  padding: 16px 0;
+  padding: 0;
+
+  .mini-title {
+    margin: 16px;
+  }
+
+  #friends_list {
+    height: 100%;
+    overflow: auto;
+    padding: 0 8px;
+    margin-right: 8px;
+    margin-bottom: 8px;
+  }
 }
 
 .box2 {
   grid-row-start: 1;
   grid-row-end: 3;
-  padding: 16px 0;
 }
 
 .box3 {
   grid-column: 2;
   grid-row-start: 1;
   grid-row-end: 5;
-  padding: 16px;
-
-  .mini-title {
-    margin: 0;
-  }
 }
 
 .mini-title {
@@ -322,13 +337,6 @@ export default {
   font-size: 18px;
   font-weight: 500;
   opacity: 0.2;
-  margin: 0 16px;
-}
-
-#friends_list {
-  height: 100%;
-  margin-top: 16px;
-  overflow: auto;
 }
 
 iframe {
@@ -348,11 +356,12 @@ iframe {
 }
 
 .quick-play-game-name {
-  font-size: 18px;
+  font-size: 16px;
   color: rgba(255, 255, 255, 0.6);
   margin-left: 16px;
   pointer-events: none;
   transition: 0.1s ease;
+  text-transform: uppercase;
 }
 
 .gray {
@@ -367,4 +376,28 @@ iframe {
 .clickable:hover {
   opacity: 0.4;
 }
+
+.warning {
+  padding: 24px;
+  bottom: 98px;
+  display: flex;
+  flex-direction: column;
+  color: rgba(255, 208, 0, 0.6);
+  text-align: center;
+  border: 2px solid rgba(255, 208, 0, 0.40);
+  background-color: rgba(255, 208, 0, 0.045);
+  border-radius: 16px;
+  opacity: 0.7;
+
+  p {
+    font-size: 0.76rem;
+    line-height: 16px;
+  }
+
+  i {
+    font-size: 1.6rem;
+    margin-bottom: 8px;
+  }
+}
+
 </style>
